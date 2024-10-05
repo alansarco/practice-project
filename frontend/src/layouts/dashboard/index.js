@@ -93,7 +93,7 @@ function Dashboard() {
                       chart={{
                         labels: ["Grade 7", "Grade 8", "Grade 9", "Grade 10", "Grade 11", "Grade 12"],  
                         datasets: {
-                          label: "Projects",
+                          label: "Elections",
                           backgroundColors: ["dark", "success", "primary", "warning", "info", "error"],
                           data: [
                             otherStats.data7, 

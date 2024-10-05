@@ -7,7 +7,7 @@ use Illuminate\Http\Request;
 use App\Models\Docrequest;
 use App\Models\Student;
 use App\Models\Admin;
-use App\Models\Project;
+use App\Models\Election;
 use App\Models\Calendar;
 use App\Models\User;
 use Illuminate\Support\Facades\DB;
@@ -58,18 +58,18 @@ class DashboardController extends Controller
     //returns counts of sales
     public function ProductDistribution() 
     {
-        $sales = Project::select('projectid','title as product_name','budget as product_sale')
+        $sales = Election::select('projectid','title as product_name','budget as product_sale')
             ->orderBy('budget', 'DESC')
             ->limit(10)
             ->get();
 
-        // $sales = Project::leftJoin('requests', 'projects.projectid', '=', 'requests.doctype')
+        // $sales = Election::leftJoin('requests', 'elections.projectid', '=', 'requests.doctype')
         //     ->select(
-        //         'projects.projectid',
-        //         'projects.title as product_name',
+        //         'elections.projectid',
+        //         'elections.title as product_name',
         //         DB::raw('COALESCE(SUM(requests.sales), 0) as product_sale')
         //     )
-        //     ->groupBy('projects.projectid', 'projects.title')
+        //     ->groupBy('elections.projectid', 'elections.title')
         //     ->get();
 
         return response()->json([

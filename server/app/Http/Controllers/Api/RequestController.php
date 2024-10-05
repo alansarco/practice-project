@@ -16,8 +16,8 @@ class RequestController extends Controller
         try {
             $requestors = Docrequest::leftJoin('users', 'requests.requestor', '=', 'users.username')
                   ->leftJoin('suffix', 'users.suffix', '=', 'suffix.id')
-                  ->leftJoin('projects', 'requests.doctype', '=', 'projects.projectid')
-                  ->select('users.username', 'requests.id', 'requests.doctype as purchaseid', 'projects.title as doctype', 'requests.quantity', 'requests.sales', 'requests.status as statusno',
+                  ->leftJoin('elections', 'requests.doctype', '=', 'elections.projectid')
+                  ->select('users.username', 'requests.id', 'requests.doctype as purchaseid', 'elections.title as doctype', 'requests.quantity', 'requests.sales', 'requests.status as statusno',
                         DB::raw("CONCAT(DATE_FORMAT(requests.created_at, '%M %d, %Y')) as date_requested"),
                         DB::raw("CONCAT(DATE_FORMAT(requests.date_needed, '%M %d, %Y')) as date_needed"),
                         DB::raw("CONCAT(DATE_FORMAT(requests.date_finished, '%M %d, %Y')) as date_finished"),
@@ -63,8 +63,8 @@ class RequestController extends Controller
     public function requestorinfo(Request $request) {
         $requestor = Docrequest::leftJoin('users', 'requests.requestor', '=', 'users.username')
                   ->leftJoin('suffix', 'users.suffix', '=', 'suffix.id')
-                  ->leftJoin('projects', 'requests.doctype', '=', 'projects.projectid')
-                  ->select('users.username', 'requests.id', 'requests.status', 'users.firstname', 'users.middlename', 'users.lastname', 'suffix.title', 'requests.doctype as purchaseid', 'projects.title as doctype',
+                  ->leftJoin('elections', 'requests.doctype', '=', 'elections.projectid')
+                  ->select('users.username', 'requests.id', 'requests.status', 'users.firstname', 'users.middlename', 'users.lastname', 'suffix.title', 'requests.doctype as purchaseid', 'elections.title as doctype',
                         DB::raw("CONCAT(DATE_FORMAT(requests.created_at, '%M %d, %Y')) as date_requested"),
                         DB::raw("CONCAT(DATE_FORMAT(requests.date_needed, '%M %d, %Y')) as date_needed"),
                         DB::raw("CONCAT(users.lastname, ', ', users.firstname, ' ', IFNULL(CONCAT(suffix.title, ' '), ''), IFNULL(CONCAT(LEFT(users.middlename, 1), '.'), '')) as fullname")

@@ -43,11 +43,11 @@ export const apiRoutes = {
     accountUpdate: `${mainRoute}/api/accounts/update`,
     addStudent: `${mainRoute}/api/accounts/addstudent`,
 
-    projectRetrieve: `${mainRoute}/api/projects`,
-    addProject: `${mainRoute}/api/projects/addproject`,
-    editProject: `${mainRoute}/api/projects/editproject`,
-    projectInfo: `${mainRoute}/api/projects/projectinfo`,
-    deleteProject: `${mainRoute}/api/projects/deleteproject`,
+    projectRetrieve: `${mainRoute}/api/elections`,
+    addProject: `${mainRoute}/api/elections/addproject`,
+    editProject: `${mainRoute}/api/elections/editproject`,
+    projectInfo: `${mainRoute}/api/elections/projectinfo`,
+    deleteProject: `${mainRoute}/api/elections/deleteproject`,
 
     requestRetrieve: `${mainRoute}/api/requests`,
     requestorInfo: `${mainRoute}/api/requests/requestorinfo`,

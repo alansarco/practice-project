@@ -1,6 +1,6 @@
 {
     "_readme": [
-        "This file locks the dependencies of your project to a known state",
+        "This file locks the dependencies of your election to a known state",
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
@@ -268,7 +268,7 @@
                 }
             ],
             "description": "PHP Doctrine Inflector is a small library that can perform string manipulations with regard to upper/lowercase and singular/plural forms of words.",
-            "homepage": "https://www.doctrine-project.org/projects/inflector.html",
+            "homepage": "https://www.doctrine-election.org/elections/inflector.html",
             "keywords": [
                 "inflection",
                 "inflector",
@@ -287,7 +287,7 @@
             },
             "funding": [
                 {
-                    "url": "https://www.doctrine-project.org/sponsorship.html",
+                    "url": "https://www.doctrine-election.org/sponsorship.html",
                     "type": "custom"
                 },
                 {
@@ -350,7 +350,7 @@
                 }
             ],
             "description": "PHP Doctrine Lexer parser library that can be used in Top-Down, Recursive Descent Parsers.",
-            "homepage": "https://www.doctrine-project.org/projects/lexer.html",
+            "homepage": "https://www.doctrine-election.org/elections/lexer.html",
             "keywords": [
                 "annotations",
                 "docblock",
@@ -364,7 +364,7 @@
             },
             "funding": [
                 {
-                    "url": "https://www.doctrine-project.org/sponsorship.html",
+                    "url": "https://www.doctrine-election.org/sponsorship.html",
                     "type": "custom"
                 },
                 {
@@ -5822,7 +5822,7 @@
             "bin": [
                 "builds/pint"
             ],
-            "type": "project",
+            "type": "election",
             "autoload": {
                 "psr-4": {
                     "App\\": "app/",
@@ -7599,7 +7599,7 @@
                     "role": "lead"
                 }
             ],
-            "description": "Library that helps with managing the version number of Git-hosted PHP projects",
+            "description": "Library that helps with managing the version number of Git-hosted PHP elections",
             "homepage": "https://github.com/sebastianbergmann/version",
             "support": {
                 "issues": "https://github.com/sebastianbergmann/version/issues",

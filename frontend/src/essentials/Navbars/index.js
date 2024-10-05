@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 
 // react-router components
-import { useLocation, Link, Navigate } from "react-router-dom";
+import { useLocation } from "react-router-dom";
 
 // prop-types is a library for typechecking of props.
 import PropTypes from "prop-types";
@@ -135,14 +135,15 @@ function DashboardNavbar(props) {
   const handleConfiguratorOpen = () => setOpenConfigurator(dispatch, !openConfigurator);
   const handleOpenMenu = (event) => setOpenMenu(event.currentTarget);
   const handleCloseMenu = () => setOpenMenu(false);
-  const navigate = useNavigate(); 
+  const navigate = useNavigate();
+  const location = useLocation();
   
   const YOUR_ACCESS_TOKEN = token; 
   const headers = {
     'Authorization': `Bearer ${YOUR_ACCESS_TOKEN}`
   };
   const handlePassword = () => {
-    navigate("/change-password");  
+    navigate("/change-password", { state: { from: location } });
   }
 
   const handleLogout = async (e) => {

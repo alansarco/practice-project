@@ -3,7 +3,7 @@ import { createStore, applyMiddleware,combineReducers  } from 'redux';
 import thunk from 'redux-thunk';
 import signinReducer from './signin/signinReducer';
 import dashboardReducer from './dashboard/dashboardReducer';
-import projectsReducer from './projects/projectsReducer';
+import projectsReducer from './elections/projectsReducer';
 import requestsReducer from './requests/requestsReducer';
 import applicationsReducer from './application/applicationReducer';
 
@@ -11,7 +11,7 @@ import applicationsReducer from './application/applicationReducer';
 const rootReducer = combineReducers({
     signin: signinReducer,
     dashboard: dashboardReducer,
-    projects: projectsReducer,
+    elections: projectsReducer,
     requests: requestsReducer,
     applications: applicationsReducer,
   });

@@ -11,7 +11,7 @@ import colors from "assets/theme/base/colors";
 import typography from "assets/theme/base/typography";
 import borders from "assets/theme/base/borders";
 
-function Table({ projects, tablehead, HandleDATA, HandleRendering }) {
+function Table({ elections, tablehead, HandleDATA, HandleRendering }) {
   const { light, secondary } = colors;
   const { size, fontWeightBold } = typography;
   const { borderWidth } = borders;
@@ -39,7 +39,7 @@ function Table({ projects, tablehead, HandleDATA, HandleRendering }) {
     );
   });
 
-  const renderRows = projects.map((row) => {
+  const renderRows = elections.map((row) => {
     return (
       <TableRow key={row.projectid}>
           <SoftBox

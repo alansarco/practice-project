@@ -5,7 +5,7 @@ namespace App\Http\Controllers\Api;
 use Exception;
 use App\Http\Controllers\Controller;
 use App\Models\Docrequest;
-use App\Models\Project;
+use App\Models\Election;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
@@ -18,20 +18,20 @@ class ApplicationController extends Controller
       {
             $authUser = Auth::user();
 
-            $products = Project::where('status', 1)->orderBy('budget', 'DESC')->get();
+            $products = Election::where('status', 1)->orderBy('budget', 'DESC')->get();
 
-            $activeorder = Docrequest::leftJoin('projects', 'requests.doctype', '=', 'projects.projectid')
-                  ->selectRaw("requests.*, projects.title, CONCAT(DATE_FORMAT(requests.created_at, '%M %d, %Y %h:%i %p')) as myorder_date")
+            $activeorder = Docrequest::leftJoin('elections', 'requests.doctype', '=', 'elections.projectid')
+                  ->selectRaw("requests.*, elections.title, CONCAT(DATE_FORMAT(requests.created_at, '%M %d, %Y %h:%i %p')) as myorder_date")
                   ->where('requests.status', '>', 0)
-                  ->where('projects.status', 1)
+                  ->where('elections.status', 1)
                   ->where('requests.status', '<', 4)
                   ->where('requests.requestor', $authUser->username)
                   ->orderBy('requests.status')
                   ->orderBy('requests.created_at', 'DESC')
                   ->get();
 
-            $pastorder = Docrequest::leftJoin('projects', 'requests.doctype', '=', 'projects.projectid')
-                  ->selectRaw("requests.*, projects.title, CONCAT(DATE_FORMAT(requests.created_at, '%M %d, %Y %h:%i %p')) as myorder_date")
+            $pastorder = Docrequest::leftJoin('elections', 'requests.doctype', '=', 'elections.projectid')
+                  ->selectRaw("requests.*, elections.title, CONCAT(DATE_FORMAT(requests.created_at, '%M %d, %Y %h:%i %p')) as myorder_date")
                   ->where('requests.status', 4)
                   ->where('requests.requestor', $authUser->username)
                   ->orderBy('requests.created_at', 'DESC')
@@ -54,7 +54,7 @@ class ApplicationController extends Controller
             $current_date = Carbon::today();
             $current_time = Carbon::now()->toTimeString();
 
-            $getprojectid = Project::where('projectid', $request->projectid)->first();
+            $getprojectid = Election::where('projectid', $request->projectid)->first();
 
             $receipt = rand(1000000, 9999999);
             $existingReceipt = Docrequest::where('requests.receipt_no', $receipt)->first();
@@ -79,7 +79,7 @@ class ApplicationController extends Controller
                   ]);
         
                   if($add) {
-                        Project::where('projectid', $request->projectid)->update([ 
+                        Election::where('projectid', $request->projectid)->update([ 
                               'budget' => $getprojectid->budget + $getprojectid->price,
                               'updated_at' => today(),
                         ]);
@@ -103,7 +103,7 @@ class ApplicationController extends Controller
       public function cancelorder(Request $request) 
       {
             $activeBooking = Docrequest::where('id', $request->id)->first();
-            $getprojectid = Project::where('projectid', $activeBooking->doctype)->first();
+            $getprojectid = Election::where('projectid', $activeBooking->doctype)->first();
 
             $updateActiveBooking = Docrequest::where('id', $request->id)->update([ 
                   'status' => 0,
@@ -112,7 +112,7 @@ class ApplicationController extends Controller
 
             if($updateActiveBooking) {
                   try {
-                        Project::where('projectid', $request->projectid)->update([ 
+                        Election::where('projectid', $request->projectid)->update([ 
                               'budget' => $getprojectid->budget - $activeBooking->price,
                               'updated_at' => today(),
                         ]);

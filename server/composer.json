@@ -1,6 +1,6 @@
 {
     "name": "laravel/laravel",
-    "type": "project",
+    "type": "election",
     "description": "The skeleton application for the Laravel framework.",
     "keywords": ["laravel", "framework"],
     "license": "MIT",
@@ -43,7 +43,7 @@
         "post-root-package-install": [
             "@php -r \"file_exists('.env') || copy('.env.example', '.env');\""
         ],
-        "post-create-project-cmd": [
+        "post-create-election-cmd": [
             "@php artisan key:generate --ansi"
         ]
     },

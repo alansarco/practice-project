@@ -14,9 +14,9 @@ import SoftTypography from "components/SoftTypography";
 import Table from "essentials/Tables";
 
 // Data
-import data from "layouts/dashboard/components/Projects/data";
+import data from "layouts/dashboard/components/Elections/data";
 
-function Projects() {
+function Elections() {
   const { columns, rows } = data();
   const [menu, setMenu] = useState(null);
 
@@ -49,7 +49,7 @@ function Projects() {
       <SoftBox display="flex" justifyContent="space-between" alignItems="center" p={3}>
         <SoftBox>
           <SoftTypography variant="h6" gutterBottom>
-            Projects
+            Elections
           </SoftTypography>
           <SoftBox display="flex" alignItems="center" lineHeight={0}>
             <Icon
@@ -89,4 +89,4 @@ function Projects() {
   );
 }
 
-export default Projects;
+export default Elections;

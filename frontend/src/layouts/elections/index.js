@@ -17,8 +17,8 @@ import FileCopyIcon from '@mui/icons-material/FileCopy';
 import DashboardLayout from "essentials/LayoutContainers/DashboardLayout";
 import DashboardNavbar from "essentials/Navbars"; 
 import Footer from "essentials/Footer";
-import Table from "layouts/projects/data/table";
-import { tablehead } from "layouts/projects/data/head";
+import Table from "layouts/elections/data/table";
+import { tablehead } from "layouts/elections/data/head";
 
 // Data
   import { Grid } from "@mui/material";
@@ -29,14 +29,14 @@ import FixedLoading from "components/General/FixedLoading";
 import { useStateContext } from "context/ContextProvider";
 import { Navigate } from "react-router-dom";
 import { useProjectsData } from "./data/projectRedux";
-import Add from "layouts/projects/components/Add";
-import Edit from "layouts/projects/components/Edit";
+import Add from "layouts/elections/components/Add";
+import Edit from "layouts/elections/components/Edit";
 import axios from "axios";
 import { passToSuccessLogs, passToErrorLogs } from "components/Api/Gateway";
 import { apiRoutes } from "components/Api/ApiRoutes";
 
-function Projects() {
-  const currentFileName = "layouts/projects/index.js";
+function Elections() {
+  const currentFileName = "layouts/elections/index.js";
   const {token, access, updateTokenExpiration} = useStateContext();
   updateTokenExpiration();
   if (!token) {
@@ -56,20 +56,20 @@ function Projects() {
   
   const [data, setDATA] = useState(); 
   const [rendering, setRendering] = useState(1);
-  const {projects, isLoading} = useProjectsData({ projects: rendering }, []);
+  const {elections, isLoading} = useProjectsData({ elections: rendering }, []);
   const [projectinfo, setProjectInfo] = useState();
   const [fetchdata, setFetchdata] = useState([]);
 
   useEffect(() => {
-    if (!isLoading && projects) {
-      setFetchdata(projects, []);
+    if (!isLoading && elections) {
+      setFetchdata(elections, []);
     }
-  }, [projects, isLoading]);
+  }, [elections, isLoading]);
 
   const tableHeight = DynamicTableHeight();
   
-  const HandleDATA = (project) => {
-    setDATA(project);
+  const HandleDATA = (election) => {
+    setDATA(election);
   };
 
   const HandleNullProject = (info) => {
@@ -95,12 +95,12 @@ function Projects() {
       setReload(true);
       axios.get(apiRoutes.projectRetrieve, { params: { filter }, headers })
         .then(response => {
-          setFetchdata(response.data.projects);
+          setFetchdata(response.data.elections);
           passToSuccessLogs(response.data, currentFileName);
           setReload(false);
         })
         .catch(error => {
-          passToErrorLogs(`Projects Data not Fetched!  ${error}`, currentFileName);
+          passToErrorLogs(`Elections Data not Fetched!  ${error}`, currentFileName);
           setReload(false);
         });
       setSearchTriggered(false);
@@ -112,12 +112,12 @@ function Projects() {
       setReload(true);
       axios.get(apiRoutes.projectInfo, { params: { data }, headers })
       .then(response => {
-          setProjectInfo(response.data.project);
+          setProjectInfo(response.data.election);
           passToSuccessLogs(response.data, currentFileName);
           setReload(false);
       })    
       .catch(error => {
-          passToErrorLogs(`Project Data not Fetched!  ${error}`, currentFileName);
+          passToErrorLogs(`Election Data not Fetched!  ${error}`, currentFileName);
           setReload(false);
       });
     }
@@ -176,7 +176,7 @@ function Projects() {
               </Grid>
               <SoftBox className="shadow-none table-container px-md-1 px-3 bg-gray rounded-5" height={tableHeight} minHeight={200}>
                 {fetchdata && fetchdata.length > 0 ? 
-                  <Table table="sm" HandleDATA={HandleDATA} HandleRendering={HandleRendering} projects={fetchdata} tablehead={tablehead} /> :
+                  <Table table="sm" HandleDATA={HandleDATA} HandleRendering={HandleRendering} elections={fetchdata} tablehead={tablehead} /> :
                   <SoftBox className="d-flex" height="100%">
                     <SoftTypography variant="h6" className="m-auto text-secondary"> 
                       {!isLoading && "No data found!"}
@@ -205,4 +205,4 @@ function Projects() {
   );
 }
 
-export default Projects;
+export default Elections;

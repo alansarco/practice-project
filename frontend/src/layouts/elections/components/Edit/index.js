@@ -5,21 +5,19 @@ import SoftBox from "components/SoftBox";
 import SoftButton from "components/SoftButton";
 import SoftInput from "components/SoftInput";
 import SoftTypography from "components/SoftTypography";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import { messages } from "components/General/Messages";
 import { useStateContext } from "context/ContextProvider";
 import { passToErrorLogs, passToSuccessLogs  } from "components/Api/Gateway";
 import axios from "axios";
 import { apiRoutes } from "components/Api/ApiRoutes";
-import { projectStatus } from "components/General/Utils";
 
-function Add({HandleRendering}) {
-      const currentFileName = "layouts/projects/components/Add/index.js";
+function Edit({HandleRendering, PROJECT, HandleNullProject, HandleDATA}) {
+      const currentFileName = "layouts/elections/components/Edit/index.js";
       const [submitProfile, setSubmitProfile] = useState(false);
       const {token} = useStateContext();  
-      const [futureImg, setFutureImg] = useState([]);
-      const [previewImg, setPreviewImg] = useState();
+      const projectid = PROJECT.projectid;
 
       const YOUR_ACCESS_TOKEN = token; 
       const headers = {
@@ -27,44 +25,35 @@ function Add({HandleRendering}) {
       };
 
       const initialState = {
-            title: "Banana Split",
-            description: "",
-            price: "89",
-            status: 1,
-            agreement: true,   
+            projectid: PROJECT.projectid,
+            title: PROJECT.title,
+            description: PROJECT.description == null ? "" : PROJECT.description,
+            budget: PROJECT.budget == null ? "0" : PROJECT.budget,
+            status: PROJECT.status == null ? "" : PROJECT.status,
+            price: PROJECT.price == null ? "0" : PROJECT.price,
+            agreement: false,   
       };
 
-      const handleFutureImg = (e) => {
-            setFutureImg({ picture: e.target.files[0] });
-            setPreviewImg(e.target.files[0]);
-      }
-        
-      const [formData, setFormData] = useState(initialState);     
+      const [formData, setFormData] = useState(initialState);
 
-      const handleChange = (e) => { 
+      const handleChange = (e) => {
             const { name, value, type } = e.target;
-            if (type === "checkbox") {     
+            if (type === "checkbox") {
                   setFormData({ ...formData, [name]: !formData[name]});
-            } 
-            else {
+            } else {
                   setFormData({ ...formData, [name]: value });
             }
       };
 
       const handleCancel = () => {
-            HandleRendering(1);
+            HandleRendering(1); 
+            HandleNullProject(null); 
+            HandleDATA(null); 
       };
             
       const handleSubmit = async (e) => {
             e.preventDefault(); 
             toast.dismiss();
-
-            const productData = new FormData();
-            productData.append('title', formData.title);
-            productData.append('description', formData.description);
-            productData.append('price', formData.price);
-            productData.append('status', formData.status);
-            productData.append('picture', futureImg.picture);
             // Check if all required fields are empty
             const requiredFields = [
                   "title", 
@@ -76,18 +65,19 @@ function Add({HandleRendering}) {
                   if(!formData.agreement) {
                         toast.warning(messages.agreement, { autoClose: true });
                   }
-                  else {      
+                  else {
                         setSubmitProfile(true);
                         try {
                               if (!token) {
                                     toast.error(messages.prohibit, { autoClose: true });
-                              }     
+                              }
                               else {  
-                                    const response = await axios.post(apiRoutes.addProject, productData, {headers});
+                                    const response = await axios.post(apiRoutes.editProject, formData, {headers});
                                     if(response.data.status == 200) {
-                                          setFormData(initialState);
                                           toast.success(`${response.data.message}`, { autoClose: true });
                                           HandleRendering(1);
+                                          HandleNullProject(null); 
+                                          HandleDATA(null);
                                     } else {
                                           toast.error(`${response.data.message}`, { autoClose: true });
                                     }
@@ -99,10 +89,59 @@ function Add({HandleRendering}) {
                         }     
                         setSubmitProfile(false);
                   }
+                  
             } else {
                   // Display an error message or prevent form submission
                   toast.warning(messages.required, { autoClose: true });
             }
+      };
+
+      const handleDelete = async (e) => {
+            e.preventDefault();     
+            Swal.fire({
+              customClass: {
+                title: 'alert-title',
+                icon: 'alert-icon',
+                confirmButton: 'alert-confirmButton',
+                cancelButton: 'alert-cancelButton',
+                container: 'alert-container',
+                popup: 'alert-popup'
+              },
+              title: 'Delete Election?',
+              text: "You won't be able to revert this!",
+              icon: 'warning',
+              showCancelButton: true,
+              confirmButtonColor: '#3085d6',  
+              cancelButtonColor: '#d33',
+              confirmButtonText: 'Yes, delete it!'
+            }).then((result) => {
+              if (result.isConfirmed) {
+                  setSubmitProfile(true);
+                  if (!token) {
+                    toast.error(messages.prohibit, { autoClose: true });
+                  }
+                  else {  
+                    axios.get(apiRoutes.deleteProject, { params: { projectid }, headers })
+                      .then(response => {
+                        if (response.data.status == 200) {
+                          toast.success(`${response.data.message}`, { autoClose: true });
+                        } else {
+                          toast.error(`${response.data.message}`, { autoClose: true });
+                        }
+                        passToSuccessLogs(response.data, currentFileName);
+                        HandleRendering(1);
+                        HandleNullProject(null); 
+                        HandleDATA(null); 
+                        setSubmitProfile(false);
+                      })      
+                      .catch(error => {
+                        setSubmitProfile(false);
+                        toast.error("Cant delete Election!", { autoClose: true });
+                        passToErrorLogs(error, currentFileName);
+                      });
+                  } 
+              }
+            })
       };
 
       return (  
@@ -110,26 +149,23 @@ function Add({HandleRendering}) {
             {submitProfile && <FixedLoading />}   
             <SoftBox mt={5} mb={3} px={3}>      
                   <SoftBox mb={5} p={4} className="shadow-sm rounded-4 bg-white">
-                        <SoftTypography fontWeight="medium" color="warning" textGradient>
+                        <SoftTypography variant="h6" fontWeight="medium" textTransform="capitalize" className="text-info text-gradient text-uppercase">
                               Direction!
                         </SoftTypography>
                         <SoftTypography fontWeight="bold" className="text-xs">
-                              Please fill in the necessary fields.
-                        </SoftTypography>     
-                        <SoftBox p={2} className="border image-height-preview">
-                              {previewImg && (
-                                    <img style={{ width: "100%", height:"100%" }} className='rounded border' src={URL.createObjectURL(previewImg)} alt="product.png" />
-                              )}
-                              <SoftTypography className="text-xxs fst-italic">
-                                    Product Preview
-                              </SoftTypography> 
-                        </SoftBox>     
+                              Please fill in the necessary fields. 
+                        </SoftTypography> 
                         <SoftBox mt={2}>
                               <SoftBox component="form" role="form" className="px-md-0 px-2" onSubmit={handleSubmit}>
                                     <SoftTypography fontWeight="medium" textTransform="capitalize" color="warning" textGradient>
-                                          Product Information
+                                          Election Information
                                     </SoftTypography>
+                                    <input type="hidden" name="projectid" value={formData.projectid} size="small" /> 
                                     <Grid container spacing={0} alignItems="center">
+                                          <Grid item xs={12} md={3} px={1}>
+                                                <SoftTypography variant="button" className="me-1">Product ID:</SoftTypography>
+                                                <SoftInput disabled value={PROJECT.projectid} size="small" /> 
+                                          </Grid>     
                                           <Grid item xs={12} md={7} px={1}>
                                                 <SoftTypography variant="button" className="me-1">Name:</SoftTypography>
                                                 <SoftTypography variant="span" className="text-xxs text-danger fst-italic">*</SoftTypography>
@@ -142,25 +178,13 @@ function Add({HandleRendering}) {
                                     </Grid>
                                     <Grid container spacing={0} alignItems="center">
                                           <Grid item xs={12} md={6} lg={3} px={1}>
-                                                <SoftTypography variant="button" className="me-1"> Status:</SoftTypography>
-                                                <select className="form-control form-select form-select-sm text-secondary rounded-5 cursor-pointer" name="status" value={formData.status} onChange={handleChange}>
-                                                      {projectStatus && projectStatus.map((status) => (
-                                                      <option key={status.value} value={status.value}>
-                                                            {status.desc}
-                                                      </option>
-                                                      ))}
-                                                </select> 
-                                          </Grid>   
+                                                <SoftTypography variant="button" className="me-1">Total Sales:</SoftTypography>
+                                                <SoftInput name="budget" value={formData.budget} onChange={handleChange} size="small" type="number" disabled/> 
+                                          </Grid>
                                           <Grid item xs={12} md={6} lg={3} px={1}>
                                                 <SoftTypography variant="button" className="me-1"> Price: </SoftTypography>
-                                                <SoftTypography variant="span" className="text-xxs text-danger fst-italic">*</SoftTypography>
                                                 <input className="form-control form-control-sm text-secondary rounded-5" name="price" value={formData.price} onChange={handleChange} type="number" />
-                                          </Grid>     
-                                          <Grid item xs={12} md={6} lg={3} px={1}>
-                                                <SoftTypography variant="button" className="me-1"> Picture: </SoftTypography>
-                                                <SoftTypography variant="span" className="text-xxs text-danger fst-italic">*</SoftTypography>
-                                                <input className="form-control form-control-sm text-secondary rounded-5" name="picture" onChange={handleFutureImg} type="file" />
-                                          </Grid>     
+                                          </Grid>
                                     </Grid>
                                     <Grid mt={3} container spacing={0} alignItems="center">
                                           <Grid item xs={12} pl={1}>
@@ -172,6 +196,13 @@ function Add({HandleRendering}) {
                                     </Grid>
                                     <Grid mt={3} container spacing={0} alignItems="center" justifyContent="end">
                                           <Grid item xs={12} sm={4} md={2} pl={1}>
+                                                <SoftBox mt={2} display="flex" justifyContent="start">
+                                                      <SoftButton onClick={handleDelete} className="mx-2 bg-danger text-white w-100" size="small">
+                                                            delete
+                                                      </SoftButton>
+                                                </SoftBox>
+                                          </Grid>
+                                          <Grid item xs={12} sm={4} md={2} pl={1}>
                                                 <SoftBox mt={2} display="flex" justifyContent="end">
                                                       <SoftButton onClick={handleCancel} className="mx-2 w-100" size="small" color="light">
                                                             Back
@@ -180,7 +211,7 @@ function Add({HandleRendering}) {
                                           </Grid>
                                           <Grid item xs={12} sm={4} md={2} pl={1}>
                                                 <SoftBox mt={2} display="flex" justifyContent="end">
-                                                      <SoftButton variant= "gradient" type="submit" className="mx-2 w-100" size="small" color="warning">
+                                                      <SoftButton type="submit" className="mx-2 w-100" size="small" color="dark">
                                                             Save
                                                       </SoftButton>
                                                 </SoftBox>
@@ -194,4 +225,4 @@ function Add({HandleRendering}) {
       );
 }
 
-export default Add;
+export default Edit;

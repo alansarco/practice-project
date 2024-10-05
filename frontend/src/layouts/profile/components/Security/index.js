@@ -12,6 +12,7 @@ import { useStateContext } from "context/ContextProvider";
 import { passToErrorLogs, passToSuccessLogs  } from "components/Api/Gateway";
 import axios from "axios";
 import { apiRoutes } from "components/Api/ApiRoutes";
+import { useLocation, useNavigate } from "react-router-dom";
 
 function areRequiredFieldsFilled(formData) {
       const requiredFields = [
@@ -27,12 +28,12 @@ function areRequiredFieldsFilled(formData) {
       return true;
       }
       
-function Security({USER, HandleRendering, ReloadTable }) {
+function Security() {
       const currentFileName = "layouts/users/components/Security/index.js";
-      
+      const location = useLocation();
       const [submitPass, setSubmitPass] = useState(false);
-
       const {token} = useStateContext();  
+      const navigate = useNavigate();
 
       const YOUR_ACCESS_TOKEN = token; 
       const headers = {
@@ -45,6 +46,10 @@ function Security({USER, HandleRendering, ReloadTable }) {
       };
 
       const [formData, setFormData] = useState(initialState);
+
+      const handleCancel = () => {
+            navigate(location.state?.from);
+      };
 
       const handleChange = (e) => {
             const { name, value } = e.target;
@@ -95,7 +100,7 @@ function Security({USER, HandleRendering, ReloadTable }) {
                               <SoftBox component="form" role="form" className="px-md-0 px-2" onSubmit={handleSubmit}>
                                     <Grid container mt={2} spacing={0} alignItems="center">
                                           <Grid item xs={12} md={3} px={1}>
-                                                <SoftTypography variant="button" className="me-1">New Password:</SoftTypography>
+                                                <SoftTypography variant="button" className="me-1 text-nowrap">New Password:</SoftTypography>
                                                 <SoftTypography variant="span" className="text-danger text-xs"> *</SoftTypography>
                                           </Grid>
                                           <Grid item xs={12} md={4} px={1}>
@@ -104,7 +109,7 @@ function Security({USER, HandleRendering, ReloadTable }) {
                                     </Grid>
                                     <Grid container mt={2} spacing={0} alignItems="center">
                                           <Grid item xs={12} md={3} px={1}>
-                                                <SoftTypography variant="button" className="me-1">Confirm New Password:</SoftTypography>
+                                                <SoftTypography variant="button" className="me-1 text-nowrap">Confirm New Password:</SoftTypography>
                                                 <SoftTypography variant="span" className="text-danger text-xs"> *</SoftTypography>
                                           </Grid>
                                           <Grid item xs={12} md={4} px={1}>
@@ -113,9 +118,16 @@ function Security({USER, HandleRendering, ReloadTable }) {
                                     </Grid>
                                     <SoftTypography mt={2} fontWeight="medium" px={1} className=" text-xs text-success">
                                           Note:
-                                          <SoftTypography variant="span" className=" ms-2 text-xs text-secondary">Use your new password the next time they login.</SoftTypography>
+                                          <SoftTypography variant="span" className=" ms-2 text-xs text-secondary">Use your new password the next time you login.</SoftTypography>
                                     </SoftTypography> 
                                     <Grid mt={3} container spacing={0} alignItems="center" justifyContent="end">
+                                          <Grid item xs={12} sm={4} md={2} pl={1}>
+                                                <SoftBox mt={2} display="flex" justifyContent="end">
+                                                      <SoftButton onClick={handleCancel} className="mx-2 w-100" size="small" color="light">
+                                                            Back
+                                                      </SoftButton>
+                                                </SoftBox>
+                                          </Grid>
                                           <Grid item xs={12} sm={4} md={2} pl={1}>
                                                 <SoftBox mt={2} display="flex" justifyContent="end">
                                                       <SoftButton variant="gradient" type="submit" className="mx-2 w-100" size="small" color="success">

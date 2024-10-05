@@ -2,7 +2,7 @@
 import { FETCH_PROJECTS, FETCH_PROJECTS_FAIL } from './actionTypes';
 
 const initialState = {
-  projects: [],
+  elections: [],
   errormessage: "Something went wrong!",
   isLoading: true,
 };
@@ -12,7 +12,7 @@ const projectsReducer = (state = initialState, action) => {
     case FETCH_PROJECTS:
       return {
         ...state,
-        projects: action.data.projects,
+        elections: action.data.elections,
         isLoading: false,
       };
     case FETCH_PROJECTS_FAIL:

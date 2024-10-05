@@ -26,13 +26,13 @@ function VerticalBarChart({ title, description, height, chart, nodata, loading }
         ...dataset,
         weight: 15,
         borderWidth: 0,
-        borderRadius: 5,  
+        // borderRadius: 5,  
         backgroundColor: colors[dataset.color]
           ? colors[dataset.color || "dark"].main
           : colors.dark.main,
         fill: false,
-        maxBarThickness: 20, 
-        borderSkipped: 'start'
+        maxBarThickness: 10, 
+        // borderSkipped: 'start'
         // borderSkipped: {
         //   top: 5,    // Radius for the top
         //   bottom: 5, // Radius for the bottom

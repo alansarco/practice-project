@@ -88,7 +88,7 @@ Route::middleware('auth:sanctum')->group(function () {
 
     });
 
-    Route::prefix('projects')->group(function () {
+    Route::prefix('elections')->group(function () {
         Route::get('/', [ProjectController::class, 'index']);
         Route::get('captainselect', [ProjectController::class, 'captainselect']);
         Route::post('addproject', [ProjectController::class, 'addproject']);
