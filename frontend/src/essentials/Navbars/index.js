@@ -81,8 +81,8 @@ function DashboardNavbar(props) {
     polls: true, 
     render: render
   });
-  
-  const notifs = polls.length;
+
+  const notifs = polls.filter(poll => poll.status !== "archive" && poll.allowed === "yes").length;
 
   useEffect(() => {
     const updateTimestamps = () => {
@@ -226,7 +226,7 @@ function DashboardNavbar(props) {
                   <SoftTypography textGradient color="success" className="d-md-block d-none" textAlign="end" variant="h5">{formattedTime}</SoftTypography>
                   <SoftTypography className="d-md-block d-none" fontSize="0.8rem">{formattedDate}</SoftTypography>
                 </SoftBox>  
-                {access >= 10 && 
+                {access >= 5 && 
                 <>
                   <IconButton 
                   size="large"
@@ -244,7 +244,7 @@ function DashboardNavbar(props) {
                   onClick={handleConfiguratorOpen}  
                 >
                   <NotificationsIcon />
-                  {polls.length > 0 && <SoftTypography className="fw-bold bg-danger text-white rounded-circle notif"> {notifs} </SoftTypography>}
+                  {notifs > 0 && <SoftTypography className="fw-bold bg-danger text-white rounded-circle notif"> {notifs} </SoftTypography>}
                 </IconButton>
                 </>
               }

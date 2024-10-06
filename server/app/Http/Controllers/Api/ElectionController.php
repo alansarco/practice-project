@@ -5,58 +5,16 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use App\Models\Election;
+use App\Models\Poll;
+use App\Models\User;
 use App\Rules\ImageSize;
 use Exception;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 
-class ProjectController extends Controller
+class ElectionController extends Controller
 {
-    public function index(Request $request) {
-        try {
-            $elections = Election::select('projectid', 'title', 'budget', 'status', 
-                DB::raw("CONCAT(DATE_FORMAT(created_at, '%M %d, %Y')) as date_added"),
-                DB::raw('CASE
-                    WHEN status = 1 THEN "Active" 
-                    WHEN status = 2 THEN "Inactive"
-                    ELSE "Unknown"
-                    END AS status'),
-                DB::raw('CASE
-                    WHEN status = 1 THEN "info" 
-                    WHEN status = 2 THEN "warning"
-                    ELSE "dark"
-                    END AS color')
-                )
-            ->where('status', '>', 0)
-            ->where('status', '<', 4)
-            ->where(function ($query) use ($request) {
-                $query->where('projectid', 'like', '%' . $request->filter . '%')
-                    ->orWhere('title', 'like', '%' . $request->filter . '%');
-                })
-            ->orderBy('status', 'ASC')
-            ->orderBy('budget', 'DESC') 
-            ->get();
-
-            if($elections->count() > 0) {
-                return response()->json([
-                    'elections' => $elections,
-                    'message' => 'Products retrieved!',
-                ]);
-            }
-            else {
-                return response()->json([
-                    'message' => 'No products found!'
-                ]);
-            }
-        }
-        catch (Exception $e) {
-            return response()->json([
-                'status' => 404,
-                'message' => $e->getMessage()
-            ], 404);
-        }
-    }
+    
 
     public function addproject(Request $request) {
         $authUser = Auth::user();
@@ -121,7 +79,7 @@ class ProjectController extends Controller
             $newProjectID = "$ProjectID-$newNumber";    
 
             try {
-                $add = Election::create([
+                $add = Poll::create([
                     'projectid' => $newProjectID,
                     'title' => $request->title,
                     'description' => $request->description,
@@ -158,7 +116,7 @@ class ProjectController extends Controller
         ]);
         
         if($request->status == 0) {
-            $delete = Election::where('projectid', $request->projectid)->delete();
+            $delete = Poll::where('projectid', $request->projectid)->delete();
             if($delete) {
                 return response()->json([
                     'status' => 200,
@@ -173,7 +131,7 @@ class ProjectController extends Controller
 
         if (strlen($request->title) < 10) {
             return response()->json([
-                'message' => "Election title too short!"
+                'message' => "Poll title too short!"
             ]);
         }
 
@@ -184,7 +142,7 @@ class ProjectController extends Controller
         } 
         else {
             try {
-                $update = Election::where('projectid', $request->projectid)->update([ 
+                $update = Poll::where('projectid', $request->projectid)->update([ 
                     'title' => $request->title,
                     'description' => $request->description,
                     'status' => $request->status,
@@ -212,7 +170,7 @@ class ProjectController extends Controller
 
     public function projectinfo(Request $request) {
         try {
-            $election = Election::where('status', '>', 0)->where('projectid', $request->data)->first();
+            $election = Poll::where('status', '>', 0)->where('projectid', $request->data)->first();
             if($election) {
                 return response()->json([
                     'election' => $election,
@@ -233,10 +191,10 @@ class ProjectController extends Controller
     }
 
     public function deleteproject(Request $request) {
-        $election = Election::where('projectid', $request->projectid)->first();
+        $election = Poll::where('projectid', $request->projectid)->first();
         if($election) {
             try {
-                $delete = Election::where('projectid', $request->projectid)->delete();
+                $delete = Poll::where('projectid', $request->projectid)->delete();
                 if($delete) {
                     return response()->json([
                         'status' => 200,

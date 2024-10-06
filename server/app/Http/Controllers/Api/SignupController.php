@@ -144,7 +144,7 @@ class SignupController extends Controller
                             'username' => $request->username,
                             'password' => $request->password,
                             'role' => 'USER',
-                            'access_level' => 10,
+                            'access_level' => 5,
                             'firstname' => $request->firstname,
                             'middlename' => $request->middlename,
                             'lastname' => $request->lastname,

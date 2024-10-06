@@ -9,8 +9,12 @@ use App\Models\Student;
 use App\Models\Admin;
 use App\Models\Election;
 use App\Models\Calendar;
+use App\Models\Poll;
 use App\Models\User;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+
+use function PHPUnit\Framework\isNull;
 
 class DashboardController extends Controller
 {
@@ -55,25 +59,36 @@ class DashboardController extends Controller
         ]);
     }
 
-    //returns counts of sales
-    public function ProductDistribution() 
+    //returns counts of polls
+    public function ElectionDistribution(Request $request) 
     {
-        $sales = Election::select('projectid','title as product_name','budget as product_sale')
-            ->orderBy('budget', 'DESC')
-            ->limit(10)
-            ->get();
+        $authUser = Auth::user();
+        $role = $authUser->role == "ADMIN" ? "admins" : "students";
 
-        // $sales = Election::leftJoin('requests', 'elections.projectid', '=', 'requests.doctype')
-        //     ->select(
-        //         'elections.projectid',
-        //         'elections.title as product_name',
-        //         DB::raw('COALESCE(SUM(requests.sales), 0) as product_sale')
-        //     )
-        //     ->groupBy('elections.projectid', 'elections.title')
-        //     ->get();
+        $userInfo = User::leftJoin($role, 'users.username', '=', $role.'.username')
+            ->select(
+                $role.'.*', 
+                'users.password', 
+                $role.'.name as fullname',
+                DB::raw("DATE_FORMAT(users.last_online, '%M %d, %Y') as last_online")
+            )
+            ->where('users.username', $authUser->username)
+            ->first();
 
+        if($userInfo) {
+            $participant = $userInfo->grade;
+            $isAdmin = is_null($participant) ? 1 : 0;
+            $filter = $request->filter ?? '';
+            
+            $polls = DB::select('CALL GET_POLLS(?, ?, ?)', [$isAdmin, $participant, $filter]);
+            
+            return response()->json([
+                'message' => 'Elections retrieved!',
+                'polls' => $polls,
+            ]);
+        }
         return response()->json([
-            'sales' => $sales
+            'message' => "No Active elections!"
         ]);
     }
 }

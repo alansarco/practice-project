@@ -139,7 +139,7 @@ class AdminController extends Controller
     public function addadmin(Request $request) {
         $authUser = Auth::user();
         
-        if($authUser->role !== "ADMIN" || $authUser->access_level != 999) {
+        if($authUser->role !== "ADMIN" || $authUser->access_level < 10) {
             return response()->json([
                 'message' => 'You are not allowed to perform this action!'
             ]);
@@ -191,7 +191,7 @@ class AdminController extends Controller
                 ->update([
                 'password' => $hashedPassword,
                 'role' => 'ADMIN',
-                'access_level' => 999,
+                'access_level' => 10,
                 'account_status' => 1,
             ]);
             if($update) {
@@ -206,7 +206,7 @@ class AdminController extends Controller
                 'username' => $request->username,
                 'password' => $hashedPassword,
                 'role' => 'ADMIN',
-                'access_level' => 999,
+                'access_level' => 10,
                 'account_status' => 1,
                 'created_by' => Auth::user()->username,
             ]);
@@ -225,7 +225,7 @@ class AdminController extends Controller
     public function deleteadmin(Request $request) {
         $authUser = Auth::user();
 
-        if($authUser->role !== "ADMIN" || $authUser->access_level != 999) {
+        if($authUser->role !== "ADMIN" || $authUser->access_level < 10) {
             return response()->json([
                 'message' => 'You are not allowed to perform this action!'
             ]);

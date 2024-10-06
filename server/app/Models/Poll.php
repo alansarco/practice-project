@@ -19,6 +19,7 @@ class Poll extends Model
         'participant_grade', 
         'application_start',
         'application_end', 
+        'validation_end', 
         'voting_start', 
         'voting_end', 
         'requirements', 

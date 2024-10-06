@@ -142,7 +142,7 @@ function Information({USER, HandleRendering, ReloadTable}) {
                 </SoftButton>
               </SoftBox>
             </Grid>
-            {access == 999 && role === "ADMIN" && 
+            {access >= 10 && role === "ADMIN" && 
             <Grid item xs={12} sm={4} md={2} pl={1}>
               <SoftBox mt={2} display="flex" justifyContent="end">
                 <SoftButton onClick={handleDelete} variant="gradient" color="success" className="mx-2 w-100" size="small">

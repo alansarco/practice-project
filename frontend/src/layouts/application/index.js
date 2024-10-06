@@ -250,7 +250,7 @@ function Application() {
                             Quantity: <span className="text-xxs text-whiter text-nowrap fw-normal">{row.quantity}</span>
                           </SoftTypography>
                           <SoftTypography className="text-xxs text-whiter text-nowrap fw-bold">
-                            Total: <span className="text-xxs text-whiter text-nowrap fw-normal">{row.sales.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}</span>
+                            Total: <span className="text-xxs text-whiter text-nowrap fw-normal">{row.polls.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}</span>
                           </SoftTypography>
                           <SoftTypography className="text-xxs text-whiter fw-bold">
                             Date Ordered: <span className="text-xxs text-whiter fw-normal">{row.myorder_date}</span>

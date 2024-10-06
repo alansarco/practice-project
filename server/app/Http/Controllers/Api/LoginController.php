@@ -27,7 +27,6 @@ class LoginController extends Controller {
         $rules = [
             'username' => 'required|string',
             'password' => 'required|string',
-            // 'role' => 'required|string',
         ];
         $credentials = $request->validate($rules);
 
@@ -53,7 +52,7 @@ class LoginController extends Controller {
                         'username' => $verifyStudent->username,
                         'password' => $verifyStudent->contact,
                         'role' => 'USER',
-                        'access_level' => 10,
+                        'access_level' => 5,
                         'account_status' => '0',
                         'password_change' => '0',
                         'created_by' => $request->username
@@ -63,7 +62,7 @@ class LoginController extends Controller {
                             'status' => 200,
                             'user' => $verifyStudent->username,
                             'role' => "USER",
-                            'access' => 10,
+                            'access' => 5,
                             'changepass' => true,
                             'message' => "Please set your permanent password!"
                         ], 200);
@@ -94,14 +93,14 @@ class LoginController extends Controller {
                 'status' => 200,
                 'user' => $request->username,
                 'role' => "USER",
-                'access' => 10,
+                'access' => 5,
                 'changepass' => true,
                 'message' => "Please set your permanent password!"
             ], 200);
         }
 
         if ($verifyUser) {
-            if($verifyUser->access_level >= 10) {
+            if($verifyUser->access_level >= 5) {
                 User::where('username', $verifyUser->username)->update(['last_online' => Carbon::now()]);
                 /** @var \App\Models\User $user */
                 $user = Auth::user();
@@ -193,9 +192,9 @@ class LoginController extends Controller {
         }
     }
     
-    public function user() {
+    public function user(Request $request) {
         $authUser = Auth::user();
-        $role = $authUser->role == "USER" ? "students" : "admins";
+        $role = $authUser->role == "ADMIN" ? "admins" : "students";
 
         $userInfo = User::leftJoin($role, 'users.username', '=', $role.'.username')
             ->select(
@@ -208,52 +207,9 @@ class LoginController extends Controller {
             ->first();
 
         if($userInfo) {
-            if ($role == "admins") {
-                $polls = Poll::select('*',
-                    DB::raw("DATE_FORMAT(voting_start, '%M %d, %Y') as voting_start"),
-                    DB::raw("DATE_FORMAT(voting_end, '%M %d, %Y') as voting_end"),
-                    DB::raw("DATE_FORMAT(application_start, '%M %d, %Y') as application_start"),
-                    DB::raw("DATE_FORMAT(application_end, '%M %d, %Y') as application_end"),
-                    DB::raw("DATE_FORMAT(created_at, '%M %d, %Y') as created_at"),
-                    DB::raw("DATE_FORMAT(updated_at, '%M %d, %Y') as updated_at"),
-                    DB::raw("
-                        CASE
-                            WHEN CURDATE() >= voting_start AND CURDATE() <= voting_end THEN 'ongoing'
-                            WHEN CURDATE() >= application_end AND CURDATE() <= voting_start THEN 'upcoming'
-                            ELSE 'application'
-                        END as status
-                    "),
-                )
-                ->orderBy('status')
-                ->where('poll_status', 1)
-                ->get();
-            }
-            else {
-                $participant = $userInfo->grade;
-                $polls = Poll::select('*',
-                    DB::raw("DATE_FORMAT(voting_start, '%M %d, %Y') as voting_start"),
-                    DB::raw("DATE_FORMAT(voting_end, '%M %d, %Y') as voting_end"),
-                    DB::raw("DATE_FORMAT(application_start, '%M %d, %Y') as application_start"),
-                    DB::raw("DATE_FORMAT(application_end, '%M %d, %Y') as application_end"),
-                    DB::raw("DATE_FORMAT(created_at, '%M %d, %Y') as created_at"),
-                    DB::raw("DATE_FORMAT(updated_at, '%M %d, %Y') as updated_at"),
-                    DB::raw("
-                        CASE
-                            WHEN CURDATE() >= voting_start AND CURDATE() <= voting_end THEN 'ongoing'
-                            ELSE 'upcoming'
-                        END as status
-                    "),
-                )
-                ->whereRaw("FIND_IN_SET(".$participant.", participant_grade)")
-                ->where('poll_status', 1)
-                ->orderBy('status')
-                ->get();
-    
-            }
             return response()->json([
                 'authorizedUser' => $userInfo,
                 'message' => "Access Granted!",
-                'polls' => $polls,
             ]);
         }
         else {

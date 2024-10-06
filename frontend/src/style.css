@@ -182,6 +182,10 @@ strong {
   font-size: 0.75rem !important;
 }
 
+.text-xxxs {
+  font-size: 0.6rem !important;
+}
+
 .text-xs {
   font-size: 0.9rem !important;
 }

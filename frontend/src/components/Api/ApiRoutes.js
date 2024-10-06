@@ -56,7 +56,7 @@ export const apiRoutes = {
     suffixRetrieve: `${mainRoute}/api/suffix`,
 
     otherStatsRetrieve: `${mainRoute}/api/dashboard/otherStats`,
-    salesRetrieve: `${mainRoute}/api/dashboard/sales`,
+    pollsRetrieve: `${mainRoute}/api/dashboard/polls`,
     
     applicationRetrieve: `${mainRoute}/api/application`,
     orderNow: `${mainRoute}/api/application/ordernow`,

@@ -2,13 +2,17 @@
 import Dashboard from "layouts/dashboard";
 import Admins from "layouts/admins";
 import Users from "layouts/users";
-import Elections from "layouts/elections";
+import Ongoing from "layouts/elections/ongoing";
+import Upcoming from "layouts/elections/upcoming";
+import Archive from "layouts/elections/archive";
 import Requests from "layouts/requests";
 import History from "layouts/history";
-import Application from "layouts/application";
 import Blank from "layouts/blank";
 import Juniors from "layouts/junior";
 import Announcements from "layouts/announcements";
+import Seniors from "layouts/senior";
+import Profile from "layouts/profile";
+import Application from "layouts/elections/application";
 
 import SignIn from "layouts/authentication/sign-in";
 import AdminSignIn from "layouts/authentication/sign-in/admin";
@@ -26,8 +30,7 @@ import GroupsTwoToneIcon from '@mui/icons-material/GroupsTwoTone';
 import CampaignTwoToneIcon from '@mui/icons-material/CampaignTwoTone';
 import PollTwoToneIcon from '@mui/icons-material/PollTwoTone';
 import InfoTwoToneIcon from '@mui/icons-material/InfoTwoTone';
-import Seniors from "layouts/senior";
-import Profile from "layouts/profile";
+import CalendarMonthTwoToneIcon from '@mui/icons-material/CalendarMonthTwoTone';
 
 // Accept access as a parameter
 const routes = (access) => [
@@ -42,8 +45,8 @@ const routes = (access) => [
   },
 
   // Conditionally render the Accounts menu and its submenus based on access
-  access >= 999 && { type: "title", title: "Accounts", key: "account-pages" },
-  access >= 999 && {
+  access >= 10 && { type: "title", title: "Accounts", key: "account-pages" },
+  access >= 10 && {
     type: "collapse",
     name: "Users",
     key: "users",
@@ -52,7 +55,7 @@ const routes = (access) => [
     component: <Users />,
     noCollapse: true,
   },
-  access >= 999 && {
+  access >= 10 && {
     type: "collapse",
     name: "Admins",
     key: "admins",
@@ -62,8 +65,8 @@ const routes = (access) => [
     noCollapse: true,
   },
 
-  access >= 999 && { type: "title", title: "Students", key: "student-pages" },
-  access >= 999 && {
+  access >= 10 && { type: "title", title: "Students", key: "student-pages" },
+  access >= 10 && {
     type: "collapse",
     name: "Junior HS",
     key: "juniors",
@@ -72,7 +75,7 @@ const routes = (access) => [
     component: <Juniors />,
     noCollapse: true,
   },
-  access >= 999 && {
+  access >= 10 && {
     type: "collapse",
     name: "Senior HS",
     key: "seniors",
@@ -88,7 +91,7 @@ const routes = (access) => [
     key: "ongoing",
     route: "/ongoing",
     icon: <HowToVoteTwoToneIcon size="12px" />,
-    component: <Blank />,
+    component: <Ongoing />,
     noCollapse: true,
   },
   {
@@ -96,8 +99,17 @@ const routes = (access) => [
     name: "Upcoming",
     key: "upcoming",
     route: "/upcoming",
+    icon: <CalendarMonthTwoToneIcon size="12px" />,
+    component: <Upcoming />,
+    noCollapse: true,
+  },
+  {
+    type: "collapse",
+    name: "Application",
+    key: "application",
+    route: "/application",
     icon: <PendingActionsTwoToneIcon size="12px" />,
-    component: <Blank />,
+    component: <Application />,
     noCollapse: true,
   },
   {
@@ -106,7 +118,7 @@ const routes = (access) => [
     key: "archive",
     route: "/archive",
     icon: <MoveToInboxTwoToneIcon size="12px" />,
-    component: <Blank />,
+    component: <Archive />,
     noCollapse: true,
   },
   { type: "title", title: "Other Pages", key: "other-pages" },

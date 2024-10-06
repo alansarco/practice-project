@@ -19,7 +19,7 @@ class Docrequest extends Model
         'purpose',
         'quantity',
         'price',
-        'sales',
+        'polls',
         'date_needed',
         'date_finished',
         'status',

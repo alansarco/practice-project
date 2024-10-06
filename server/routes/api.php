@@ -7,7 +7,7 @@ use App\Http\Controllers\Api\DashboardController;
 use App\Http\Controllers\Api\GeneralController;
 use App\Http\Controllers\Api\LoginController;
 use App\Http\Controllers\Api\UserController;
-use App\Http\Controllers\Api\ProjectController;
+use App\Http\Controllers\Api\ElectionController;
 use App\Http\Controllers\Api\SuffixController;
 use App\Http\Controllers\Api\RequestController;
 use App\Http\Controllers\Api\SignupController;
@@ -38,7 +38,7 @@ Route::middleware('auth:sanctum')->group(function () {
 
     Route::prefix('dashboard')->group(function () {
         Route::get('otherStats', [DashboardController::class, 'OtherStatistics']);
-        Route::get('sales', [DashboardController::class, 'ProductDistribution']);
+        Route::get('polls', [DashboardController::class, 'ElectionDistribution']);
     });
 
     Route::prefix('admins')->group(function () {
@@ -89,12 +89,11 @@ Route::middleware('auth:sanctum')->group(function () {
     });
 
     Route::prefix('elections')->group(function () {
-        Route::get('/', [ProjectController::class, 'index']);
-        Route::get('captainselect', [ProjectController::class, 'captainselect']);
-        Route::post('addproject', [ProjectController::class, 'addproject']);
-        Route::post('editproject', [ProjectController::class, 'editproject']);
-        Route::get('projectinfo', [ProjectController::class, 'projectinfo']);
-        Route::get('deleteproject', [ProjectController::class, 'deleteproject']);
+        Route::get('/', [ElectionController::class, 'index']);
+        Route::get('captainselect', [ElectionController::class, 'captainselect']);
+        Route::post('addproject', [ElectionController::class, 'editproject']);
+        Route::get('projectinfo', [ElectionController::class, 'projectinfo']);
+        Route::get('deleteproject', [ElectionController::class, 'deleteproject']);
     });
 
     Route::prefix('requests')->group(function () {

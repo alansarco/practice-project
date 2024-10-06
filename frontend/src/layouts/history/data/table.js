@@ -121,7 +121,7 @@ function Table({ requests, tablehead, HandleDATA, HandleRendering }) {
               borderBottom={`${borderWidth[1]} solid ${light.main}`}
               borderTop={`${borderWidth[1]} solid ${light.main}`}
             >
-              {row.sales}    
+              {row.polls}    
             </SoftBox>  
             <SoftBox
               className="px-2"

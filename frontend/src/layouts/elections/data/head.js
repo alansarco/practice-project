@@ -1,27 +1,37 @@
 export const tablehead = [
       {
-        name: "product id",
+        name: "election id",
         padding: "pe-2",
         align: "left",
       },
       {
-        name: "product name",
+        name: "election name",
         padding: "px-2",
         align: "left",
       },
       {
-        name: "Total Sales",
+        name: "participants",
         padding: "px-2",
         align: "left",
       },
       {
-        name: "status",
+        name: "voting starts",
         padding: "px-2",
         align: "left",
       },
       {
-        name: "date added", 
-        padding: "ps-2",
+        name: "voting ends", 
+        padding: "px-2",
         align: "left",
+      },
+      {
+        name: "assigned admin", 
+        padding: "px-2",
+        align: "left",
+      },
+      {
+        name: "actions", 
+        padding: "px-2",
+        align: "center",
       },
     ];

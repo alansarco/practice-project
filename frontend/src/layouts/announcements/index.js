@@ -174,7 +174,7 @@ function Announcements() {
                     <SoftTypography className="text-uppercase text-secondary" variant="h6" >Announcements and Events List</SoftTypography>
                 </SoftBox>
                 <SoftBox display="flex">
-                    {access == 999 && role === "ADMIN" && 
+                    {access >= 10 && role === "ADMIN" && 
                     <SoftButton onClick={() => setRendering(3)} className="ms-2 px-3 d-flex" variant="gradient" color="success" size="medium" iconOnly>
                     <Icon>add</Icon>
                     </SoftButton>
@@ -214,12 +214,12 @@ function Announcements() {
                                     event.hashtag3,
                                   ]}
                                 />
-                                {access == 999 && role === "ADMIN" &&
+                                {access >= 10 && role === "ADMIN" &&
                                  <SoftBox mt={2} display="flex" justifyContent="end">
-                                  <SoftButton onClick={() => handleDelete(event.id)} className="text-xxs me-2" size="small" variant="gradient" color="primary">
+                                  <SoftButton onClick={() => handleDelete(event.id)} className="text-xxs me-2 px-3 rounded-pill" size="small" variant="gradient" color="primary">
                                     <DeleteTwoToneIcon /> delete
                                   </SoftButton>
-                                  <SoftButton onClick={() => handleUpdate(event.id)} className="text-xxs" size="small" variant="gradient" color="success">
+                                  <SoftButton onClick={() => handleUpdate(event.id)} className="text-xxs me-2 px-3 rounded-pill" size="small" variant="gradient" color="success">
                                     <BorderColorTwoToneIcon /> edit
                                   </SoftButton>
                                 </SoftBox>

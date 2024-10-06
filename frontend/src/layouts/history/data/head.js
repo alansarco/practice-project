@@ -25,7 +25,7 @@ export const tablehead = [
         align: "left",
       },
       {
-        name: "Total Sales",
+        name: "Total Polls",
         padding: "px-2",
         align: "left",
       },

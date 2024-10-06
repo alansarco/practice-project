@@ -18,14 +18,14 @@ function Profile() {
   if (!token) {
     return <Navigate to="/authentication/sign-in" />
   }
-  else if(token && access < 999) {
+  else if(token && access < 10) {
     return <Navigate to="/user-app" />
   }
   
   const {authUser, loadAuthUser} = useDashboardData({
     authUser: true, 
     otherStats: false, 
-    sales: false
+    polls: false
   }, []);
 
   return (

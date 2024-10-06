@@ -178,7 +178,7 @@ function Edit({HandleRendering, PROJECT, HandleNullProject, HandleDATA}) {
                                     </Grid>
                                     <Grid container spacing={0} alignItems="center">
                                           <Grid item xs={12} md={6} lg={3} px={1}>
-                                                <SoftTypography variant="button" className="me-1">Total Sales:</SoftTypography>
+                                                <SoftTypography variant="button" className="me-1">Total Polls:</SoftTypography>
                                                 <SoftInput name="budget" value={formData.budget} onChange={handleChange} size="small" type="number" disabled/> 
                                           </Grid>
                                           <Grid item xs={12} md={6} lg={3} px={1}>

@@ -61,7 +61,7 @@ class AnnouncementController extends Controller
     public function updateannouncement(Request $request) {
         $authUser = Auth::user();
         
-        if($authUser->role !== "ADMIN" || $authUser->access_level != 999) {
+        if($authUser->role !== "ADMIN" || $authUser->access_level < 10) {
             return response()->json([
                 'message' => 'You are not allowed to perform this action!'
             ]);
@@ -119,7 +119,7 @@ class AnnouncementController extends Controller
     public function addannouncement(Request $request) {
         $authUser = Auth::user();
         
-        if($authUser->role !== "ADMIN" || $authUser->access_level != 999) {
+        if($authUser->role !== "ADMIN" || $authUser->access_level < 10) {
             return response()->json([
                 'message' => 'You are not allowed to perform this action!'
             ]);
@@ -167,7 +167,7 @@ class AnnouncementController extends Controller
     public function deleteannouncement(Request $request) {
         $authUser = Auth::user();
 
-        if($authUser->role !== "ADMIN" || $authUser->access_level != 999) {
+        if($authUser->role !== "ADMIN" || $authUser->access_level < 10) {
             return response()->json([
                 'message' => 'You are not allowed to perform this action!'
             ]);

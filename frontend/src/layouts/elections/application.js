@@ -17,8 +17,8 @@ import FileCopyIcon from '@mui/icons-material/FileCopy';
 import DashboardLayout from "essentials/LayoutContainers/DashboardLayout";
 import DashboardNavbar from "essentials/Navbars"; 
 import Footer from "essentials/Footer";
-import Table from "layouts/elections/data/table";
-import { tablehead } from "layouts/elections/data/head";
+import Table from "layouts/elections/data/applicationtable";
+import { tablehead } from "layouts/elections/data/applicationhead";
 
 // Data
   import { Grid } from "@mui/material";
@@ -28,22 +28,19 @@ import React, { useEffect, useState } from "react";
 import FixedLoading from "components/General/FixedLoading";
 import { useStateContext } from "context/ContextProvider";
 import { Navigate } from "react-router-dom";
-import { useProjectsData } from "./data/projectRedux";
 import Add from "layouts/elections/components/Add";
 import Edit from "layouts/elections/components/Edit";
 import axios from "axios";
 import { passToSuccessLogs, passToErrorLogs } from "components/Api/Gateway";
 import { apiRoutes } from "components/Api/ApiRoutes";
+import { useDashboardData } from 'layouts/dashboard/data/dashboardRedux';
 
-function Elections() {
-  const currentFileName = "layouts/elections/index.js";
-  const {token, access, updateTokenExpiration} = useStateContext();
+function Application() {
+  const currentFileName = "layouts/elections/application.js";
+  const {token, access, updateTokenExpiration, role} = useStateContext();
   updateTokenExpiration();
   if (!token) {
     return <Navigate to="/authentication/sign-in" />
-  }
-  else if(token && access < 999) {
-    return <Navigate to="/user-app" />
   }
   
   const [searchTriggered, setSearchTriggered] = useState(false);
@@ -56,15 +53,17 @@ function Elections() {
   
   const [data, setDATA] = useState(); 
   const [rendering, setRendering] = useState(1);
-  const {elections, isLoading} = useProjectsData({ elections: rendering }, []);
-  const [projectinfo, setProjectInfo] = useState();
+  const [pollinfo, setProjectInfo] = useState();
   const [fetchdata, setFetchdata] = useState([]);
+  const {polls, loadPolls} = useDashboardData({polls: true}, []);  
+  const [fetching, setFetching] = useState("");
+
 
   useEffect(() => {
-    if (!isLoading && elections) {
-      setFetchdata(elections, []);
+    if (!loadPolls && polls) {
+      setFetchdata(polls.filter(poll => poll.status === "application" && poll.allowed === "yes"), []);
     }
-  }, [elections, isLoading]);
+  }, [polls, loadPolls]);
 
   const tableHeight = DynamicTableHeight();
   
@@ -93,11 +92,16 @@ function Elections() {
   useEffect(() => {
     if (searchTriggered) {
       setReload(true);
-      axios.get(apiRoutes.projectRetrieve, { params: { filter }, headers })
+      axios.get(apiRoutes.pollsRetrieve, { params: { filter }, headers })
         .then(response => {
-          setFetchdata(response.data.elections);
-          passToSuccessLogs(response.data, currentFileName);
-          setReload(false);
+            const retrieved = response.data.polls.filter(
+                poll => poll.status === "application" && 
+                poll.allowed === "yes"
+            )
+            setFetchdata(retrieved);
+            passToSuccessLogs(response.data, currentFileName);
+            if(retrieved.length < 1) setFetching("No data Found!")        
+            setReload(false);
         })
         .catch(error => {
           passToErrorLogs(`Elections Data not Fetched!  ${error}`, currentFileName);
@@ -112,7 +116,7 @@ function Elections() {
       setReload(true);
       axios.get(apiRoutes.projectInfo, { params: { data }, headers })
       .then(response => {
-          setProjectInfo(response.data.election);
+          setProjectInfo(response.data.polls);
           passToSuccessLogs(response.data, currentFileName);
           setReload(false);
       })    
@@ -123,14 +127,15 @@ function Elections() {
     }
   }, [data]);
 
+
   return (
     <> 
-      {isLoading && <FixedLoading />} 
+      {loadPolls && <FixedLoading />} 
       {reload && <FixedLoading />} 
       <DashboardLayout>
         <DashboardNavbar RENDERNAV={rendering} />
-        {data && projectinfo && rendering == 2 ? 
-            <Edit PROJECT={projectinfo} HandleNullProject={HandleNullProject}  HandleRendering={HandleRendering} HandleDATA={HandleDATA} /> 
+        {data && pollinfo && rendering == 2 ? 
+            <Edit PROJECT={pollinfo} HandleNullProject={HandleNullProject}  HandleRendering={HandleRendering} HandleDATA={HandleDATA} /> 
           :
           rendering == 3 ?
             <Add HandleRendering={HandleRendering} />
@@ -139,17 +144,28 @@ function Elections() {
           <SoftBox >   
             <SoftBox className="px-md-4 px-3 py-2" display="flex" justifyContent="space-between" alignItems="center">
               <SoftBox>
-                <SoftTypography className="text-uppercase text-secondary" variant="h6" >List of Products</SoftTypography>
+                <SoftTypography className="text-uppercase text-secondary" variant="h6" >Application for Elections</SoftTypography>
               </SoftBox>
-              <SoftBox display="flex">
-                <SoftButton onClick={() => setRendering(3)} className="ms-2 px-3 d-flex" variant="gradient" color="warning" size="medium" iconOnly>
-                  <Icon>add</Icon>
+              <SoftBox display="flex" >
+                <SoftButton onClick={() => setRendering(1)} className="ms-2 py-0 px-3 d-flex rounded-pill" variant="gradient" color="success" size="small" >
+                  <Icon>add</Icon> Add Poll
                 </SoftButton>
               </SoftBox>
             </SoftBox>
             <Card className="px-md-4 px-2 pt-3 pb-md-5 pb-4">
               <Grid container spacing={1} py={1} pb={2}>  
-                <Grid item xs={12} md={12}>
+                <Grid item xs={12} md={8} display="flex">
+                  {access >= 10 && role === "ADMIN" ?
+                  <SoftTypography className="text-xs my-auto px-2 text-dark">
+                    <b className="text-success">Note:</b> Once the <b>VALIDATION DATE</b> has <b>ENDED</b>, you can only update the voting dates. So make sure to finalize the election information and approve qualified candidates.
+                  </SoftTypography>
+                  : 
+                  <SoftTypography className="text-xs my-auto px-2 text-dark">
+                    <b className="text-success">Note:</b> Elections displayed here are those you can only participate with. If you think you are qualified, please apply for candidacy.
+                  </SoftTypography>
+                  }
+                </Grid>    
+                <Grid item xs={12} md={4}>
                   <SoftBox className="px-md-0 px-2" display="flex" margin="0" justifyContent="end">
                         <SoftInput
                           placeholder="Search here..."
@@ -164,7 +180,7 @@ function Elections() {
                         <SoftButton
                           className="px-3 rounded-0 rounded-right"
                           variant="gradient"
-                          color="warning"
+                          color="success"
                           size="medium"
                           iconOnly
                           onClick={handleSearchAndButtonClick}
@@ -174,16 +190,18 @@ function Elections() {
                       </SoftBox>
                 </Grid>
               </Grid>
-              <SoftBox className="shadow-none table-container px-md-1 px-3 bg-gray rounded-5" height={tableHeight} minHeight={200}>
-                {fetchdata && fetchdata.length > 0 ? 
-                  <Table table="sm" HandleDATA={HandleDATA} HandleRendering={HandleRendering} elections={fetchdata} tablehead={tablehead} /> :
-                  <SoftBox className="d-flex" height="100%">
-                    <SoftTypography variant="h6" className="m-auto text-secondary"> 
-                      {!isLoading && "No data found!"}
-                    </SoftTypography>
-                  </SoftBox>
-                }
-              </SoftBox>
+              <SoftBox className="shadow-none table-container px-md-1 px-3 bg-gray rounded-5" height={tableHeight} minHeight={50}>
+                  {fetchdata &&  fetchdata.length > 0 ? 
+                    <Table table="sm" HandleDATA={HandleDATA} HandleRendering={HandleRendering} elections={fetchdata} tablehead={tablehead} /> :
+                    <>
+                    <SoftBox className="d-flex" height="100%">
+                      <SoftTypography variant="h6" className="m-auto text-secondary">   
+                      {fetching}               
+                      </SoftTypography>
+                    </SoftBox>
+                    </>
+                  }
+                </SoftBox>
             </Card>
           </SoftBox>
         </SoftBox>
@@ -205,4 +223,4 @@ function Elections() {
   );
 }
 
-export default Elections;
+export default Application;

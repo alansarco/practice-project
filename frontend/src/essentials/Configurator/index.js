@@ -38,10 +38,12 @@ function Configurator() {
     polls: true, 
   });
   const navigate = useNavigate(); 
+
+  const notifpolls = polls.filter(poll => poll.status !== "archive" && poll.allowed === "yes");
   
   const handleViewRequest = () => {
-    setOpenConfigurator(dispatch, false); 
-    navigate("/active-orders");  
+    // setOpenConfigurator(dispatch, false); 
+    // navigate("/ongoing");  
 };
   // Use the useEffect hook to change the button state for the sidenav type based on window size.
   useEffect(() => {
@@ -73,7 +75,7 @@ function Configurator() {
         <SoftBox>
           <SoftTypography variant="h5">Polling Events</SoftTypography>
           <SoftTypography variant="body2" color="text">
-            {polls && polls.length > 0 ? "Active Election" : "No Active Election"}
+            {notifpolls && notifpolls.length > 0 ? "Active Election" : "No Active Election"}
             
           </SoftTypography>
         </SoftBox>
@@ -93,12 +95,13 @@ function Configurator() {
         </Icon>
       </SoftBox>
       <Divider />
-      {polls && polls.map((poll) => (
+      {notifpolls && notifpolls.length > 0 && notifpolls.map((poll) => (
       <SoftBox key={poll.pollid} py={2} px={3} className="border-bottom SoftBox cursor-pointer" onClick={handleViewRequest}>
-          <SoftBox display="flex  ">
+          <SoftBox display="flex">
             <SoftTypography variant="h6">{poll.pollname}</SoftTypography>
-            <SoftBadge badgeContent={poll.status} variant="contained" 
-              color={poll.status === "ongoing" ? "info" : poll.status === "upcoming" ? "success" : "warning"} size="sm" />
+            {/* contained */}
+            <SoftBadge badgeContent={poll.status} variant="gradient" 
+              color={poll.status === "ongoing" ? "primary" : poll.status === "upcoming" ? "info" : "warning"} size="sm" />
           </SoftBox>
           {poll.status === "ongoing" || poll.status === "upcoming" ? 
             <SoftBox>

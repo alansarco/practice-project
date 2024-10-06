@@ -35,7 +35,7 @@ function History() {
   if (!token) {
     return <Navigate to="/authentication/sign-in" />
   }
-  else if(token && access < 999) {
+  else if(token && access < 10) {
     return <Navigate to="/user-app" />
   }
   
@@ -100,7 +100,7 @@ function History() {
           <SoftBox >   
             <SoftBox className="px-md-4 px-3 py-2" display="flex" justifyContent="space-between" alignItems="center">
               <SoftBox>
-                <SoftTypography className="text-uppercase text-secondary" variant="h6" >Sales History</SoftTypography>
+                <SoftTypography className="text-uppercase text-secondary" variant="h6" >Polls History</SoftTypography>
               </SoftBox>
             </SoftBox>
             <Card className="px-md-4 px-2 pt-3 pb-md-5 pb-4">

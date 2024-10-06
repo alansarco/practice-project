@@ -37,7 +37,7 @@ export function useDashboardData(fetchData) {
   
   //Fetch Otherstats Data
   useEffect(() => {
-    if(fetchData.otherStats || fetchData.render == 1) {
+    if(fetchData.otherStats) {
       axios.get(apiRoutes.otherStatsRetrieve, {headers})
       .then(response => {
         dispatch(actions.fetchOtherStats(response.data));
@@ -50,20 +50,20 @@ export function useDashboardData(fetchData) {
     }
   }, [fetchData.otherStats, dispatch]); // Include dashboardData as a dependency if needed
 
-  //Fetch Sales Data
+  //Fetch Polls Data
   useEffect(() => {
-    if(fetchData.sales) {
-      axios.get(apiRoutes.salesRetrieve, {headers})
+    if(fetchData.polls) {
+      axios.get(apiRoutes.pollsRetrieve, {headers})
       .then(response => {
-        dispatch(actions.fetchSales(response.data));
+        dispatch(actions.fetchPolls(response.data));
         passToSuccessLogs(response.data, currentFileName);
       })
       .catch(error => {
-        dispatch(actions.fetchSalesFail(error.error));
-        passToErrorLogs(`Sales Data not Fetched!  ${error}`, currentFileName);
+        dispatch(actions.fetchPollsFail(error.error));
+        passToErrorLogs(`Polls Data not Fetched!  ${error}`, currentFileName);
       });
     }
-  }, [fetchData.sales, dispatch]); // Include dashboardData as a dependency if needed
+  }, [fetchData.polls, dispatch]); // Include dashboardData as a dependency if needed
 
   
 

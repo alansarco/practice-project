@@ -44,9 +44,6 @@ function Blank() {
   if (!token) {
     return <Navigate to="/authentication/sign-in" />
   }
-//   else if(token && access < 999) {
-//     return <Navigate to="/user-app" />
-//   }
   
 
   return (

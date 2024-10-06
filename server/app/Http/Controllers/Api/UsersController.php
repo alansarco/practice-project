@@ -154,7 +154,7 @@ class UsersController extends Controller
     // Delete / deactivate user
     public function delete(Request $request) {
         $authUser = Auth::user();
-        if($authUser->role !== "ADMIN" || $authUser->access_level != 999) {
+        if($authUser->role !== "ADMIN" || $authUser->access_level < 10) {
             return response()->json([
                 'message' => 'You are not allowed to perform this action!'
             ]);
@@ -190,7 +190,7 @@ class UsersController extends Controller
 
     public function addstudent(Request $request) {
         $authUser = Auth::user();
-        if($authUser->role !== "ADMIN" || $authUser->access_level != 999) {
+        if($authUser->role !== "ADMIN" || $authUser->access_level < 10) {
             return response()->json([
                 'message' => 'You are not allowed to perform this action!'
             ]);

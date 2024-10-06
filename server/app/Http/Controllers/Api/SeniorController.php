@@ -4,54 +4,49 @@ namespace App\Http\Controllers\Api;
 
 use Exception;
 use App\Http\Controllers\Controller;
-use App\Models\Student;
 use Illuminate\Http\Request;
-use App\Models\User;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Validator;
+use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\DB;
 
 class SeniorController extends Controller
 {
     public function index(Request $request) {
-        $users = Student::leftJoin('users', 'students.username', '=', 'users.username')
-        ->select('students.username', 'students.name', 'students.contact', 'students.grade', 
-            'students.gender',  'users.password_change', 'users.last_online', 'students.birthdate', 
-            'students.track', 'students.course',
-            DB::raw("CONCAT(DATE_FORMAT(users.last_online, '%M %d, %Y %h:%i %p')) as last_online"),
-            DB::raw("CONCAT(DATE_FORMAT(students.birthdate, '%M %d, %Y %h:%i %p')) as format_birthdate "),
-        )
-        ->where(function ($query) use ($request) {
-            $query->where('students.name', 'like', '%' . $request->filter . '%');
-            $query->orWhere('students.username', 'like', '%' . $request->filter . '%');
-            })
-        ->orderBy('students.name', 'ASC')
-        ->orderBy('students.username', 'ASC');
+        $filter = $request->filter ?? '';
+        $hasSpecificGrade = $request->grade != '' ? 1 : 0;
+        $grade = $request->grade ?? 0;     
+        $track = $request->track ?? ''; 
+        $course = $request->course ?? ''; 
 
-        $request->track != '' && $users->where('students.track', $request->track);
-        $request->course != '' && $users->where('students.course', $request->course);
+        // Call the stored procedure
+        $students = DB::select('CALL GET_SENIOR_STUDENTS(?, ?, ?, ?, ?)', [$filter, $track, $course, $grade, $hasSpecificGrade]);
 
-        if ($request->grade != '') {
-            $users->where('students.grade', $request->grade);
-        } else {
-            $users->whereIn('students.grade', [11, 12]);
-        }
+        // Convert results into a collection
+        $studentsCollection = collect($students);
 
+        // Set pagination variables
+        $perPage = 3; // Number of items per page
+        $currentPage = LengthAwarePaginator::resolveCurrentPage(); // Get the current page
 
-        // Paginate the final result
-        $finalresult = $users->paginate(5);
+        // Slice the collection to get the items for the current page
+        $currentPageItems = $studentsCollection->slice(($currentPage - 1) * $perPage, $perPage)->values();
 
-        if($finalresult->count() > 0) {
+        // Create a LengthAwarePaginator instance
+        $paginatedStudents = new LengthAwarePaginator($currentPageItems, $studentsCollection->count(), $perPage, $currentPage, [
+            'path' => $request->url(), // Set the base URL for pagination links
+            'query' => $request->query(), // Preserve query parameters in pagination links
+        ]);
+
+        // Return the response
+        if ($paginatedStudents->count() > 0) {
             return response()->json([
                 'status' => 200,
                 'message' => 'Users retrieved!',
-                'users' => $finalresult
+                'users' => $paginatedStudents
             ], 200);
-        }
-        else {
+        } else {
             return response()->json([
                 'message' => 'No users found!',
-                'users' => $finalresult
+                'users' => $paginatedStudents
             ]);
         }
     }

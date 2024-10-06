@@ -17,7 +17,7 @@ class RequestController extends Controller
             $requestors = Docrequest::leftJoin('users', 'requests.requestor', '=', 'users.username')
                   ->leftJoin('suffix', 'users.suffix', '=', 'suffix.id')
                   ->leftJoin('elections', 'requests.doctype', '=', 'elections.projectid')
-                  ->select('users.username', 'requests.id', 'requests.doctype as purchaseid', 'elections.title as doctype', 'requests.quantity', 'requests.sales', 'requests.status as statusno',
+                  ->select('users.username', 'requests.id', 'requests.doctype as purchaseid', 'elections.title as doctype', 'requests.quantity', 'requests.polls', 'requests.status as statusno',
                         DB::raw("CONCAT(DATE_FORMAT(requests.created_at, '%M %d, %Y')) as date_requested"),
                         DB::raw("CONCAT(DATE_FORMAT(requests.date_needed, '%M %d, %Y')) as date_needed"),
                         DB::raw("CONCAT(DATE_FORMAT(requests.date_finished, '%M %d, %Y')) as date_finished"),
@@ -89,7 +89,7 @@ class RequestController extends Controller
 
     public function editrequest(Request $request) {
         $authUser = Auth::user();
-        if($authUser->access_level < 50) {
+        if($authUser->access_level < 10) {
             return response()->json([
                 'message' => 'You are not allowed to perform this action!'
             ]);

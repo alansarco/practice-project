@@ -3,12 +3,11 @@ import * as actionTypes from './actionTypes';
 
 const initialState = {
   authUser: [],
-  polls: [],
   loadAuthUser: true,
   otherStats: [],
   loadOtherStats: true,
-  sales: [],
-  loadSales: true,
+  polls: [],
+  loadPolls: true,
   errormessage: "Something went wrong!",
 };
 
@@ -18,7 +17,6 @@ const dashboardReducer = (state = initialState, action) => {
       return {
         ...state,
         authUser: action.data.authorizedUser,
-        polls: action.data.polls,
         loadAuthUser: false,
       };
 
@@ -46,15 +44,15 @@ const dashboardReducer = (state = initialState, action) => {
     case actionTypes.FETCH_SALES:
       return {
         ...state,
-        sales: action.data.sales,
-        loadSales: false,
+        polls: action.data.polls,
+        loadPolls: false,
       };
 
     case actionTypes.FETCH_SALES_FAIL:
       return {
         ...state,
-        errormessage: "Error fetching sales data, please check your internet connection",
-        loadSales: false,
+        errormessage: "Error fetching polls data, please check your internet connection",
+        loadPolls: false,
       };
 
     default:

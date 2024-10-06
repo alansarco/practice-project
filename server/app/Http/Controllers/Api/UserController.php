@@ -14,10 +14,11 @@ use Exception;
 
 class UserController extends Controller
 {
+    //Admin changing students pasword
     public function changepass(Request $request) {
         $authUser = Auth::user();
 
-        if($authUser->role !== "ADMIN" || $authUser->access_level != 999) {
+        if($authUser->role !== "ADMIN" || $authUser->access_level < 10) {
             return response()->json([
                 'message' => 'You are not allowed to perform this action!'
             ]);
@@ -87,6 +88,7 @@ class UserController extends Controller
         }
     }
 
+    // Change your password
     public function personalchangepass(Request $request) {
         $authUser = Auth::user();
 
@@ -152,7 +154,7 @@ class UserController extends Controller
     public function deleteuser(Request $request) {
         $authUser = Auth::user();
 
-        if($authUser->role !== "ADMIN" || $authUser->access_level != 999) {
+        if($authUser->role !== "ADMIN" || $authUser->access_level < 10) {
             return response()->json([
                 'message' => 'You are not allowed to perform this action!'
             ]);
@@ -206,7 +208,7 @@ class UserController extends Controller
                     'role' => 'RESIDENT',
                     'password' => $hashedPassword,
                     'deleted_at' => NULL,
-                    'access_level' => 10,
+                    'access_level' => 5,
                 ]);
                 if($update) {
                     return response()->json([
@@ -223,7 +225,7 @@ class UserController extends Controller
                     $add = User::create([
                         'username' => $request->username,
                         'password' => $request->password,
-                        'access_level' => 10,
+                        'access_level' => 5,
                         'created_by' => $authUser->username
                     ]);
         

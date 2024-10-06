@@ -31,23 +31,20 @@ function Dashboard() {
   if (!token) {
     return <Navigate to="/authentication/sign-in" />
   }
-  // else if(token && access < 999) {
-  //   return <Navigate to="/not-found" />
-  // }
 
   const { 
     authUser,
     otherStats , loadOtherStats,
-    sales, loadSales,
+    polls, loadPolls,
   } = useDashboardData({
     authUser: true, 
     otherStats: true, 
-    sales: true, 
+    polls: true, 
   });  
   
-  // Extract "sales" and "sale_count" into separate arrays
-  const sale_label = sales.map(data => data.product_name);
-  const sale_data = sales.map(data => data.product_sale);
+  // Extract "polls" and "sale_count" into separate arrays
+  const sale_label = polls.map(data => data.product_name);
+  const sale_data = polls.map(data => data.product_sale);
 
 
   return (
@@ -62,7 +59,7 @@ function Dashboard() {
           <SoftBox mb={3}>
             <Grid container spacing={3}>
               <Grid item xs={12} md={7} xl={8}>
-                {access >= 999 && 
+                {access >= 10 && 
                   <>
                     <SoftTypography fontWeight="bold" color="success" textGradient fontSize="1rem">Accounts</SoftTypography>
                     <Grid container spacing={3}>
@@ -114,7 +111,7 @@ function Dashboard() {
                       title="SSG Election 2024"
                       nodata={sale_data.every(value => value === "0")}
                       height="20rem"
-                      loading={loadSales}
+                      loading={loadPolls}
                         chart={{
                         labels: sale_label,
                         datasets: [{

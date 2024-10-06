@@ -10,14 +10,16 @@ import SoftBox from "components/SoftBox";
 import colors from "assets/theme/base/colors";
 import typography from "assets/theme/base/typography";
 import borders from "assets/theme/base/borders";
+import SoftButton from "components/SoftButton";
+import PeopleAltTwoToneIcon from '@mui/icons-material/PeopleAltTwoTone';
 
 function Table({ elections, tablehead, HandleDATA, HandleRendering }) {
   const { light, secondary } = colors;
   const { size, fontWeightBold } = typography;
   const { borderWidth } = borders;
 
-  const handleSubmit = (row) => {
-    HandleDATA(row.projectid);
+  const hanleViewResult = (pollid) => {
+    HandleDATA(pollid);
     HandleRendering(2);
   }
 
@@ -41,22 +43,22 @@ function Table({ elections, tablehead, HandleDATA, HandleRendering }) {
 
   const renderRows = elections.map((row) => {
     return (
-      <TableRow key={row.projectid}>
+      <TableRow key={row.pollid}>
           <SoftBox
-            className="pe-2 text-decoration-underline cursor-pointer fw-bold"
+            className="px-2"
             component="td"
             fontSize={size.xs}
-            onClick={() => handleSubmit(row)}
-            color="dark"
+            color="secondary"
             borderBottom={`${borderWidth[1]} solid ${light.main}`}
             borderTop={`${borderWidth[1]} solid ${light.main}`}
+            // onClick={() => handleSubmit(row)}
             sx={{
               "&:hover ": {
                 letterSpacing: "2px"        
               },
             }}  
           >
-            {row.projectid}
+            {row.pollid}
           </SoftBox>  
           <SoftBox
             className="px-2"
@@ -66,7 +68,7 @@ function Table({ elections, tablehead, HandleDATA, HandleRendering }) {
             borderBottom={`${borderWidth[1]} solid ${light.main}`}
             borderTop={`${borderWidth[1]} solid ${light.main}`}
           >
-            {row.title}
+            {row.pollname}
           </SoftBox>  
           <SoftBox
             className="px-2"
@@ -76,17 +78,17 @@ function Table({ elections, tablehead, HandleDATA, HandleRendering }) {
             borderBottom={`${borderWidth[1]} solid ${light.main}`}
             borderTop={`${borderWidth[1]} solid ${light.main}`}
           >
-            {row.budget}
+            {row.participant_grade}
           </SoftBox>
           <SoftBox
             className="px-2"
             component="td"
             fontSize={size.xs}
-            color={row.color}   
+            color="secondary" 
             borderBottom={`${borderWidth[1]} solid ${light.main}`}
             borderTop={`${borderWidth[1]} solid ${light.main}`}
           >
-            {row.status}
+            {row.voting_start}
           </SoftBox>  
           <SoftBox
             className="px-2"
@@ -96,7 +98,30 @@ function Table({ elections, tablehead, HandleDATA, HandleRendering }) {
             borderBottom={`${borderWidth[1]} solid ${light.main}`}
             borderTop={`${borderWidth[1]} solid ${light.main}`}
           >
-            {row.date_added}    
+            {row.voting_end}    
+          </SoftBox>  
+          <SoftBox
+            className="px-2"
+            component="td"
+            fontSize={size.xs}
+            color="secondary" 
+            borderBottom={`${borderWidth[1]} solid ${light.main}`}
+            borderTop={`${borderWidth[1]} solid ${light.main}`}
+          >
+            {row.admin_name}    
+          </SoftBox>  
+          <SoftBox
+            className="px-2"
+            component="td"
+            fontSize={size.xs}
+            color="secondary" 
+            textAlign="center"
+            borderBottom={`${borderWidth[1]} solid ${light.main}`}
+            borderTop={`${borderWidth[1]} solid ${light.main}`}
+          >
+            <SoftButton onClick={() => hanleViewResult(row.pollid)} className="text-xxxs px-3 rounded-pill" size="small" variant="gradient" color="info">
+                <PeopleAltTwoToneIcon className="me-1 p-0"/> Candidates
+            </SoftButton>
           </SoftBox>  
         </TableRow>
     )});

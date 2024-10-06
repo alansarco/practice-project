@@ -20,12 +20,12 @@ export const fetchOtherStatsFail = (error) => ({
   error,
 });
 
-export const fetchSales = (data) => ({
+export const fetchPolls = (data) => ({
   type: actionTypes.FETCH_SALES,
   data,
 });
 
-export const fetchSalesFail = (error) => ({
+export const fetchPollsFail = (error) => ({
   type: actionTypes.FETCH_SALES_FAIL,
   error,
 });
