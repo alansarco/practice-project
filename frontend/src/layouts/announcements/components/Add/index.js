@@ -184,14 +184,14 @@ function Add({HandleRendering, ReloadTable}) {
                                     <Grid mt={3} container spacing={0} alignItems="center" justifyContent="end">
                                           <Grid item xs={12} sm={4} md={2} pl={1}>
                                                 <SoftBox mt={2} display="flex" justifyContent="end">
-                                                      <SoftButton onClick={handleCancel} className="mx-2 w-100" size="small" color="light">
+                                                      <SoftButton onClick={handleCancel} className="mx-2 w-100 text-xxs px-3 rounded-pill" size="small" color="light">
                                                             Back
                                                       </SoftButton>
                                                 </SoftBox>
                                           </Grid>
                                           <Grid item xs={12} sm={4} md={2} pl={1}>
                                                 <SoftBox mt={2} display="flex" justifyContent="end">
-                                                      <SoftButton variant="gradient" type="submit" className="mx-2 w-100" size="small" color="success">
+                                                      <SoftButton variant="gradient" type="submit" className="mx-2 w-100 text-xxs px-3 rounded-pill" size="small" color="success">
                                                             Save
                                                       </SoftButton>
                                                 </SoftBox>

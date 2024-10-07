@@ -14,7 +14,9 @@ use Illuminate\Support\Facades\Validator;
 
 class ElectionController extends Controller
 {
-    
+    public function adminselect() {
+        
+    }
 
     public function addproject(Request $request) {
         $authUser = Auth::user();

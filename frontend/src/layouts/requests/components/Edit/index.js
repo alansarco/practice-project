@@ -12,7 +12,6 @@ import { useStateContext } from "context/ContextProvider";
 import { passToErrorLogs, passToSuccessLogs  } from "components/Api/Gateway";
 import axios from "axios";
 import { apiRoutes } from "components/Api/ApiRoutes";
-import { docstatusSelect } from "components/General/Utils";
 import { pdf  } from '@react-pdf/renderer';
 import Indigency from "../Documents/Indigency";
 import Residency from "../Documents/Residency";
@@ -148,18 +147,6 @@ function Edit({HandleRendering, REQUESTOR, HandleDATA, HandleNullRequestor, CAPT
                                                 <SoftTypography variant="button" className="me-1">Product Name:</SoftTypography>
                                                 <SoftInput disabled value={REQUESTOR.doctype} size="small" /> 
                                           </Grid>
-                                          <Grid item xs={12} md={3} px={1}>
-                                                <SoftTypography variant="button" className="me-1"> Status: </SoftTypography>
-                                                <SoftTypography variant="span" className="text-xxs text-danger fst-italic">*</SoftTypography>
-                                                <select disabled={REQUESTOR.status == 4} className="form-control form-select form-select-sm text-secondary rounded-5 cursor-pointer" name="status" value={formData.status} onChange={handleChange}>
-                                                      <option value="">Select</option>
-                                                      {docstatusSelect && docstatusSelect.map((req) => (
-                                                      <option key={req.value} value={req.value}>
-                                                            {req.desc}
-                                                      </option>
-                                                      ))}
-                                                </select> 
-                                          </Grid>       
                                     </Grid>
                                     <Grid mt={3} container spacing={0} alignItems="center">
                                           <Grid item xs={12} pl={1}>

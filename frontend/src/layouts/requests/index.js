@@ -130,7 +130,7 @@ function Requests() {
       </DashboardLayout>
       <ToastContainer
         position="bottom-right"
-        autoClose={false}
+        autoClose={5000}
         limit={5}
         newestOnTop={false}
         closeOnClick  

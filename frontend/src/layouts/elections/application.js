@@ -52,7 +52,7 @@ function Application() {
   };
   
   const [data, setDATA] = useState(); 
-  const [rendering, setRendering] = useState(1);
+  const [rendering, setRendering] = useState(3);
   const [pollinfo, setProjectInfo] = useState();
   const [fetchdata, setFetchdata] = useState([]);
   const {polls, loadPolls} = useDashboardData({polls: true}, []);  
@@ -147,7 +147,7 @@ function Application() {
                 <SoftTypography className="text-uppercase text-secondary" variant="h6" >Application for Elections</SoftTypography>
               </SoftBox>
               <SoftBox display="flex" >
-                <SoftButton onClick={() => setRendering(1)} className="ms-2 py-0 px-3 d-flex rounded-pill" variant="gradient" color="success" size="small" >
+                <SoftButton onClick={() => setRendering(3)} className="ms-2 py-0 px-3 d-flex rounded-pill" variant="gradient" color="success" size="small" >
                   <Icon>add</Icon> Add Poll
                 </SoftButton>
               </SoftBox>
@@ -210,7 +210,7 @@ function Application() {
       </DashboardLayout>
       <ToastContainer
         position="bottom-right"
-        autoClose={false}
+        autoClose={5000}
         limit={5}
         newestOnTop={false}
         closeOnClick

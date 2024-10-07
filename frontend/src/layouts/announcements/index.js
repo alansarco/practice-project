@@ -219,7 +219,7 @@ function Announcements() {
                                   <SoftButton onClick={() => handleDelete(event.id)} className="text-xxs me-2 px-3 rounded-pill" size="small" variant="gradient" color="primary">
                                     <DeleteTwoToneIcon /> delete
                                   </SoftButton>
-                                  <SoftButton onClick={() => handleUpdate(event.id)} className="text-xxs me-2 px-3 rounded-pill" size="small" variant="gradient" color="success">
+                                  <SoftButton onClick={() => handleUpdate(event.id)} className="text-xxs me-2 px-3 rounded-pill" size="small" variant="gradient" color="dark">
                                     <BorderColorTwoToneIcon /> edit
                                   </SoftButton>
                                 </SoftBox>
@@ -261,7 +261,7 @@ function Announcements() {
       </DashboardLayout>
       <ToastContainer
         position="bottom-right"
-        autoClose={false}
+        autoClose={5000}
         limit={5}
         newestOnTop={false}
         closeOnClick

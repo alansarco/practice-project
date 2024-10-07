@@ -23,7 +23,10 @@ class Poll extends Model
         'voting_start', 
         'voting_end', 
         'requirements', 
+        'qualifications', 
         'poll_status',
+        'admin_id',
+        'admin_name',
         'created_by', 
         'updated_by'
     ];

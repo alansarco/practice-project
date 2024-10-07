@@ -16,17 +16,9 @@ class AnnouncementController extends Controller
 {
     // Get all the list of admins
     public function index(Request $request) {
-        $upcomingevents = Calendar::select('*',
-            DB::raw("CONCAT(DATE_FORMAT(event_date, '%M %d, %Y'), ' ', DATE_FORMAT(time, '%h:%i %p')) as event_datetime")
-            )
-            ->where('event_date', '>=', DB::raw('CURDATE()'))
-            ->get();
+        $upcomingevents = DB::select('CALL GET_UPCOMING_EVENTS()');
             
-        $pastevents = Calendar::select('*',
-            DB::raw("CONCAT(DATE_FORMAT(event_date, '%M %d, %Y'), ' ', DATE_FORMAT(time, '%h:%i %p')) as event_datetime")
-            )
-            ->where('event_date', '<', DB::raw('CURDATE()'))
-            ->get();
+        $pastevents = DB::select('CALL GET_PAST_EVENTS()');
 
         $calendars = [
             'upcomingevents' => $upcomingevents,
