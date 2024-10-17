@@ -8,8 +8,6 @@ use App\Http\Controllers\Api\GeneralController;
 use App\Http\Controllers\Api\LoginController;
 use App\Http\Controllers\Api\UserController;
 use App\Http\Controllers\Api\ElectionController;
-use App\Http\Controllers\Api\SuffixController;
-use App\Http\Controllers\Api\RequestController;
 use App\Http\Controllers\Api\SignupController;
 use App\Http\Controllers\Api\JuniorController;
 use App\Http\Controllers\Api\SeniorController;
@@ -49,6 +47,10 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('deleteadmin', [AdminController::class, 'deleteadmin']);
         Route::get('adminselect', [AdminController::class, 'adminselect']);
     });
+
+    Route::prefix('applications')->group(function () {
+        Route::get('adminselect', [ElectionController::class, 'adminselect']);
+    });    
 
     Route::prefix('users')->group(function () {
         Route::get('/', [UserController::class, 'index']);
@@ -91,19 +93,13 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::prefix('elections')->group(function () {
         Route::get('/', [ElectionController::class, 'index']);
         Route::get('captainselect', [ElectionController::class, 'captainselect']);
-        Route::post('addproject', [ElectionController::class, 'editproject']);
-        Route::get('projectinfo', [ElectionController::class, 'projectinfo']);
-        Route::get('deleteproject', [ElectionController::class, 'deleteproject']);
+        Route::post('addelection', [ElectionController::class, 'addelection']);
+        Route::get('electioninfo', [ElectionController::class, 'electioninfo']);
+        Route::get('deleteelection', [ElectionController::class, 'deleteelection']);
+        Route::post('editupcoming', [ElectionController::class, 'editupcoming']);
+        Route::post('editongoing', [ElectionController::class, 'editongoing']);
+        Route::post('editapplication', [ElectionController::class, 'editapplication']);
     });
 
-    Route::prefix('requests')->group(function () {
-        Route::get('/', [RequestController::class, 'index']);
-        Route::get('requestorinfo', [RequestController::class, 'requestorinfo']);
-        Route::post('editrequest', [RequestController::class, 'editrequest']);
-    });
-    
-    Route::prefix('suffix')->group(function () {
-        Route::get('/', [SuffixController::class, 'index']);
-    });
 
 });

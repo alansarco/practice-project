@@ -14,6 +14,7 @@ class Poll extends Model
     protected $table = "polls";
 
     protected $fillable = [
+        'pollid',
         'pollname',
         'description', 
         'participant_grade', 

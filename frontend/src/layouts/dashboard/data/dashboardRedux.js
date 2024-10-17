@@ -52,7 +52,7 @@ export function useDashboardData(fetchData) {
 
   //Fetch Polls Data
   useEffect(() => {
-    if(fetchData.polls) {
+    if(fetchData.polls || fetchData.render == 1) {
       axios.get(apiRoutes.pollsRetrieve, {headers})
       .then(response => {
         dispatch(actions.fetchPolls(response.data));
@@ -63,7 +63,7 @@ export function useDashboardData(fetchData) {
         passToErrorLogs(`Polls Data not Fetched!  ${error}`, currentFileName);
       });
     }
-  }, [fetchData.polls, dispatch]); // Include dashboardData as a dependency if needed
+  }, [fetchData.polls, fetchData.render, dispatch]); // Include dashboardData as a dependency if needed
 
   
 

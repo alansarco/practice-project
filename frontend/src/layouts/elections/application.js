@@ -10,8 +10,6 @@ import { ToastContainer, toast } from 'react-toastify';
 import { Link } from 'react-router-dom';
 
 import Icon from "@mui/material/Icon";
-import FilterListIcon from '@mui/icons-material/FilterList';
-import FileCopyIcon from '@mui/icons-material/FileCopy';
   
 // React examples
 import DashboardLayout from "essentials/LayoutContainers/DashboardLayout";
@@ -29,11 +27,11 @@ import FixedLoading from "components/General/FixedLoading";
 import { useStateContext } from "context/ContextProvider";
 import { Navigate } from "react-router-dom";
 import Add from "layouts/elections/components/Add";
-import Edit from "layouts/elections/components/Edit";
 import axios from "axios";
 import { passToSuccessLogs, passToErrorLogs } from "components/Api/Gateway";
 import { apiRoutes } from "components/Api/ApiRoutes";
 import { useDashboardData } from 'layouts/dashboard/data/dashboardRedux';
+import ElectionContainer from "layouts/elections/components/ElectionContainer";
 
 function Application() {
   const currentFileName = "layouts/elections/application.js";
@@ -51,13 +49,11 @@ function Application() {
     'Authorization': `Bearer ${YOUR_ACCESS_TOKEN}`
   };
   
-  const [data, setDATA] = useState(); 
-  const [rendering, setRendering] = useState(3);
-  const [pollinfo, setProjectInfo] = useState();
+  const [info, setINFO] = useState(); 
+  const [rendering, setRendering] = useState(1);
   const [fetchdata, setFetchdata] = useState([]);
-  const {polls, loadPolls} = useDashboardData({polls: true}, []);  
+  const {authUser, polls, loadPolls} = useDashboardData({authUser: true, polls: true, render: rendering}, []);  
   const [fetching, setFetching] = useState("");
-
 
   useEffect(() => {
     if (!loadPolls && polls) {
@@ -67,13 +63,10 @@ function Application() {
 
   const tableHeight = DynamicTableHeight();
   
-  const HandleDATA = (election) => {
-    setDATA(election);
+  const HandleDATA = (pollid) => {
+    setINFO(pollid);
   };
 
-  const HandleNullProject = (info) => {
-    setProjectInfo(info);
-  };
 
   const HandleRendering = (rendering) => {
     setRendering(rendering);
@@ -110,32 +103,15 @@ function Application() {
       setSearchTriggered(false);
     }
   }, [searchTriggered]);
-
-  useEffect(() => {
-    if(data) {
-      setReload(true);
-      axios.get(apiRoutes.projectInfo, { params: { data }, headers })
-      .then(response => {
-          setProjectInfo(response.data.polls);
-          passToSuccessLogs(response.data, currentFileName);
-          setReload(false);
-      })    
-      .catch(error => {
-          passToErrorLogs(`Election Data not Fetched!  ${error}`, currentFileName);
-          setReload(false);
-      });
-    }
-  }, [data]);
-
-
+  
   return (
     <> 
       {loadPolls && <FixedLoading />} 
       {reload && <FixedLoading />} 
       <DashboardLayout>
         <DashboardNavbar RENDERNAV={rendering} />
-        {data && pollinfo && rendering == 2 ? 
-            <Edit PROJECT={pollinfo} HandleNullProject={HandleNullProject}  HandleRendering={HandleRendering} HandleDATA={HandleDATA} /> 
+        {info && rendering == 2 ? 
+            <ElectionContainer FROM="application" authUser={authUser} INFO={info} HandleRendering={HandleRendering} HandleDATA={HandleDATA} /> 
           :
           rendering == 3 ?
             <Add HandleRendering={HandleRendering} />
@@ -146,11 +122,14 @@ function Application() {
               <SoftBox>
                 <SoftTypography className="text-uppercase text-secondary" variant="h6" >Application for Elections</SoftTypography>
               </SoftBox>
+              {access == 999 && role === "ADMIN" &&
               <SoftBox display="flex" >
                 <SoftButton onClick={() => setRendering(3)} className="ms-2 py-0 px-3 d-flex rounded-pill" variant="gradient" color="success" size="small" >
                   <Icon>add</Icon> Add Poll
                 </SoftButton>
               </SoftBox>
+              }
+              
             </SoftBox>
             <Card className="px-md-4 px-2 pt-3 pb-md-5 pb-4">
               <Grid container spacing={1} py={1} pb={2}>  
@@ -192,7 +171,7 @@ function Application() {
               </Grid>
               <SoftBox className="shadow-none table-container px-md-1 px-3 bg-gray rounded-5" height={tableHeight} minHeight={50}>
                   {fetchdata &&  fetchdata.length > 0 ? 
-                    <Table table="sm" HandleDATA={HandleDATA} HandleRendering={HandleRendering} elections={fetchdata} tablehead={tablehead} /> :
+                    <Table table="sm" authUser={authUser} HandleDATA={HandleDATA} HandleRendering={HandleRendering} elections={fetchdata} tablehead={tablehead} /> :
                     <>
                     <SoftBox className="d-flex" height="100%">
                       <SoftTypography variant="h6" className="m-auto text-secondary">   
@@ -201,7 +180,7 @@ function Application() {
                     </SoftBox>
                     </>
                   }
-                </SoftBox>
+              </SoftBox>
             </Card>
           </SoftBox>
         </SoftBox>

@@ -6,6 +6,7 @@ import TableRow from "@mui/material/TableRow";
 // React components
 import SoftBox from "components/SoftBox";
 import { useStateContext } from "context/ContextProvider";
+import { participantSelect, currentDate } from "components/General/Utils";
 
 // React base styles
 import colors from "assets/theme/base/colors";
@@ -14,13 +15,23 @@ import borders from "assets/theme/base/borders";
 import SoftButton from "components/SoftButton";
 import DescriptionTwoToneIcon from '@mui/icons-material/DescriptionTwoTone';
 
-function Table({ elections, tablehead, HandleDATA, HandleRendering }) {
+function Table({ authUser, elections, tablehead, HandleDATA, HandleRendering }) {
   const {access, role} = useStateContext();
   const { light, secondary } = colors;
   const { size, fontWeightBold } = typography;
   const { borderWidth } = borders;
 
-  const hanleViewResult = (pollid) => {
+  const handleViewResult = (pollid) => {
+    // HandleDATA(pollid);
+    // HandleRendering(2);
+  }
+
+  const handleViewPoll = (pollid) => {
+    HandleDATA(pollid);
+    HandleRendering(2);
+  }
+
+  const handleSubmitApply = (pollid) => {
     HandleDATA(pollid);
     HandleRendering(2);
   }
@@ -50,7 +61,7 @@ function Table({ elections, tablehead, HandleDATA, HandleRendering }) {
             className="pe-2 text-decoration-underline cursor-pointer fw-bold"
             component="td"
             fontSize={size.xs}
-            onClick={() => handleSubmit(row)}
+            onClick={() => handleViewPoll(row.pollid)}
             color="dark"
             borderBottom={`${borderWidth[1]} solid ${light.main}`}
             borderTop={`${borderWidth[1]} solid ${light.main}`}
@@ -80,7 +91,10 @@ function Table({ elections, tablehead, HandleDATA, HandleRendering }) {
             borderBottom={`${borderWidth[1]} solid ${light.main}`}
             borderTop={`${borderWidth[1]} solid ${light.main}`}
           >
-            {row.participant_grade}
+            {row.participant_grade === "11,12" ? "All SHS" : 
+              row.participant_grade === "7,8,9,10" ? "All JHS" : 
+              row.participant_grade === "7,8,9,10,11,12" ? "All Students" : 
+              row.participant_grade}
           </SoftBox>
           <SoftBox
             className="px-2"
@@ -90,7 +104,7 @@ function Table({ elections, tablehead, HandleDATA, HandleRendering }) {
             borderBottom={`${borderWidth[1]} solid ${light.main}`}
             borderTop={`${borderWidth[1]} solid ${light.main}`}
           >
-            {row.application_start}
+            {row.application_starts}
           </SoftBox>  
           <SoftBox
             className="px-2"
@@ -100,7 +114,7 @@ function Table({ elections, tablehead, HandleDATA, HandleRendering }) {
             borderBottom={`${borderWidth[1]} solid ${light.main}`}
             borderTop={`${borderWidth[1]} solid ${light.main}`}
           >
-            {row.application_end}    
+            {row.application_ends}    
           </SoftBox>  
           <SoftBox
             className="px-2"
@@ -110,7 +124,7 @@ function Table({ elections, tablehead, HandleDATA, HandleRendering }) {
             borderBottom={`${borderWidth[1]} solid ${light.main}`}
             borderTop={`${borderWidth[1]} solid ${light.main}`}
           >
-            {row.validation_end}    
+            {row.validation_ends}    
           </SoftBox>  
           <SoftBox
             className="px-2"
@@ -131,12 +145,16 @@ function Table({ elections, tablehead, HandleDATA, HandleRendering }) {
             borderBottom={`${borderWidth[1]} solid ${light.main}`}
             borderTop={`${borderWidth[1]} solid ${light.main}`}
           >
-            {access >= 10 && role === "ADMIN" ?
-            <SoftButton onClick={() => hanleViewResult(row.pollid)} className="text-xxxs px-3 rounded-pill" size="small" variant="gradient" color="warning">
+            {access == 5 || authUser.username === row.admin_id ?
+            <SoftButton onClick={() => handleViewResult(row.pollid)} className="text-xxxs px-3 rounded-pill" size="small" variant="gradient" color="warning"
+              disabled = {currentDate < row.application_start}
+            >
                 <DescriptionTwoToneIcon className="me-1 p-0"/> View Applications
             </SoftButton>
-            :
-            <SoftButton onClick={() => hanleViewResult(row.pollid)} className="text-xxxs px-3 rounded-pill" size="small" variant="gradient" color="warning">
+            : access != 10 &&
+              <SoftButton onClick={() => handleSubmitApply(row.pollid)} className="text-xxxs px-3 rounded-pill" size="small" variant="gradient" color="warning"
+              disabled = {currentDate < row.application_start}
+            >
                 <DescriptionTwoToneIcon className="me-1 p-0"/> Apply for Candidacy
             </SoftButton>
             }

@@ -64,7 +64,7 @@ class SignupController extends Controller
             ]);
             if($validator->fails()) {
                 return response()->json([
-                    'message' => $validator->messages()
+                    'message' => $validator->messages()->all()
                 ]);
             }
             else {
@@ -127,7 +127,7 @@ class SignupController extends Controller
     
             if($validator->fails()) {
                 return response()->json([
-                    'message' => $validator->messages()
+                    'message' => $validator->messages()->all()
                 ]);
             }
     

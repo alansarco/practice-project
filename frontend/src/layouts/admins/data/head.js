@@ -15,6 +15,11 @@ export const tablehead = [
     align: "left",
   },
   {
+    name: "role",
+    padding: "px-2",
+    align: "left",
+  },
+  {
     name: "contact",
     padding: "px-2",
     align: "left",

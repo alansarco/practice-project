@@ -70,7 +70,7 @@ class AnnouncementController extends Controller
 
         if($validator->fails()) {
             return response()->json([
-                'message' => $validator->messages()
+                'message' => $validator->messages()->all()
             ]);
         }
         else {
@@ -128,7 +128,7 @@ class AnnouncementController extends Controller
 
         if($validator->fails()) {
             return response()->json([
-                'message' => $validator->messages()
+                'message' => $validator->messages()->all()
             ]);
         }
 

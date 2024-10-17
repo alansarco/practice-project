@@ -20,15 +20,16 @@ function ProfileInfoCard({ title, info }) {
 
   // Convert this form `objectKey` of the object key in to this `object key`
   Object.keys(info).forEach((el) => {
-    if (el.match(/[A-Z\s]+/)) {
-      const uppercaseLetter = Array.from(el).find((i) => i.match(/[A-Z]+/));
-      const newElement = el.replace(uppercaseLetter, ` ${uppercaseLetter.toLowerCase()}`);
-
-      labels.push(newElement);
-    } else {
-      labels.push(el);
+    // Replace underscores with spaces and handle camelCase keys
+    let newElement = el.replace(/_/g, " "); // Replace underscores with spaces
+    
+    if (newElement.match(/[A-Z\s]+/)) {
+      const uppercaseLetter = Array.from(newElement).find((i) => i.match(/[A-Z]+/));
+      newElement = newElement.replace(uppercaseLetter, ` ${uppercaseLetter.toLowerCase()}`);
     }
-  });
+  
+    labels.push(newElement);
+  });  
 
   // Push the object values into the values array
   Object.values(info).forEach((el) => values.push(el));

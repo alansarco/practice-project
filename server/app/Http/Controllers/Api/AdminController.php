@@ -19,7 +19,7 @@ class AdminController extends Controller
         try {
             $admins = User::leftJoin('admins', 'users.username', '=', 'admins.username')
                 ->select('admins.username', 'admins.name', 'admins.contact', 'admins.birthdate',
-                    'admins.gender', 
+                    'admins.gender', 'users.access_level', 
                     DB::raw("CONCAT(DATE_FORMAT(users.last_online, '%M %d, %Y %h:%i %p')) as last_online"),
                     DB::raw("CONCAT(DATE_FORMAT(users.created_at, '%M %d, %Y')) as admin_since"),
                 )
@@ -30,7 +30,7 @@ class AdminController extends Controller
                 ->where('users.account_status', 1)
                 ->orderBy('admins.name', 'ASC')
                 ->orderBy('admins.username', 'ASC')
-                ->paginate(5);
+                ->paginate(50);
 
             if($admins->count() > 0) {
                 return response()->json([
@@ -61,7 +61,7 @@ class AdminController extends Controller
         }
 
         $user = User::leftJoin('admins', 'users.username', '=', 'admins.username')
-        ->select('admins.*', 'users.password_change', 'users.account_status as account_status', 
+        ->select('admins.*', 'users.password_change', 'users.account_status as account_status', 'users.access_level', 
             DB::raw("CONCAT(DATE_FORMAT(admins.birthdate, '%M %d, %Y')) as birthday"),
             DB::raw("CONCAT(DATE_FORMAT(users.created_at, '%M %d, %Y')) as date_added"),
             DB::raw("CONCAT(DATE_FORMAT(users.last_online, '%M %d, %Y')) as last_online")
@@ -90,12 +90,13 @@ class AdminController extends Controller
         $validator = Validator::make($request->all(), [
             'name' => 'required',
             'gender' => 'required',
+            'access' => 'required',
             'contact' => 'required',
         ]);
 
         if($validator->fails()) {
             return response()->json([
-                'message' => $validator->messages()
+                'message' => $validator->messages()->all()
             ]);
         }
         else {
@@ -109,6 +110,10 @@ class AdminController extends Controller
                         'contact' => $request->contact, 
                         'birthdate' => $request->birthdate,  
                         'updated_by' => Auth::user()->username,
+                    ]);
+                    User::where('username', $request->username)
+                    ->update([
+                        'access_level' => $request->access,   
                     ]);
 
                 if($update) {
@@ -150,12 +155,13 @@ class AdminController extends Controller
             'password' => 'required',
             'name' => 'required',
             'gender' => 'required',
+            'access' => 'required',
             'contact' => 'required',
         ]);
 
         if($validator->fails()) {
             return response()->json([
-                'message' => $validator->messages()
+                'message' => $validator->messages()->all()
             ]);
         }
         
@@ -191,7 +197,7 @@ class AdminController extends Controller
                 ->update([
                 'password' => $hashedPassword,
                 'role' => 'ADMIN',
-                'access_level' => 10,
+                'access_level' => $request->access,
                 'account_status' => 1,
             ]);
             if($update) {
@@ -206,7 +212,7 @@ class AdminController extends Controller
                 'username' => $request->username,
                 'password' => $hashedPassword,
                 'role' => 'ADMIN',
-                'access_level' => 10,
+                'access_level' => $request->access,
                 'account_status' => 1,
                 'created_by' => Auth::user()->username,
             ]);

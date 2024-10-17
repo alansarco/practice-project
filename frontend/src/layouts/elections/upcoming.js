@@ -10,8 +10,6 @@ import { ToastContainer, toast } from 'react-toastify';
 import { Link } from 'react-router-dom';
 
 import Icon from "@mui/material/Icon";
-import FilterListIcon from '@mui/icons-material/FilterList';
-import FileCopyIcon from '@mui/icons-material/FileCopy';
   
 // React examples
 import DashboardLayout from "essentials/LayoutContainers/DashboardLayout";
@@ -29,11 +27,11 @@ import FixedLoading from "components/General/FixedLoading";
 import { useStateContext } from "context/ContextProvider";
 import { Navigate } from "react-router-dom";
 import Add from "layouts/elections/components/Add";
-import Edit from "layouts/elections/components/Edit";
 import axios from "axios";
 import { passToSuccessLogs, passToErrorLogs } from "components/Api/Gateway";
 import { apiRoutes } from "components/Api/ApiRoutes";
 import { useDashboardData } from 'layouts/dashboard/data/dashboardRedux';
+import ElectionContainer from "layouts/elections/components/ElectionContainer";
 
 function Upcoming() {
   const currentFileName = "layouts/elections/upcoming.js";
@@ -51,13 +49,11 @@ function Upcoming() {
     'Authorization': `Bearer ${YOUR_ACCESS_TOKEN}`
   };
   
-  const [data, setDATA] = useState(); 
+  const [info, setINFO] = useState(); 
   const [rendering, setRendering] = useState(1);
-  const [pollinfo, setProjectInfo] = useState();
   const [fetchdata, setFetchdata] = useState([]);
-  const {polls, loadPolls} = useDashboardData({polls: true}, []);  
+  const {authUser, polls, loadPolls} = useDashboardData({authUser: true, polls: true, render: rendering}, []);  
   const [fetching, setFetching] = useState("");
-
 
   useEffect(() => {
     if (!loadPolls && polls) {
@@ -67,13 +63,10 @@ function Upcoming() {
 
   const tableHeight = DynamicTableHeight();
   
-  const HandleDATA = (election) => {
-    setDATA(election);
+  const HandleDATA = (pollid) => {
+    setINFO(pollid);
   };
 
-  const HandleNullProject = (info) => {
-    setProjectInfo(info);
-  };
 
   const HandleRendering = (rendering) => {
     setRendering(rendering);
@@ -111,22 +104,6 @@ function Upcoming() {
     }
   }, [searchTriggered]);
 
-  useEffect(() => {
-    if(data) {
-      setReload(true);
-      axios.get(apiRoutes.projectInfo, { params: { data }, headers })
-      .then(response => {
-          setProjectInfo(response.data.polls);
-          passToSuccessLogs(response.data, currentFileName);
-          setReload(false);
-      })    
-      .catch(error => {
-          passToErrorLogs(`Election Data not Fetched!  ${error}`, currentFileName);
-          setReload(false);
-      });
-    }
-  }, [data]);
-
 
   return (
     <> 
@@ -134,11 +111,8 @@ function Upcoming() {
       {reload && <FixedLoading />} 
       <DashboardLayout>
         <DashboardNavbar RENDERNAV={rendering} />
-        {data && pollinfo && rendering == 2 ? 
-            <Edit PROJECT={pollinfo} HandleNullProject={HandleNullProject}  HandleRendering={HandleRendering} HandleDATA={HandleDATA} /> 
-          :
-          rendering == 3 ?
-            <Add HandleRendering={HandleRendering} />
+        {info && rendering == 2 ? 
+            <ElectionContainer FROM="upcoming" authUser={authUser} INFO={info} HandleRendering={HandleRendering} HandleDATA={HandleDATA} /> 
         :
         <SoftBox p={2}>
           <SoftBox >   
@@ -148,11 +122,11 @@ function Upcoming() {
               </SoftBox>
             </SoftBox>
             <Card className="px-md-4 px-2 pt-3 pb-md-5 pb-4">
-              <Grid container spacing={1} py={1} pb={2}> 
+              <Grid container spacing={1} py={1} pb={2}>  
                 <Grid item xs={12} md={8} display="flex">
                   {access >= 10 && role === "ADMIN" ?
                   <SoftTypography className="text-xs my-auto px-2 text-dark">
-                    <b className="text-success">Note:</b> Once the election is <b>UPCOMING</b>, you can only update the voting dates.
+                    <b className="text-success">Note:</b> Once the election is <b>UPCOMING</b>, only the voting dates can be updated. Super admin can delete the entire data of upcoming election if necessary.
                   </SoftTypography>
                   : 
                   <SoftTypography className="text-xs my-auto px-2 text-dark">
@@ -191,7 +165,7 @@ function Upcoming() {
                     <>
                     <SoftBox className="d-flex" height="100%">
                       <SoftTypography variant="h6" className="m-auto text-secondary">   
-                      {fetching}              
+                      {fetching}               
                       </SoftTypography>
                     </SoftBox>
                     </>

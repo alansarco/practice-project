@@ -71,7 +71,7 @@ function Admins() {
   };
 
   const ReloadTable = () => {
-    axios.get(apiRoutes.adminRetrieve, { params: { filter }, headers })
+    axios.get(apiRoutes.adminRetrieve, + '?page=' + page, { params: { filter }, headers })
     .then(response => {
       setFetchdata(response.data.admins);
       passToSuccessLogs(response.data, currentFileName);
@@ -152,19 +152,20 @@ function Admins() {
                 <SoftTypography className="text-uppercase text-secondary" variant="h6" >Admin Account List</SoftTypography>
               </SoftBox>
               <SoftBox display="flex">
-                {access >= 10 && role === "ADMIN" && 
-                  <SoftButton onClick={() => setRendering(3)} className="ms-2 px-3 d-flex" variant="gradient" color="success" size="medium" iconOnly>
-                  <Icon>add</Icon>
-                </SoftButton>
+                {access == 999 && role === "ADMIN" &&
+                <SoftBox display="flex" >
+                  <SoftButton onClick={() => setRendering(3)} className="ms-2 py-0 px-3 d-flex rounded-pill" variant="gradient" color="success" size="small" >
+                    <Icon>add</Icon> Add Admin
+                  </SoftButton>
+                </SoftBox>
                 }
-                
               </SoftBox>
             </SoftBox>
             <Card className="px-md-4 px-2 pt-3 pb-md-5 pb-4">
               <Grid container spacing={1} py={1} pb={2}>
                 <Grid item xs={12} md={8} display="flex">
                   <SoftTypography className="text-xs my-auto px-2 text-dark">
-                    <b className="text-success">Note:</b> Admin accounts can access all the fuctionalities of the system.
+                    <b className="text-success">Note:</b> <b>ADMIN</b>  accounts has limited access, while <b>SUPER ADMIN</b> can access all the fuctionalities of the system.
                   </SoftTypography>
                 </Grid>
                 <Grid item xs={12} md={4}>

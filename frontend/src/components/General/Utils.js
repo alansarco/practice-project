@@ -24,6 +24,11 @@ export const seniorSelect = [
       { value: 12, desc: "Grade 12" },
 ];
 
+export const roleSelect = [
+      { value: 10, desc: "Admin" },
+      { value: 999, desc: "Super Admin" },
+];
+
 export const participantSelect = [
       { value: "7,8,9,10,11,12", desc: "All Students" },
       { value: "7,8,9,10", desc: "All JHS" },

@@ -10,8 +10,6 @@ import { ToastContainer, toast } from 'react-toastify';
 import { Link } from 'react-router-dom';
 
 import Icon from "@mui/material/Icon";
-import FilterListIcon from '@mui/icons-material/FilterList';
-import FileCopyIcon from '@mui/icons-material/FileCopy';
   
 // React examples
 import DashboardLayout from "essentials/LayoutContainers/DashboardLayout";
@@ -29,11 +27,11 @@ import FixedLoading from "components/General/FixedLoading";
 import { useStateContext } from "context/ContextProvider";
 import { Navigate } from "react-router-dom";
 import Add from "layouts/elections/components/Add";
-import Edit from "layouts/elections/components/Edit";
 import axios from "axios";
 import { passToSuccessLogs, passToErrorLogs } from "components/Api/Gateway";
 import { apiRoutes } from "components/Api/ApiRoutes";
 import { useDashboardData } from 'layouts/dashboard/data/dashboardRedux';
+import ElectionContainer from "layouts/elections/components/ElectionContainer";
 
 function Archive() {
   const currentFileName = "layouts/elections/archive.js";
@@ -51,13 +49,11 @@ function Archive() {
     'Authorization': `Bearer ${YOUR_ACCESS_TOKEN}`
   };
   
-  const [data, setDATA] = useState(); 
+  const [info, setINFO] = useState(); 
   const [rendering, setRendering] = useState(1);
-  const [pollinfo, setProjectInfo] = useState();
   const [fetchdata, setFetchdata] = useState([]);
-  const {polls, loadPolls} = useDashboardData({polls: true}, []);  
+  const {authUser, polls, loadPolls} = useDashboardData({authUser: true, polls: true, render: rendering}, []);  
   const [fetching, setFetching] = useState("");
-
 
   useEffect(() => {
     if (!loadPolls && polls) {
@@ -67,13 +63,10 @@ function Archive() {
 
   const tableHeight = DynamicTableHeight();
   
-  const HandleDATA = (election) => {
-    setDATA(election);
+  const HandleDATA = (pollid) => {
+    setINFO(pollid);
   };
 
-  const HandleNullProject = (info) => {
-    setProjectInfo(info);
-  };
 
   const HandleRendering = (rendering) => {
     setRendering(rendering);
@@ -111,22 +104,6 @@ function Archive() {
     }
   }, [searchTriggered]);
 
-  useEffect(() => {
-    if(data) {
-      setReload(true);
-      axios.get(apiRoutes.projectInfo, { params: { data }, headers })
-      .then(response => {
-          setProjectInfo(response.data.polls);
-          passToSuccessLogs(response.data, currentFileName);
-          setReload(false);
-      })    
-      .catch(error => {
-          passToErrorLogs(`Election Data not Fetched!  ${error}`, currentFileName);
-          setReload(false);
-      });
-    }
-  }, [data]);
-
 
   return (
     <> 
@@ -134,11 +111,8 @@ function Archive() {
       {reload && <FixedLoading />} 
       <DashboardLayout>
         <DashboardNavbar RENDERNAV={rendering} />
-        {data && pollinfo && rendering == 2 ? 
-            <Edit PROJECT={pollinfo} HandleNullProject={HandleNullProject}  HandleRendering={HandleRendering} HandleDATA={HandleDATA} /> 
-          :
-          rendering == 3 ?
-            <Add HandleRendering={HandleRendering} />
+        {info && rendering == 2 ? 
+            <ElectionContainer FROM="archive" authUser={authUser} INFO={info} HandleRendering={HandleRendering} HandleDATA={HandleDATA} /> 
         :
         <SoftBox p={2}>
           <SoftBox >   

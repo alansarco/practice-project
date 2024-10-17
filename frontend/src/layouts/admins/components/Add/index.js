@@ -5,7 +5,7 @@ import SoftBox from "components/SoftBox";
 import SoftButton from "components/SoftButton";
 import SoftInput from "components/SoftInput";
 import SoftTypography from "components/SoftTypography";
-import { genderSelect, currentDate } from "components/General/Utils";
+import { genderSelect, currentDate, roleSelect } from "components/General/Utils";
 import { useState } from "react";
 import { toast } from "react-toastify";
 import { messages } from "components/General/Messages";
@@ -28,6 +28,7 @@ function Add({HandleRendering, ReloadTable }) {
             username: "",
             password: "",
             name: "",
+            access: "",
             gender: "",
             contact: "",
             birthdate: "",
@@ -59,6 +60,7 @@ function Add({HandleRendering, ReloadTable }) {
                   "password",
                   "name",
                   "gender",
+                  "access",
                   "contact",
                   "birthdate",
             ];
@@ -117,12 +119,24 @@ function Add({HandleRendering, ReloadTable }) {
                                           <Grid item xs={12} sm={6} md={4} lg={3} px={1}>
                                                 <SoftTypography variant="button" className="me-1">Username:</SoftTypography>
                                                 <SoftTypography variant="span" className="text-xxs text-danger fst-italic">*</SoftTypography>
-                                                <SoftInput name="username" value={formData.username.toUpperCase()} onChange={handleChange} size="small" /> 
-                                          </Grid>  
+                                                <SoftInput name="username" value={formData.username} onChange={handleChange} size="small" /> 
+                                          </Grid> 
                                           <Grid item xs={12} sm={6} md={4} lg={3} px={1}>
                                                 <SoftTypography variant="button" className="me-1">Password:</SoftTypography>
                                                 <SoftTypography variant="span" className="text-xxs text-danger fst-italic">*</SoftTypography>
                                                 <SoftInput name="password" value={formData.password} onChange={handleChange} size="small" /> 
+                                          </Grid>   
+                                          <Grid item xs={12} sm={6} md={4} lg={3} px={1}>
+                                                <SoftTypography variant="button" className="me-1">Role:</SoftTypography>
+                                                <SoftTypography variant="span" className="text-xxs text-danger fst-italic">*</SoftTypography>
+                                                <select className="form-control form-select form-select-sm text-secondary rounded-5 cursor-pointer" name="access" value={formData.access} onChange={handleChange} >
+                                                      <option value=""></option>
+                                                      {roleSelect && roleSelect.map((role) => (
+                                                      <option key={role.value} value={role.value}>
+                                                            {role.desc}
+                                                      </option>
+                                                      ))}
+                                                </select>
                                           </Grid>  
                                     </Grid> 
                                     <SoftTypography fontWeight="medium" textTransform="capitalize" color="success" textGradient>

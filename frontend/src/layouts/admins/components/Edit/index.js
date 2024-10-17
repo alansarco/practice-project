@@ -5,7 +5,7 @@ import SoftBox from "components/SoftBox";
 import SoftButton from "components/SoftButton";
 import SoftInput from "components/SoftInput";
 import SoftTypography from "components/SoftTypography";
-import { genderSelect, currentDate } from "components/General/Utils";
+import { genderSelect, currentDate, roleSelect } from "components/General/Utils";
 import { useState } from "react";
 import { toast } from "react-toastify";
 import { messages } from "components/General/Messages";
@@ -14,7 +14,7 @@ import { passToErrorLogs, passToSuccessLogs  } from "components/Api/Gateway";
 import axios from "axios";
 import { apiRoutes } from "components/Api/ApiRoutes";
  
-function Edit({USER, HandleRendering, UpdateLoading }) {
+function Edit({USER, HandleRendering, UpdateLoading, ReloadTable }) {
       const currentFileName = "layouts/users/components/Edit/index.js";
       const [submitProfile, setSubmitProfile] = useState(false);
       const {token} = useStateContext();  
@@ -29,6 +29,7 @@ function Edit({USER, HandleRendering, UpdateLoading }) {
             name: USER.name == null ? "" : USER.name,
             gender: USER.gender == null ? "" : USER.gender,
             contact: USER.contact == null ? "" : USER.contact,
+            access: USER.access_level == null ? " " : USER.access_level,
             birthdate: USER.birthdate == null ? "" : USER.birthdate,
             agreement: false,   
       };
@@ -46,6 +47,7 @@ function Edit({USER, HandleRendering, UpdateLoading }) {
 
       const handleCancel = () => {
             HandleRendering(1);
+            ReloadTable();
       };
             
       const handleSubmit = async (e) => {
@@ -116,6 +118,17 @@ function Edit({USER, HandleRendering, UpdateLoading }) {
                                                 <SoftTypography variant="button" className="me-1">Fullname:</SoftTypography>
                                                 <SoftTypography variant="span" className="text-xxs text-danger fst-italic">*</SoftTypography>
                                                 <SoftInput name="name" value={formData.name.toUpperCase()} onChange={handleChange} size="small" /> 
+                                          </Grid>  
+                                          <Grid item xs={12} sm={12} md={3} px={1}>
+                                                <SoftTypography variant="button" className="me-1">Role:</SoftTypography>
+                                                <SoftTypography variant="span" className="text-xxs text-danger fst-italic">*</SoftTypography>
+                                                <select className="form-control form-select form-select-sm text-secondary rounded-5 cursor-pointer" name="access" value={formData.access} onChange={handleChange} >
+                                                      {roleSelect && roleSelect.map((role) => (
+                                                      <option key={role.value} value={role.value}>
+                                                            {role.desc}
+                                                      </option>
+                                                      ))}
+                                                </select>
                                           </Grid>  
                                     </Grid> 
                                     <Grid container spacing={0} alignItems="center">

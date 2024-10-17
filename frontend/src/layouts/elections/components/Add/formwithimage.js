@@ -83,7 +83,7 @@ function FormImage({HandleRendering}) {
                                     toast.error(messages.prohibit, { autoClose: true });
                               }     
                               else {  
-                                    const response = await axios.post(apiRoutes.addProject, productData, {headers});
+                                    const response = await axios.post(apiRoutes.addElection, productData, {headers});
                                     if(response.data.status == 200) {
                                           setFormData(initialState);
                                           toast.success(`${response.data.message}`, { autoClose: true });

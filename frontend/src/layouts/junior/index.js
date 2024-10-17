@@ -37,7 +37,7 @@ import CustomPagination from "components/General/CustomPagination";
 
 function Juniors() {
     const currentFileName = "layouts/juniors/index.js";
-    const {token, access, updateTokenExpiration} = useStateContext();
+    const {token, access, updateTokenExpiration, role} = useStateContext();
     updateTokenExpiration();
     if (!token) {
         return <Navigate to="/authentication/sign-in" />
@@ -86,7 +86,7 @@ function Juniors() {
     };
 
     const ReloadTable = () => {
-        axios.post(apiRoutes.juniorRetrieve + '?page=' + 1, formData, {headers})
+        axios.post(apiRoutes.juniorRetrieve + '?page=' + page, formData, {headers})
         .then(response => {
         setFetchdata(response.data.users);
         passToSuccessLogs(response.data, currentFileName);
@@ -159,11 +159,13 @@ function Juniors() {
                 <SoftBox>
                   <SoftTypography className="text-uppercase text-secondary" variant="h6" >Junior High Student List</SoftTypography>
                 </SoftBox>
-                <SoftBox display="flex">
-                    <SoftButton onClick={() => setRendering(3)} className="ms-2 px-3 d-flex" variant="gradient" color="success" size="medium" iconOnly>
-                        <Icon>add</Icon>
-                    </SoftButton>
-              </SoftBox>
+                {access == 999 && role === "ADMIN" &&
+                <SoftBox display="flex" >
+                  <SoftButton onClick={() => setRendering(3)} className="ms-2 py-0 px-3 d-flex rounded-pill" variant="gradient" color="success" size="small" >
+                    <Icon>add</Icon> Add Student
+                  </SoftButton>
+                </SoftBox>
+                }
               </SoftBox>
               <Card className="px-md-4 px-2 pt-3 pb-md-3 pb-2">
                 <SoftBox component="form" role="form" className="px-md-0 px-2" onSubmit={handleSubmit}>

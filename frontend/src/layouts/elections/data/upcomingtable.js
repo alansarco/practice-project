@@ -18,7 +18,12 @@ function Table({ elections, tablehead, HandleDATA, HandleRendering }) {
   const { size, fontWeightBold } = typography;
   const { borderWidth } = borders;
 
-  const hanleViewResult = (pollid) => {
+  const handleViewResult = (pollid) => {
+    // HandleDATA(pollid);
+    // HandleRendering(2);
+  }
+
+  const handleViewPoll = (pollid) => {
     HandleDATA(pollid);
     HandleRendering(2);
   }
@@ -45,13 +50,13 @@ function Table({ elections, tablehead, HandleDATA, HandleRendering }) {
     return (
       <TableRow key={row.pollid}>
           <SoftBox
-            className="px-2"
+            className="pe-2 text-decoration-underline cursor-pointer fw-bold"
             component="td"
             fontSize={size.xs}
-            color="secondary"
+            onClick={() => handleViewPoll(row.pollid)}
+            color="dark"
             borderBottom={`${borderWidth[1]} solid ${light.main}`}
             borderTop={`${borderWidth[1]} solid ${light.main}`}
-            // onClick={() => handleSubmit(row)}
             sx={{
               "&:hover ": {
                 letterSpacing: "2px"        
@@ -59,7 +64,7 @@ function Table({ elections, tablehead, HandleDATA, HandleRendering }) {
             }}  
           >
             {row.pollid}
-          </SoftBox>  
+          </SoftBox>   
           <SoftBox
             className="px-2"
             component="td"
@@ -78,7 +83,10 @@ function Table({ elections, tablehead, HandleDATA, HandleRendering }) {
             borderBottom={`${borderWidth[1]} solid ${light.main}`}
             borderTop={`${borderWidth[1]} solid ${light.main}`}
           >
-            {row.participant_grade}
+            {row.participant_grade === "11,12" ? "All SHS" : 
+              row.participant_grade === "7,8,9,10" ? "All JHS" : 
+              row.participant_grade === "7,8,9,10,11,12" ? "All Students" : 
+              row.participant_grade}
           </SoftBox>
           <SoftBox
             className="px-2"
@@ -88,7 +96,7 @@ function Table({ elections, tablehead, HandleDATA, HandleRendering }) {
             borderBottom={`${borderWidth[1]} solid ${light.main}`}
             borderTop={`${borderWidth[1]} solid ${light.main}`}
           >
-            {row.voting_start}
+            {row.voting_starts}
           </SoftBox>  
           <SoftBox
             className="px-2"
@@ -98,7 +106,7 @@ function Table({ elections, tablehead, HandleDATA, HandleRendering }) {
             borderBottom={`${borderWidth[1]} solid ${light.main}`}
             borderTop={`${borderWidth[1]} solid ${light.main}`}
           >
-            {row.voting_end}    
+            {row.voting_ends}    
           </SoftBox>  
           <SoftBox
             className="px-2"
@@ -119,7 +127,7 @@ function Table({ elections, tablehead, HandleDATA, HandleRendering }) {
             borderBottom={`${borderWidth[1]} solid ${light.main}`}
             borderTop={`${borderWidth[1]} solid ${light.main}`}
           >
-            <SoftButton onClick={() => hanleViewResult(row.pollid)} className="text-xxxs px-3 rounded-pill" size="small" variant="gradient" color="info">
+            <SoftButton onClick={() => handleViewResult(row.pollid)} className="text-xxxs px-3 rounded-pill" size="small" variant="gradient" color="info">
                 <PeopleAltTwoToneIcon className="me-1 p-0"/> Candidates
             </SoftButton>
           </SoftBox>  

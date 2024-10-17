@@ -24,7 +24,7 @@ class SeniorController extends Controller
         $studentsCollection = collect($students);
 
         // Set pagination variables
-        $perPage = 3; // Number of items per page
+        $perPage = 50; // Number of items per page
         $currentPage = LengthAwarePaginator::resolveCurrentPage(); // Get the current page
 
         // Slice the collection to get the items for the current page

@@ -105,13 +105,13 @@ function Configurator() {
           </SoftBox>
           {poll.status === "ongoing" || poll.status === "upcoming" ? 
             <SoftBox>
-              <SoftTypography className="text-xxs" color="dark" ><b>Voting Start: </b>{poll.voting_start}</SoftTypography>
-              <SoftTypography className="text-xxs" color="dark" ><b>Voting End: </b>{poll.voting_end}</SoftTypography>
+              <SoftTypography className="text-xxs" color="dark" ><b>Voting Start: </b>{poll.voting_starts}</SoftTypography>
+              <SoftTypography className="text-xxs" color="dark" ><b>Voting End: </b>{poll.voting_ends}</SoftTypography>
             </SoftBox> 
             : 
             <SoftBox>
-              <SoftTypography className="text-xxs" color="dark" ><b>Application Start: </b>{poll.application_start}</SoftTypography>
-              <SoftTypography className="text-xxs" color="dark" ><b>Application End: </b>{poll.application_end}</SoftTypography>
+              <SoftTypography className="text-xxs" color="dark" ><b>Application Start: </b>{poll.application_starts}</SoftTypography>
+              <SoftTypography className="text-xxs" color="dark" ><b>Application End: </b>{poll.application_ends}</SoftTypography>
             </SoftBox>
           }
           

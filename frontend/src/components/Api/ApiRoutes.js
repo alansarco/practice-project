@@ -18,9 +18,7 @@ export const apiRoutes = {
     addAdmin: `${mainRoute}/api/admins/addadmin`,
     adminUpdate: `${mainRoute}/api/admins/update`,
     deleteAdmin: `${mainRoute}/api/admins/deleteadmin`,
-    adminSelect: `${mainRoute}/api/admins/adminselect`,
 
-    userRetrieve: `${mainRoute}/api/users`,
     userChangePass: `${mainRoute}/api/users/changepass`,
     personalChangePass: `${mainRoute}/api/users/personalchangepass`,
     addUser: `${mainRoute}/api/users/adduser`,
@@ -29,6 +27,8 @@ export const apiRoutes = {
 
     juniorRetrieve: `${mainRoute}/api/juniors`,
     seniorRetrieve: `${mainRoute}/api/seniors`,
+
+    adminSelect: `${mainRoute}/api/applications/adminselect`,
 
     retrieveAnnouncement: `${mainRoute}/api/announcements`,
     retrieveAnnouncementOne: `${mainRoute}/api/announcements/retrieve`,
@@ -44,10 +44,13 @@ export const apiRoutes = {
     addStudent: `${mainRoute}/api/accounts/addstudent`,
 
     projectRetrieve: `${mainRoute}/api/elections`,
-    addProject: `${mainRoute}/api/elections/addproject`,
+    addElection: `${mainRoute}/api/elections/addelection`,
     editProject: `${mainRoute}/api/elections/editproject`,
-    projectInfo: `${mainRoute}/api/elections/projectinfo`,
-    deleteProject: `${mainRoute}/api/elections/deleteproject`,
+    electionInfo: `${mainRoute}/api/elections/electioninfo`,
+    editUpcoming: `${mainRoute}/api/elections/editupcoming`,
+    editOngoing: `${mainRoute}/api/elections/editongoing`,
+    editApplication: `${mainRoute}/api/elections/editapplication`,
+    deleteElection: `${mainRoute}/api/elections/deleteelection`,
 
     requestRetrieve: `${mainRoute}/api/requests`,
     requestorInfo: `${mainRoute}/api/requests/requestorinfo`,

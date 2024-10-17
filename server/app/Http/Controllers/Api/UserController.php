@@ -47,7 +47,7 @@ class UserController extends Controller
 
         if($validator->fails()) {
             return response()->json([
-                'message' => $validator->messages()
+                'message' => $validator->messages()->all()
             ]);
         }
         
@@ -106,7 +106,7 @@ class UserController extends Controller
 
         if($validator->fails()) {
             return response()->json([
-                'message' => $validator->messages()
+                'message' => $validator->messages()->all()
             ]);
         }
         
@@ -196,7 +196,7 @@ class UserController extends Controller
 
         if($validator->fails()) {
             return response()->json([
-                'message' => $validator->messages()
+                'message' => $validator->messages()->all()
             ]); 
         }
 

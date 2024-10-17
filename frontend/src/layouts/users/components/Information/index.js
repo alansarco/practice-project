@@ -91,14 +91,14 @@ function Information({USER, HandleRendering, ReloadTable}) {
               <ProfileInfoCard
                 title="Personal Information"
                 info={{
-                  Firstname: USER.name,
+                  Name: USER.name,
                   Grade: USER.grade == null ? " " : USER.grade,
                   Section: USER.section == null ? " " : USER.section,
                   Track: USER.track == null ? "N/A" : USER.track,
                   Course: USER.course == null ? "N/A" : USER.course,
                   Gender: USER.gender == null ? " " : USER.gender,
-                  Birthday: USER.birthday == null ? " " : USER.birthday,
-                  Mobile: USER.contact == null ? " " : USER.contact,
+                  Birthdate: USER.birthday == null ? " " : USER.birthday,
+                  Mobile_Number: USER.contact == null ? " " : USER.contact,
                   Religion: USER.religion == null ? " " : USER.religion,
                   Modality: USER.modality == null ? " " : USER.modality,
                   Password_Change: USER.password_change == "1" ? "Yes" : "No",

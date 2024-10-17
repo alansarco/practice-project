@@ -29,7 +29,7 @@ class UsersController extends Controller
         ->where('users.account_status', 1)
         ->orderBy('students.name', 'ASC')
         ->orderBy('students.username', 'ASC')
-        ->paginate(5);
+        ->paginate(50);
 
         if($users->count() > 0) {
             return response()->json([
@@ -95,7 +95,7 @@ class UsersController extends Controller
 
         if($validator->fails()) {
             return response()->json([
-                'message' => $validator->messages()
+                'message' => $validator->messages()->all()
             ]);
         }
         else {
@@ -209,7 +209,7 @@ class UsersController extends Controller
 
         if($validator->fails()) {
             return response()->json([
-                'message' => $validator->messages()
+                'message' => $validator->messages()->all()
             ]);
         }
 
