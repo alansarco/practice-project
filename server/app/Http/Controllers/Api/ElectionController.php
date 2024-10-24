@@ -4,11 +4,15 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Models\Admin;
+use App\Models\Candidate;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use App\Models\Poll;
 use App\Models\Position;
+use App\Models\Student;
 use App\Models\User;
+use App\Models\Vote;
+use Carbon\Carbon;
 use Exception;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
@@ -63,8 +67,9 @@ class ElectionController extends Controller
         } 
 
         else {
+            $havepolls = DB::table("polls")->first();
             $existingIDs = DB::table("polls")->pluck('pollid');
-            if ($existingIDs) {
+            if ($havepolls && $existingIDs) {
                 $numbers = [];
                 foreach ($existingIDs as $id) {
                     $parts = explode('-', $id);
@@ -194,33 +199,6 @@ class ElectionController extends Controller
         catch (Exception $e) {
             return response()->json([
                 'message' => $e->getMessage()
-            ]);
-        }
-    }
-
-    public function deleteproject(Request $request) {
-        $election = Poll::where('projectid', $request->projectid)->first();
-        if($election) {
-            try {
-                $delete = Poll::where('projectid', $request->projectid)->delete();
-                if($delete) {
-                    return response()->json([
-                        'status' => 200,
-                        'message' => 'Product deleted successfully!'
-                    ], 200);  
-                } else {
-                    return response()->json([
-                        'message' => 'Something went wrong!'
-                    ]);
-                }
-            } catch (Exception $e) {
-                return response()->json([
-                    'message' => $e->getMessage()
-                ]);
-            }
-        } else {
-            return response()->json([
-                'message' => 'Product not found!'
             ]);
         }
     }
@@ -432,4 +410,561 @@ class ElectionController extends Controller
             ]);
         }
     }
+
+    public function positionselect(Request $request) {
+        
+        $positions = Position::select('positionid', 'pollid', 'position_name')
+                ->where('pollid', $request->pollid)->get();
+
+            if($positions->count() > 0) {
+                return response()->json([
+                    'positions' => $positions,
+                    'message' => 'Positions retrieved!',
+                ]);
+            }   
+            else {
+                return response()->json([
+                    'message' => 'No Positions found!'
+                ]);
+            }
+    }
+
+    public function checkifapplied(Request $request) {
+        $authUser = Auth::user();
+        
+        $application = Candidate::leftJoin('students', 'candidates.candidateid', '=', 'students.username')
+            ->leftJoin('positions', function($join) {
+                $join->on('candidates.positionid', '=', 'positions.positionid')
+                    ->on('candidates.pollid', '=', 'positions.pollid');
+            })
+            ->select('candidates.candidateid', 'candidates.positionid', 'candidates.pollid', 
+                'positions.position_name', 'candidates.party', 'candidates.platform', 'candidates.status'
+            )
+            ->whereNotNull('positions.position_name')
+            ->where('candidates.pollid', $request->info)
+            ->where('candidates.candidateid', $authUser->username)
+            ->first();
+
+        $otherapplication = Candidate::leftJoin('polls', 'candidates.pollid', '=', 'polls.pollid')
+            ->select('candidates.candidateid', 'candidates.positionid', 'candidates.pollid', 
+                'candidates.party', 'candidates.platform', 'candidates.status', 'polls.voting_end'
+            )
+            ->where('polls.pollid', '!=', $request->info)
+            ->where('polls.voting_end','>' , Carbon::today()->toDateString())
+            ->where('candidates.candidateid', $authUser->username)
+            ->where('candidates.status', '!=', 2)
+            ->first();
+
+        if($application || $otherapplication) {
+            return response()->json([
+                'application' => $application,
+                'otherapplication' => $otherapplication,
+                'message' => 'Application Retrieved!',
+            ]);
+        }   
+        else {
+            return response()->json([
+                'application' => $application,
+                'otherapplication' => $otherapplication,
+                'message' => 'No application found!'
+            ]);
+        }
+    }
+
+    public function sumbitapplication(Request $request) {
+        $authUser = Student::select('name', 'username', 'grade')->where('username', Auth::user()->username)->first();
+
+        $validator = Validator::make($request->all(), [
+            'pollid' => 'required',
+            'party' => 'required',
+            'platform' => 'required',
+        ]); 
+
+        if($validator->fails()) {
+            return response()->json([
+                'message' => $validator->messages()->all()
+            ]);
+        } 
+
+        $existingApplication = Candidate::where('pollid', $request->pollid)
+        ->where('positionid', $request->positionid)
+        ->where('party', strtoupper($request->party))  // Check for the same party
+        ->where('status', '!=', 2)  // Exclude rejected application
+        ->first();
+
+        if ($existingApplication) {
+            return response()->json([
+                'message' => 'An application from this party already exists for the selected position!'
+            ]);
+        }
+        
+        $application = Candidate::leftJoin('students', 'candidates.candidateid', '=', 'students.username')
+            ->leftJoin('positions', function($join) {
+                $join->on('candidates.positionid', '=', 'positions.positionid')
+                    ->on('candidates.pollid', '=', 'positions.pollid');
+            })
+            ->select('candidates.candidateid', 'candidates.positionid', 'candidates.pollid', 
+                'positions.position_name', 'candidates.party', 'candidates.platform', 'candidates.status'
+            )
+            ->whereNotNull('positions.position_name')
+            ->where('candidates.pollid', $request->info)
+            ->where('candidates.candidateid', $authUser->username)
+            ->first();
+
+        $otherapplication = Candidate::leftJoin('polls', 'candidates.pollid', '=', 'polls.pollid')
+            ->select('candidates.candidateid', 'candidates.positionid', 'candidates.pollid', 
+                'candidates.party', 'candidates.platform', 'candidates.status', 'polls.voting_end'
+            )
+            ->where('polls.pollid', '!=', $request->info)
+            ->where('polls.voting_end','>' , Carbon::today()->toDateString())
+            ->where('candidates.candidateid', $authUser->username)
+            ->where('candidates.status', '!=', 2)
+            ->where('candidates.party', '!=', strtoupper($request->party))
+            ->first();
+
+        if($application || $otherapplication) {
+            return response()->json([
+                'message' => 'Seems like you have already active application!'
+            ]);
+        }   
+        else {
+            $addCandidate = Candidate::create([
+                'candidateid' => strtoupper($authUser->username),
+                'pollid' => strtoupper($request->pollid),
+                'positionid' => $request->positionid,
+                'candidate_name' => $authUser->name,
+                'party' => strtoupper($request->party),
+                'grade' => strtoupper($authUser->grade),
+                'platform' => $request->platform,
+                'status' => 0,
+                'created_by' => $authUser->name,
+                'updated_by' => $authUser->name
+            ]);
+            if($addCandidate) {
+                return response()->json([
+                    'status' => 200,
+                    'message' => 'Application submitted successfully!'
+                ], 200);
+            }
+            return response()->json([
+                'message' => 'Something went wrong!'
+            ]);
+            
+        }
+    }
+
+    public function deleteapplication(Request $request) {
+        try {
+            $deleteapplication = DB::table('candidates')
+                ->where('pollid', $request->pollid)
+                ->where('candidateid', $request->candidateid)
+                ->where('status', '!=', 1)
+                ->delete();
+                
+            if($deleteapplication) {
+                return response()->json([
+                    'status' => 200,
+                    'message' => 'Your application has been deleted successfully!'
+                ], 200);
+            }   
+            return response()->json([
+                'message' => 'Something went Wrong!'
+            ]);
+
+        } catch (Exception $e) {
+            return response()->json([
+                'message' => $e->getMessage()
+            ]);
+        }
+    }
+
+    public function viewapplications(Request $request) {
+        $applications = Position::select(
+            'positions.positionid',
+            'positions.position_name',
+            DB::raw('IFNULL((
+                SELECT GROUP_CONCAT(
+                    CONCAT(
+                        \'{"candidateid": "\', candidates.candidateid,
+                        \'", "candidate_name": "\', candidates.candidate_name,
+                        \'", "pollid": "\', candidates.pollid,
+                        \'", "positionid": "\', candidates.positionid,
+                        \'", "grade": "\', candidates.grade,
+                        \'", "party": "\', candidates.party,
+                        \'", "platform": "\', candidates.platform,
+                        \'", "status": "\', candidates.status, 
+                        \'"}\'
+                    ) SEPARATOR \',\'
+                )
+                FROM candidates
+                WHERE candidates.positionid = positions.positionid
+                AND candidates.pollid = positions.pollid
+            ), \'[]\') AS candidates')
+        )
+        ->where('positions.pollid', $request->info)
+        ->groupBy('positions.positionid', 'positions.position_name', 'positions.pollid')
+        ->get();
+
+        if($applications) {
+            return response()->json([
+                'applications' => $applications,
+                'message' => 'Application List Retrieved!',
+            ]);
+        }   
+        else {
+            return response()->json([
+                'applications' => $applications,
+                'message' => 'No applications found!'
+            ]);
+        }
+    }
+
+    public function approveapplication(Request $request) {
+        $authUser = Admin::select('name')->where('username', Auth::user()->username)->first();
+        try {
+            $existingApplication = Candidate::where('pollid', $request->pollid)
+                ->where('positionid', $request->positionid)
+                ->where('party', $request->party)  // Check for the same party
+                ->where('status', '!=', 2)  // Exclude rejected application
+                ->where('status', 1)  // Exclude rejected application
+                ->first();
+
+            if ($existingApplication) {
+                return response()->json([
+                    'message' => 'An application from this party already exists for the selected position!'
+                ]);
+            }
+            
+            $application = Candidate::leftJoin('students', 'candidates.candidateid', '=', 'students.username')
+                ->leftJoin('positions', function($join) {
+                    $join->on('candidates.positionid', '=', 'positions.positionid')
+                        ->on('candidates.pollid', '=', 'positions.pollid');
+                })
+                ->select('candidates.candidateid', 'candidates.positionid', 'candidates.pollid', 
+                    'positions.position_name', 'candidates.party', 'candidates.platform', 'candidates.status'
+                )
+                ->whereNotNull('positions.position_name')
+                ->where('candidates.pollid', $request->info)
+                ->where('candidates.candidateid', $authUser->username)
+                ->first();
+
+            $otherapplication = Candidate::leftJoin('polls', 'candidates.pollid', '=', 'polls.pollid')
+                ->select('candidates.candidateid', 'candidates.positionid', 'candidates.pollid', 
+                    'candidates.party', 'candidates.platform', 'candidates.status', 'polls.voting_end'
+                )
+                ->where('polls.pollid', '!=', $request->info)
+                ->where('polls.voting_end','>' , Carbon::today()->toDateString())
+                ->where('candidates.candidateid', $authUser->username)
+                ->where('candidates.status', '!=', 2)
+                ->where('candidates.party', '!=', $request->party)
+                ->first();
+
+            if($application || $otherapplication) {
+                return response()->json([
+                    'message' => 'Seems like you have already active application!'
+                ]);
+            }   
+
+            $update = Candidate::where('pollid', $request->pollid)
+                ->where('candidateid', $request->candidateid)
+                ->where('positionid', $request->positionid)
+                ->update([ 
+                'status' => 1,
+                'updated_by' => $authUser->name,
+            ]);
+
+            Candidate::where('pollid', $request->pollid)
+                ->where('candidateid', '!=', $request->candidateid)
+                ->where('positionid', $request->positionid)
+                ->where('party', $request->party)
+                ->update([ 
+                'status' => 2,
+                'updated_by' => $authUser->name,
+            ]);
+                
+            if($update) {
+                return response()->json([
+                    'status' => 200,
+                    'message' => 'Application has been approved!'
+                ], 200);
+            }   
+            return response()->json([
+                'message' => 'Something went Wrong!'
+            ]);
+
+        } catch (Exception $e) {
+            return response()->json([
+                'message' => $e->getMessage()
+            ]);
+        }
+    }
+
+    public function rejectapplication(Request $request) {
+        $authUser = Admin::select('name')->where('username', Auth::user()->username)->first();
+        try {
+            $update = Candidate::where('pollid', $request->pollid)
+                ->where('candidateid', $request->candidateid)
+                ->where('positionid', $request->positionid)
+                ->update([ 
+                'status' => 2,
+                'updated_by' => $authUser->name,
+            ]);
+                
+            if($update) {
+                return response()->json([
+                    'status' => 200,
+                    'message' => 'Application has been rejected!'
+                ], 200);
+            }   
+            return response()->json([
+                'message' => 'Something went Wrong!'
+            ]);
+
+        } catch (Exception $e) {
+            return response()->json([
+                'message' => $e->getMessage()
+            ]);
+        }
+    }
+
+
+    public function liveresult(Request $request) {
+        try {
+            $liveresult = Candidate::leftJoin('students', 'candidates.candidateid', '=', 'students.username')
+                ->leftJoin('positions', function($join) {
+                    $join->on('candidates.positionid', '=', 'positions.positionid')
+                        ->on('candidates.pollid', '=', 'positions.pollid');
+                })
+                ->select('candidates.candidateid', 'candidates.positionid', 'candidates.pollid', 
+                    'positions.position_name', 'candidates.party', 'candidates.platform', 'candidates.status', 'candidates.votes',
+                    DB::raw("CONCAT(positions.position_name, ': ', candidates.candidateid) as label"),
+                )
+                ->whereNotNull('positions.position_name')
+                ->where('candidates.pollid', $request->info)
+                ->orderBy('candidates.positionid', "ASC")
+                ->orderBy('candidates.votes', "DESC")
+                ->get();
+
+            if($liveresult) {
+                return response()->json([
+                    'status' => 200,
+                    'liveresult' => $liveresult,
+                    'message' => 'Results has been retrieved!'
+                ], 200);
+            }   
+            return response()->json([
+                'message' => 'Something went Wrong!'
+            ]);
+
+        } catch (Exception $e) {
+            return response()->json([
+                'message' => $e->getMessage()
+            ]);
+        }
+    }
+
+    public function archiveresult(Request $request) {
+        try {
+            $grades = Poll::select('participant_grade', DB::raw("YEAR(created_at) AS created_year"))->where('pollid', $request->info)->first();
+
+            if ($grades) {
+                $gradesArray = explode(',', $grades->participant_grade);
+                $totalparticipants = Student::whereIn('grade', $gradesArray)
+                    // ->where('enrolled', 1)
+                    ->where('year_enrolled', '<=', $grades->created_year)
+                    ->count();
+                $participantslist = Student::select('username', 'name', 'grade',
+                    DB::raw("IF(EXISTS(SELECT 1 FROM votes WHERE pollid = '$request->info' AND voterid = students.username),1,0) AS votestatus"),
+                    DB::raw("(SELECT DATE_FORMAT(MAX(created_at), '%M %d, %Y %h:%i %p') FROM votes 
+                            WHERE pollid = '$request->info' AND voterid = students.username) AS vote_date")
+                    )
+                    ->whereIn('grade', $gradesArray)
+                    // ->where('enrolled', 1)
+                    ->where('year_enrolled', '<=', $grades->created_year)
+                    ->orderBy('votestatus', 'DESC')
+                    ->orderBy('vote_date', 'DESC')
+                    ->get();
+            } else {
+                $totalparticipants = 0; // Handle the case where no grades are found
+            }
+
+            $currentvotes = Vote::where('pollid', $request->info)->distinct('voterid')->count();
+
+            $liveresult = Candidate::leftJoin('students', 'candidates.candidateid', '=', 'students.username')
+                ->leftJoin('positions', function($join) {
+                    $join->on('candidates.positionid', '=', 'positions.positionid')
+                        ->on('candidates.pollid', '=', 'positions.pollid');
+                })
+                ->select('candidates.candidateid', 'candidates.positionid', 'candidates.pollid', 
+                    'positions.position_name', 'candidates.party', 'candidates.platform', 'candidates.status', 'candidates.votes',
+                    DB::raw("CONCAT(positions.position_name, ': ', students.name) as label"),
+                )
+                ->whereNotNull('positions.position_name')
+                ->where('candidates.pollid', $request->info)
+                ->orderBy('candidates.positionid', "ASC")
+                ->orderBy('candidates.votes', "DESC")
+                ->get();
+
+            if($liveresult) {
+                return response()->json([
+                    'status' => 200,
+                    'liveresult' => $liveresult,
+                    'currentvotes' => $currentvotes,
+                    'totalparticipants' => $totalparticipants,
+                    'participantslist' => $participantslist,
+                    'message' => 'Results has been retrieved!'
+                ], 200);
+            }   
+            return response()->json([
+                'message' => 'Something went Wrong!'
+            ]);
+
+        } catch (Exception $e) {
+            return response()->json([
+                'message' => $e->getMessage()
+            ]);
+        }
+    }
+
+    public function votecandidates(Request $request) {
+        $authUser = Auth::user();
+
+        $alreadyvote = false;
+        $vote = Vote::where('pollid', $request->info)->where('voterid', $authUser->username)->count();
+
+        if($vote > 0) $alreadyvote = true;
+
+        $grades = Poll::select('participant_grade', DB::raw("YEAR(created_at) AS created_year"))->where('pollid', $request->info)->first();
+
+        if ($grades) {
+            $gradesArray = explode(',', $grades->participant_grade);
+            $totalparticipants = Student::whereIn('grade', $gradesArray)
+                    // ->where('enrolled', 1)
+                    ->where('year_enrolled', '<=', $grades->created_year)
+                    ->count();
+            $participantslist = Student::select('username', 'name', 'grade',
+                DB::raw("IF(EXISTS(SELECT 1 FROM votes WHERE pollid = '$request->info' AND voterid = students.username),1,0) AS votestatus"),
+                DB::raw("(SELECT DATE_FORMAT(MAX(created_at), '%M %d, %Y %h:%i %p') FROM votes 
+                          WHERE pollid = '$request->info' AND voterid = students.username) AS vote_date")
+                )
+                ->whereIn('grade', $gradesArray)
+                // ->where('enrolled', 1)
+                ->where('year_enrolled', '<=', $grades->created_year)
+                ->orderBy('votestatus', 'DESC')
+                ->orderBy('vote_date', 'DESC')
+                ->get();
+        
+
+        } else {
+            $totalparticipants = 0; // Handle the case where no grades are found
+        }
+
+        $currentvotes = Vote::where('pollid', $request->info)->distinct('voterid')->count();
+
+        $applications = Position::select(
+            'positions.positionid',
+            'positions.position_name',
+            DB::raw('IFNULL((
+                SELECT GROUP_CONCAT(
+                    CONCAT(
+                        \'{"candidateid": "\', candidates.candidateid,
+                        \'", "candidate_name": "\', candidates.candidate_name,
+                        \'", "pollid": "\', candidates.pollid,
+                        \'", "positionid": "\', candidates.positionid,
+                        \'", "grade": "\', candidates.grade,
+                        \'", "party": "\', candidates.party,
+                        \'", "platform": "\', candidates.platform,
+                        \'", "status": "\', candidates.status, 
+                        \'"}\'
+                    ) SEPARATOR \',\'
+                )
+                FROM candidates
+                WHERE candidates.positionid = positions.positionid
+                AND candidates.pollid = positions.pollid
+                AND candidates.status = 1
+            ), \'[]\') AS candidates')
+        )
+        ->where('positions.pollid', $request->info)
+        ->groupBy('positions.positionid', 'positions.position_name', 'positions.pollid')
+        ->get();
+
+        if($applications) {
+            return response()->json([
+                'applications' => $applications,
+                'alreadyvote' => $alreadyvote,
+                'currentvotes' => $currentvotes,
+                'totalparticipants' => $totalparticipants,
+                'participantslist' => $participantslist,
+                'message' => 'Vote Candidate List Retrieved!',
+            ]);
+        }   
+        else {
+            return response()->json([
+                'applications' => $applications,
+                'alreadyvote' => $alreadyvote,
+                'currentvotes' => $currentvotes,
+                'totalparticipants' => $totalparticipants,
+                'participantslist' => $participantslist,
+                'message' => 'No candidates found!'
+            ]);
+        }
+    }
+
+
+    public function submitvote(Request $request) {
+        $authUser = Auth::user();
+
+        if(!$request->pollid) {
+            return response()->json([
+                'message' => 'Invalid Election ID!'
+            ]);
+        }
+
+        $alreadyvote = Vote::where('pollid', $request->pollid)->where('voterid', $authUser->username)->count();
+
+        if($alreadyvote > 0) {
+            return response()->json([
+                'message' => 'You already vote!'
+            ]);
+        }
+        $castvote = false;
+        // Loop through each position in positionSelections
+        foreach ($request->positionSelections as $key => $candidateid) {
+            // Remove the word 'position' and retain only the numeric part as the positionid
+            $positionid = str_replace('position', '', $key);
+
+            if($positionid && $candidateid) {
+                // Insert the vote into the database
+                Vote::create([
+                    'voterid' => $authUser->username,
+                    'pollid' => strtoupper($request->pollid),
+                    'positionid' => $positionid,  // Use the numeric part of the key as positionid
+                    'candidateid' => $candidateid,  // Use the value as the candidateid
+                    'created_by' => $authUser->username,
+                    'updated_by' => $authUser->username,
+                ]);
+
+                Candidate::where('pollid', strtoupper($request->pollid))
+                    ->where('positionid', $positionid)
+                    ->where('candidateid', $candidateid)
+                    ->increment('votes');
+                    
+                $castvote = true;
+            }
+            
+        }
+
+        if($castvote) {
+            return response()->json([
+                'status' => 200,
+                'message' => 'Vote submitted successfully!'
+            ], 200);
+        }
+
+
+        return response()->json([
+            'message' => 'Please vote at least one of any candidates!'
+        ]);
+    }
+    
 }

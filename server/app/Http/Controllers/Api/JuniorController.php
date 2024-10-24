@@ -14,9 +14,10 @@ class JuniorController extends Controller
         $filter = $request->filter ?? '';
         $hasSpecificGrade = $request->grade != '' ? 1 : 0;
         $grade = $request->grade ?? 0;
+        $enrolled = $request->enrolled ?? '';
 
         // Call the stored procedure
-        $users = DB::select('CALL GET_JUNIOR_STUDENTS(?, ?, ?)', [$filter, $grade, $hasSpecificGrade]);
+        $users = DB::select('CALL GET_JUNIOR_STUDENTS(?, ?, ?, ?)', [$filter, $grade, $hasSpecificGrade, $enrolled]);
 
         // Convert the results into a collection
         $usersCollection = collect($users);

@@ -43,7 +43,7 @@ export const apiRoutes = {
     accountUpdate: `${mainRoute}/api/accounts/update`,
     addStudent: `${mainRoute}/api/accounts/addstudent`,
 
-    projectRetrieve: `${mainRoute}/api/elections`,
+    //Election
     addElection: `${mainRoute}/api/elections/addelection`,
     editProject: `${mainRoute}/api/elections/editproject`,
     electionInfo: `${mainRoute}/api/elections/electioninfo`,
@@ -51,6 +51,20 @@ export const apiRoutes = {
     editOngoing: `${mainRoute}/api/elections/editongoing`,
     editApplication: `${mainRoute}/api/elections/editapplication`,
     deleteElection: `${mainRoute}/api/elections/deleteelection`,
+    positionSelect: `${mainRoute}/api/elections/positionselect`,
+    checkIfApplied: `${mainRoute}/api/elections/checkifapplied`,
+    sumbitApplication: `${mainRoute}/api/elections/sumbitapplication`,
+    deleteApplication: `${mainRoute}/api/elections/deleteapplication`,
+    viewApplications: `${mainRoute}/api/elections/viewapplications`,
+    approveApplication: `${mainRoute}/api/elections/approveapplication`,
+    rejectApplication: `${mainRoute}/api/elections/rejectapplication`,
+    liveResult: `${mainRoute}/api/elections/liveresult`,
+    archiveResult: `${mainRoute}/api/elections/archiveresult`,
+    voteCandidates: `${mainRoute}/api/elections/votecandidates`,
+    submitVote: `${mainRoute}/api/elections/submitvote`,
+
+    myPages: `${mainRoute}/api/mypages`,
+    myVotes: `${mainRoute}/api/mypages/myvotes`,
 
     requestRetrieve: `${mainRoute}/api/requests`,
     requestorInfo: `${mainRoute}/api/requests/requestorinfo`,

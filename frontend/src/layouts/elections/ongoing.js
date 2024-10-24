@@ -32,6 +32,8 @@ import { passToSuccessLogs, passToErrorLogs } from "components/Api/Gateway";
 import { apiRoutes } from "components/Api/ApiRoutes";
 import { useDashboardData } from 'layouts/dashboard/data/dashboardRedux';
 import ElectionContainer from "layouts/elections/components/ElectionContainer";
+import CandidateList from "layouts/elections/components/CandidateList";
+import ResultContainer from "layouts/elections/components/ResultContainer";
 
 function Ongoing() {
   const currentFileName = "layouts/elections/ongoing.js";
@@ -57,7 +59,8 @@ function Ongoing() {
 
   useEffect(() => {
     if (!loadPolls && polls) {
-      setFetchdata(polls.filter(poll => poll.status === "ongoing" && poll.allowed === "yes"), []);
+      setFetchdata(polls.filter(poll => poll.status === "ongoing"), []);
+      // setFetchdata(polls.filter(poll => poll.status === "ongoing" && poll.allowed === "yes"), []);
     }
   }, [polls, loadPolls]);
 
@@ -87,10 +90,11 @@ function Ongoing() {
       setReload(true);
       axios.get(apiRoutes.pollsRetrieve, { params: { filter }, headers })
         .then(response => {
-            const retrieved = response.data.polls.filter(
-                poll => poll.status === "ongoing" && 
-                poll.allowed === "yes"
-            )
+            // const retrieved = response.data.polls.filter(
+            //     poll => poll.status === "ongoing" && 
+            //     poll.allowed === "yes"
+            // )
+            const retrieved = response.data.polls.filter(poll => poll.status === "ongoing")
             setFetchdata(retrieved);
             passToSuccessLogs(response.data, currentFileName);
             if(retrieved.length < 1) setFetching("No data Found!")        
@@ -113,6 +117,12 @@ function Ongoing() {
         {info && rendering == 2 ? 
             <ElectionContainer FROM="ongoing" authUser={authUser} INFO={info} HandleRendering={HandleRendering} HandleDATA={HandleDATA} /> 
           :
+          rendering == 5 ?
+          <CandidateList FROM="ongoing" authUser={authUser} INFO={info} HandleRendering={HandleRendering} HandleDATA={HandleDATA} />
+        :
+          rendering == 4 ?
+          <ResultContainer FROM="ongoing" authUser={authUser} INFO={info} HandleRendering={HandleRendering} HandleDATA={HandleDATA} />
+        :
         <SoftBox p={2}>
           <SoftBox >   
             <SoftBox className="px-md-4 px-3 py-2" display="flex" justifyContent="space-between" alignItems="center">
@@ -160,7 +170,7 @@ function Ongoing() {
               </Grid>
               <SoftBox className="shadow-none table-container px-md-1 px-3 bg-gray rounded-5" height={tableHeight} minHeight={50}>
                   {fetchdata &&  fetchdata.length > 0 ? 
-                    <Table table="sm" HandleDATA={HandleDATA} HandleRendering={HandleRendering} elections={fetchdata} tablehead={tablehead} /> :
+                    <Table table="sm" authUser={authUser} HandleDATA={HandleDATA} HandleRendering={HandleRendering} elections={fetchdata} tablehead={tablehead} /> :
                     <>
                     <SoftBox className="d-flex" height="100%">
                       <SoftTypography variant="h6" className="m-auto text-secondary">   

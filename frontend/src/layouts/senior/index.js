@@ -14,7 +14,7 @@ import Icon from "@mui/material/Icon";
 import DashboardLayout from "essentials/LayoutContainers/DashboardLayout";
 import DashboardNavbar from "essentials/Navbars"; 
 import Footer from "essentials/Footer";
-import { juniorSelect, trackSelect, courseSelect, seniorSelect} from "components/General/Utils";
+import { juniorSelect, enrolledSelect, trackSelect, courseSelect, seniorSelect} from "components/General/Utils";
 
 // Data
   import { Grid } from "@mui/material";
@@ -61,6 +61,7 @@ function Seniors() {
         grade: "",
         track: "",
         course: "",
+        enrolled: "",
     };
 
     const [formData, setFormData] = useState(initialState);
@@ -190,7 +191,7 @@ function Seniors() {
                                 </option>
                                 ))}
                             </select>
-                            <select className="form-select-sm text-secondary rounded-5 cursor-pointer border span" name="course" value={formData.course} onChange={handleChange} >
+                            <select className="form-select-sm text-secondary rounded-5 me-2 cursor-pointer border span" name="course" value={formData.course} onChange={handleChange} >
                                 <option value="">All Courses</option>
                                 {Array.from(new Set(courseSelect
                                 .map((course) => course.group)
@@ -204,6 +205,14 @@ function Seniors() {
                                     </option>
                                     ))}
                                 </optgroup>
+                                ))}
+                            </select>
+                            <select className="form-select-sm text-secondary rounded-5 cursor-pointer border span" name="enrolled" value={formData.enrolled} onChange={handleChange} >
+                                <option value="">All Status</option>
+                                {enrolledSelect && enrolledSelect.map((status) => (
+                                <option key={status.value} value={status.value}>
+                                        {status.desc}
+                                </option>
                                 ))}
                             </select>
                         </Grid>   

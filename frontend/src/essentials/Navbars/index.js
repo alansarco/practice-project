@@ -82,7 +82,8 @@ function DashboardNavbar(props) {
     render: render
   });
 
-  const notifs = polls.filter(poll => poll.status !== "archive" && poll.allowed === "yes").length;
+  const notifs = polls.filter(poll => poll.status !== "archive").length;
+  // const notifs = polls.filter(poll => poll.status !== "archive" && poll.allowed === "yes").length;
 
   useEffect(() => {
     const updateTimestamps = () => {

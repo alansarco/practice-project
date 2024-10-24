@@ -35,11 +35,12 @@ function Configurator() {
   const sidenavColors = ["primary", "dark", "info", "success", "warning", "error"];
   
   const {polls} = useDashboardData({
-    polls: true, 
+    // polls: true, 
   });
   const navigate = useNavigate(); 
 
-  const notifpolls = polls.filter(poll => poll.status !== "archive" && poll.allowed === "yes");
+  const notifpolls = polls.filter(poll => poll.status !== "archive");
+  // const notifpolls = polls.filter(poll => poll.status !== "archive" && poll.allowed === "yes");
   
   const handleViewRequest = () => {
     // setOpenConfigurator(dispatch, false); 

@@ -15,7 +15,10 @@ class Vote extends Model
 
     protected $fillable = [
         'voterid',
-        'votername', 
-        'candidateid', 
+        'pollid', 
+        'positionid', 
+        'candidateid',  
+        'created_by',  
+        'updated_by',  
     ];
 }

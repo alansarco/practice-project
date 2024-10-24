@@ -16,13 +16,12 @@ import { useState } from "react";
 import FixedLoading from "components/General/FixedLoading"; 
 import { messages } from "components/General/Messages";
 import axios from "axios";  
-import { genderSelect } from "components/General/Utils";
 
 function Information({FROM, POLL, POSITIONS, HandleRendering}) {  
   const [deleteData, setDeleteData] = useState(false);
   const currentFileName = "layouts/elections/components/Information/index.js";
 
-  const {token, role, access} = useStateContext();  
+  const {token, access} = useStateContext();  
   const YOUR_ACCESS_TOKEN = token; 
   const headers = {
     'Authorization': `Bearer ${YOUR_ACCESS_TOKEN}`

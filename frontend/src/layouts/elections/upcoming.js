@@ -26,12 +26,12 @@ import React, { useEffect, useState } from "react";
 import FixedLoading from "components/General/FixedLoading";
 import { useStateContext } from "context/ContextProvider";
 import { Navigate } from "react-router-dom";
-import Add from "layouts/elections/components/Add";
 import axios from "axios";
 import { passToSuccessLogs, passToErrorLogs } from "components/Api/Gateway";
 import { apiRoutes } from "components/Api/ApiRoutes";
 import { useDashboardData } from 'layouts/dashboard/data/dashboardRedux';
 import ElectionContainer from "layouts/elections/components/ElectionContainer";
+import CandidateList from "layouts/elections/components/CandidateList";
 
 function Upcoming() {
   const currentFileName = "layouts/elections/upcoming.js";
@@ -57,7 +57,8 @@ function Upcoming() {
 
   useEffect(() => {
     if (!loadPolls && polls) {
-      setFetchdata(polls.filter(poll => poll.status === "upcoming" && poll.allowed === "yes"), []);
+      setFetchdata(polls.filter(poll => poll.status === "upcoming"), []);
+      // setFetchdata(polls.filter(poll => poll.status === "upcoming" && poll.allowed === "yes"), []);
     }
   }, [polls, loadPolls]);
 
@@ -87,10 +88,11 @@ function Upcoming() {
       setReload(true);
       axios.get(apiRoutes.pollsRetrieve, { params: { filter }, headers })
         .then(response => {
-            const retrieved = response.data.polls.filter(
-                poll => poll.status === "upcoming" && 
-                poll.allowed === "yes"
-            )
+            // const retrieved = response.data.polls.filter(
+            //     poll => poll.status === "upcoming" && 
+            //     poll.allowed === "yes"
+            // )
+            const retrieved = response.data.polls.filter(poll => poll.status === "upcoming")
             setFetchdata(retrieved);
             passToSuccessLogs(response.data, currentFileName);
             if(retrieved.length < 1) setFetching("No data Found!")        
@@ -113,6 +115,9 @@ function Upcoming() {
         <DashboardNavbar RENDERNAV={rendering} />
         {info && rendering == 2 ? 
             <ElectionContainer FROM="upcoming" authUser={authUser} INFO={info} HandleRendering={HandleRendering} HandleDATA={HandleDATA} /> 
+        :
+          rendering == 5 ?
+          <CandidateList FROM="upcoming" authUser={authUser} INFO={info} HandleRendering={HandleRendering} HandleDATA={HandleDATA} />
         :
         <SoftBox p={2}>
           <SoftBox >   

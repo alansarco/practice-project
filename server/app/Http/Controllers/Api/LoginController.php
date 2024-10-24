@@ -41,35 +41,42 @@ class LoginController extends Controller {
             // If student is not yet registered and already exist in students table,
             // We will add them in users table but propt them to set permanent password
             if (!$verifyUser && $request->role == "USER") {
-                $verifyStudent = Student::select('username', 'contact')
+                $verifyStudent = Student::select('username', 'contact', 'enrolled')
                     ->whereNull('deleted_at')
                     ->where('username', $request->username)
                     ->where('contact', $request->password)
                     ->first();
 
                 if($verifyStudent) {
-                    $add = User::create([
-                        'username' => $verifyStudent->username,
-                        'password' => $verifyStudent->contact,
-                        'role' => 'USER',
-                        'access_level' => 5,
-                        'account_status' => '0',
-                        'password_change' => '0',
-                        'created_by' => $request->username
-                    ]);
-                    if($add) {
-                        return response()->json([
-                            'status' => 200,
-                            'user' => $verifyStudent->username,
-                            'role' => "USER",
-                            'access' => 5,
-                            'changepass' => true,
-                            'message' => "Please set your permanent password!"
-                        ], 200);
+                    if($verifyStudent->enrolled == 1) {
+                        $add = User::create([
+                            'username' => $verifyStudent->username,
+                            'password' => $verifyStudent->contact,
+                            'role' => 'USER',
+                            'access_level' => 5,
+                            'account_status' => '0',
+                            'password_change' => '0',
+                            'created_by' => $request->username
+                        ]);
+                        if($add) {
+                            return response()->json([
+                                'status' => 200,
+                                'user' => $verifyStudent->username,
+                                'role' => "USER",
+                                'access' => 5,
+                                'changepass' => true,
+                                'message' => "Please set your permanent password!"
+                            ], 200);
+                        }
+                        else {
+                            return response()->json([
+                                'message' => 'Something went wrong!'
+                            ]);
+                        }
                     }
                     else {
                         return response()->json([
-                            'message' => 'Something went wrong!'
+                            'message' => 'It seems that you are not currently enrolled this year!'
                         ]);
                     }
                 }
@@ -86,7 +93,18 @@ class LoginController extends Controller {
             return response()->json([
                 'message' => "Invalid admin credentials!"
             ]);
-        }                  
+        }               
+        
+        if($verifyUser && $verifyUser->role == "USER") {
+            $checkifenrolled = Student::where('username', $request->username)->where('enrolled', '!=', 1)->first();
+            if($checkifenrolled) {
+                return response()->json([
+                    'message' => 'It seems that you are not currently enrolled this year!'  
+                ]);
+            }
+        }
+        
+        
             
         if ($verifyUser && $verifyUser->password_change == 0 && $verifyUser->role == "USER") {
             return response()->json([

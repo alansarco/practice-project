@@ -102,6 +102,8 @@ function Information({USER, HandleRendering, ReloadTable}) {
                   Religion: USER.religion == null ? " " : USER.religion,
                   Modality: USER.modality == null ? " " : USER.modality,
                   Password_Change: USER.password_change == "1" ? "Yes" : "No",
+                  Enrolled: USER.enrolled == "1" ? "Yes" : "No",
+                  Year_Enrolled: USER.year_enrolled == null ? " " : USER.year_enrolled,
                   Date_Added: USER.date_added,
                   Last_Online: USER.last_online,
                 }}

@@ -5,14 +5,13 @@ import Users from "layouts/users";
 import Ongoing from "layouts/elections/ongoing";
 import Upcoming from "layouts/elections/upcoming";
 import Archive from "layouts/elections/archive";
-import Requests from "layouts/requests";
-import History from "layouts/history";
 import Blank from "layouts/blank";
 import Juniors from "layouts/junior";
 import Announcements from "layouts/announcements";
 import Seniors from "layouts/senior";
 import Profile from "layouts/profile";
 import Application from "layouts/elections/application";
+import MyApplications from "layouts/myapplications";
 
 import SignIn from "layouts/authentication/sign-in";
 import AdminSignIn from "layouts/authentication/sign-in/admin";
@@ -31,6 +30,8 @@ import CampaignTwoToneIcon from '@mui/icons-material/CampaignTwoTone';
 import PollTwoToneIcon from '@mui/icons-material/PollTwoTone';
 import InfoTwoToneIcon from '@mui/icons-material/InfoTwoTone';
 import CalendarMonthTwoToneIcon from '@mui/icons-material/CalendarMonthTwoTone';
+import DescriptionTwoToneIcon from '@mui/icons-material/DescriptionTwoTone';
+import MyVotes from "layouts/myvotes";
 
 // Accept access as a parameter
 const routes = (access) => [
@@ -121,16 +122,26 @@ const routes = (access) => [
     component: <Archive />,
     noCollapse: true,
   },
-  { type: "title", title: "Other Pages", key: "other-pages" },
-  {
+  access == 5 && { type: "title", title: "My Pages", key: "my-pages" },
+  access == 5 && {
     type: "collapse",
-    name: "Candidates",
-    key: "candidates",
-    route: "/candidates",
-    icon: <GroupsTwoToneIcon size="12px" />,
-    component: <Blank />,
+    name: "My Applications",
+    key: "my-applications",
+    route: "/my-applications",
+    icon: <DescriptionTwoToneIcon size="12px" />,
+    component: <MyApplications />,
     noCollapse: true,
   },
+  access == 5 && {
+    type: "collapse",
+    name: "My Votes",
+    key: "my-votes",
+    route: "/my-votes",
+    icon: <PollTwoToneIcon size="12px" />,
+    component: <MyVotes />,
+    noCollapse: true,
+  },
+  { type: "title", title: "Other Pages", key: "other-pages" },
   {
     type: "collapse",
     name: "Announcements",
@@ -138,15 +149,6 @@ const routes = (access) => [
     route: "/announcements",
     icon: <CampaignTwoToneIcon size="12px" />,
     component: <Announcements />,
-    noCollapse: true,
-  },
-  {
-    type: "collapse",
-    name: "My Votes",
-    key: "my-votes",
-    route: "/my-votes",
-    icon: <PollTwoToneIcon size="12px" />,
-    component: <Blank />,
     noCollapse: true,
   },
   {

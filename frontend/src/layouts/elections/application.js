@@ -32,6 +32,8 @@ import { passToSuccessLogs, passToErrorLogs } from "components/Api/Gateway";
 import { apiRoutes } from "components/Api/ApiRoutes";
 import { useDashboardData } from 'layouts/dashboard/data/dashboardRedux';
 import ElectionContainer from "layouts/elections/components/ElectionContainer";
+import ApplicationForm from "layouts/elections/components/ApplicationForm";
+import ApplicationList from "layouts/elections/components/ApplicationList";
 
 function Application() {
   const currentFileName = "layouts/elections/application.js";
@@ -57,7 +59,8 @@ function Application() {
 
   useEffect(() => {
     if (!loadPolls && polls) {
-      setFetchdata(polls.filter(poll => poll.status === "application" && poll.allowed === "yes"), []);
+      setFetchdata(polls.filter(poll => poll.status === "application"), []);
+      // setFetchdata(polls.filter(poll => poll.status === "application" && poll.allowed === "yes"), []);
     }
   }, [polls, loadPolls]);
 
@@ -87,10 +90,11 @@ function Application() {
       setReload(true);
       axios.get(apiRoutes.pollsRetrieve, { params: { filter }, headers })
         .then(response => {
-            const retrieved = response.data.polls.filter(
-                poll => poll.status === "application" && 
-                poll.allowed === "yes"
-            )
+            // const retrieved = response.data.polls.filter(
+            //     poll => poll.status === "application" && 
+            //     poll.allowed === "yes"
+            // )
+            const retrieved = response.data.polls.filter(poll => poll.status === "application")
             setFetchdata(retrieved);
             passToSuccessLogs(response.data, currentFileName);
             if(retrieved.length < 1) setFetching("No data Found!")        
@@ -115,6 +119,12 @@ function Application() {
           :
           rendering == 3 ?
             <Add HandleRendering={HandleRendering} />
+        :
+          rendering == 4 ?
+            <ApplicationForm FROM="application" authUser={authUser} INFO={info} HandleRendering={HandleRendering} HandleDATA={HandleDATA} />
+        :
+          rendering == 5 ?
+            <ApplicationList FROM="application" authUser={authUser} INFO={info} HandleRendering={HandleRendering} HandleDATA={HandleDATA} />
         :
         <SoftBox p={2}>
           <SoftBox >   

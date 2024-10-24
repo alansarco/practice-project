@@ -326,12 +326,12 @@ function Edit({FROM, POLL, POSITIONS, HandleRendering, UpdateLoading}) {
                                           <Grid item xs={12} md={6} px={1}>
                                                 <SoftTypography variant="button" className="me-1">Qualification/s:</SoftTypography>
                                                 <SoftTypography variant="span" className="text-xxs text-danger fst-italic">*</SoftTypography> 
-                                                <textarea name="qualifications" value={formData.qualifications} onChange={handleChange} className="form-control text-secondary" rows="4"></textarea>
+                                                <textarea name="qualifications" value={formData.qualifications} onChange={handleChange} className="form-control text-secondary text-xs" rows="4"></textarea>
                                           </Grid> 
                                           <Grid item xs={12} md={6} px={1}>
                                                 <SoftTypography variant="button" className="me-1">Requirement/s:</SoftTypography>
                                                 <SoftTypography variant="span" className="text-xxs text-danger fst-italic">*</SoftTypography>
-                                                <textarea name="requirements" value={formData.requirements} onChange={handleChange} className="form-control text-secondary" rows="4"></textarea> 
+                                                <textarea name="requirements" value={formData.requirements} onChange={handleChange} className="form-control text-secondary text-xs" rows="4"></textarea> 
                                           </Grid> 
                                     </Grid> 
                                     <SoftTypography mt={2} fontWeight="medium" textTransform="capitalize" color="success" textGradient>

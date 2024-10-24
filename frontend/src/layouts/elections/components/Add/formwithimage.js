@@ -137,7 +137,7 @@ function FormImage({HandleRendering}) {
                                           </Grid>
                                           <Grid item xs={12} md={12} px={1}>
                                                 <SoftTypography variant="button" className="me-1">Description:</SoftTypography>
-                                                <textarea name="description" value={formData.description} onChange={handleChange} className="form-control" rows="4"></textarea>
+                                                <textarea name="description" value={formData.description} onChange={handleChange} className="form-control text-xs" rows="4"></textarea>
                                           </Grid>
                                     </Grid>
                                     <Grid container spacing={0} alignItems="center">

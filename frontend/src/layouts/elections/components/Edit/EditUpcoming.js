@@ -3,16 +3,14 @@ import { Checkbox, Grid} from "@mui/material";
 import FixedLoading from "components/General/FixedLoading";
 import SoftBox from "components/SoftBox";
 import SoftButton from "components/SoftButton";
-import SoftInput from "components/SoftInput";
 import SoftTypography from "components/SoftTypography";
-import { participantSelect, currentDate } from "components/General/Utils";
 import { toast } from "react-toastify";
 import { messages } from "components/General/Messages";
 import { useStateContext } from "context/ContextProvider";
 import { passToErrorLogs, passToSuccessLogs  } from "components/Api/Gateway";
 import axios from "axios";
 import { apiRoutes } from "components/Api/ApiRoutes";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 
 function EditUpcoming({FROM, POLL, POSITIONS, HandleRendering, UpdateLoading}) {
       const currentFileName = "layouts/admins/components/Add/index.js";

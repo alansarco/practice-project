@@ -91,7 +91,7 @@ function Announcements() {
       setReload(false);
     })
     .catch(error => {
-      passToErrorLogs(`Admin Data not Fetched!  ${error}`, currentFileName);
+      passToErrorLogs(`Calendars not Fetched!  ${error}`, currentFileName);
       setReload(false);
     });
   }
@@ -106,7 +106,7 @@ function Announcements() {
           setReload(false);
         })
         .catch(error => {
-          passToErrorLogs(`Admin Data not Fetched!  ${error}`, currentFileName);
+          passToErrorLogs(`Calendars not Fetched!  ${error}`, currentFileName);
           setReload(false);
         });
         setSearchTriggered(false);
@@ -175,8 +175,8 @@ function Announcements() {
                 </SoftBox>
                 <SoftBox display="flex">
                     {access >= 10 && role === "ADMIN" && 
-                    <SoftButton onClick={() => setRendering(3)} className="ms-2 px-3 d-flex" variant="gradient" color="success" size="medium" iconOnly>
-                    <Icon>add</Icon>
+                    <SoftButton onClick={() => setRendering(3)} className="ms-2 py-0 px-3 d-flex rounded-pill" variant="gradient" color="success" size="small" >
+                      <Icon>add</Icon> Add Election
                     </SoftButton>
                     }
                     

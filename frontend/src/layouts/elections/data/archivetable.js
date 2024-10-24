@@ -12,15 +12,19 @@ import typography from "assets/theme/base/typography";
 import borders from "assets/theme/base/borders";
 import SoftButton from "components/SoftButton";
 import LeaderboardTwoToneIcon from '@mui/icons-material/LeaderboardTwoTone';
-
+import PeopleAltTwoToneIcon from '@mui/icons-material/PeopleAltTwoTone';
 function Table({ elections, tablehead, HandleDATA, HandleRendering }) {
   const { light, secondary } = colors;
   const { size, fontWeightBold } = typography;
   const { borderWidth } = borders;
 
   const handleViewResult = (pollid) => {
-    // HandleDATA(pollid);
-    // HandleRendering(2);
+    HandleDATA(pollid);
+    HandleRendering(4);
+  }
+  const handleViewApplication = (pollid) => {
+    HandleDATA(pollid);
+    HandleRendering(5);
   }
 
   const handleViewPoll = (pollid) => {
@@ -127,6 +131,9 @@ function Table({ elections, tablehead, HandleDATA, HandleRendering }) {
             borderBottom={`${borderWidth[1]} solid ${light.main}`}
             borderTop={`${borderWidth[1]} solid ${light.main}`}
           >
+            <SoftButton onClick={() => handleViewApplication(row.pollid)} className="me-2 text-xxxs px-3 rounded-pill" size="small" variant="gradient" color="info">
+                <PeopleAltTwoToneIcon className="me-1 p-0"/> Candidates
+            </SoftButton>
             <SoftButton onClick={() => handleViewResult(row.pollid)} className="text-xxxs px-3 rounded-pill" size="small" variant="gradient" color="dark">
                 <LeaderboardTwoToneIcon className="me-1 p-0"/> Results
             </SoftButton>

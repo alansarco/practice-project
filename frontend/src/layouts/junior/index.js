@@ -34,6 +34,7 @@ import { apiRoutes } from "components/Api/ApiRoutes";
 import { passToErrorLogs } from "components/Api/Gateway";
 import { passToSuccessLogs } from "components/Api/Gateway";
 import CustomPagination from "components/General/CustomPagination";
+import { enrolledSelect } from "components/General/Utils";
 
 function Juniors() {
     const currentFileName = "layouts/juniors/index.js";
@@ -58,6 +59,7 @@ function Juniors() {
 
     const initialState = {
         filter: "",
+        enrolled: "",
         grade: "",
     };
 
@@ -172,11 +174,19 @@ function Juniors() {
                     <Grid container spacing={1} py={1} pb={2}>  
                         <Grid item xs={12} md={8} display="">
                             <SoftTypography variant="button" className="me-2">Filter Result:</SoftTypography>
-                            <select className="form-select-sm text-secondary rounded-5 cursor-pointer border span" name="grade" value={formData.grade} onChange={handleChange} >
+                            <select className="form-select-sm text-secondary rounded-5 me-2 cursor-pointer border span" name="grade" value={formData.grade} onChange={handleChange} >
                                 <option value="">All JHS</option>
                                 {juniorSelect && juniorSelect.map((grade) => (
                                 <option key={grade.value} value={grade.value}>
                                         {grade.desc}
+                                </option>
+                                ))}
+                            </select>
+                            <select className="form-select-sm text-secondary rounded-5 cursor-pointer border span" name="enrolled" value={formData.enrolled} onChange={handleChange} >
+                                <option value="">All Status</option>
+                                {enrolledSelect && enrolledSelect.map((status) => (
+                                <option key={status.value} value={status.value}>
+                                        {status.desc}
                                 </option>
                                 ))}
                             </select>

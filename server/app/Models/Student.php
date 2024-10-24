@@ -33,6 +33,8 @@ class Student extends Model
         'guardian', 
         'guardian_rel', 
         'contact_rel', 
+        'enrolled', 
+        'year_enrolled', 
         'modality', 
         'created_by',
         'updated_by'

@@ -22,12 +22,12 @@ class DashboardController extends Controller
     {
         $data1 = User::where('role', "ADMIN")->where('account_status', 1)->count();
         $data2 = User::where('role', "USER")->where('account_status', 1)->count();
-        $data7 = Student::where('grade', 7)->count();
-        $data8 = Student::where('grade', 8)->count();
-        $data9 = Student::where('grade', 9)->count();
-        $data10 = Student::where('grade', 10)->count();
-        $data11 = Student::where('grade', 11)->count();
-        $data12 = Student::where('grade', 12)->count();
+        $data7 = Student::where('grade', 7)->where('enrolled', 1)->count();
+        $data8 = Student::where('grade', 8)->where('enrolled', 1)->count();
+        $data9 = Student::where('grade', 9)->where('enrolled', 1)->count();
+        $data10 = Student::where('grade', 10)->where('enrolled', 1)->count();
+        $data11 = Student::where('grade', 11)->where('enrolled', 1)->count();
+        $data12 = Student::where('grade', 12)->where('enrolled', 1)->count();
         $upcomingevents = Calendar::select('*',
             DB::raw("CONCAT(DATE_FORMAT(event_date, '%M %d, %Y'), ' ', DATE_FORMAT(time, '%h:%i %p')) as event_datetime")
             )

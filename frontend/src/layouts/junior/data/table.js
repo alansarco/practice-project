@@ -99,6 +99,27 @@ function Table({ users, tablehead, HandleUSER, HandleRendering }) {
           >
             {row.contact}    
           </SoftBox>   
+          <SoftBox
+            className="px-2"
+            component="td"
+            textAlign="center"
+            fontSize={size.xs}
+            color="secondary" 
+            borderBottom={`${borderWidth[1]} solid ${light.main}`}
+            borderTop={`${borderWidth[1]} solid ${light.main}`}
+          >
+            <SoftTypography color={row.enrolled == "1" ? "info" : "primary"} sx={{ fontSize: "1rem" }}>{row.enrolled == "1" ? <CheckIcon /> : "x"}</SoftTypography>
+          </SoftBox>   
+          <SoftBox
+            className="px-2"
+            component="td"
+            fontSize={size.xs}
+            color="secondary" 
+            borderBottom={`${borderWidth[1]} solid ${light.main}`}
+            borderTop={`${borderWidth[1]} solid ${light.main}`}
+          >
+            {row.year_enrolled}    
+          </SoftBox>   
         </TableRow>
     )});
 

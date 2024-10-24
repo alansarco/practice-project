@@ -10,6 +10,7 @@ use App\Http\Controllers\Api\UserController;
 use App\Http\Controllers\Api\ElectionController;
 use App\Http\Controllers\Api\SignupController;
 use App\Http\Controllers\Api\JuniorController;
+use App\Http\Controllers\Api\MyPageController;
 use App\Http\Controllers\Api\SeniorController;
 use Illuminate\Support\Facades\Route;
 
@@ -45,7 +46,6 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::post('update', [AdminController::class, 'update']);
         Route::post('addadmin', [AdminController::class, 'addadmin']);
         Route::get('deleteadmin', [AdminController::class, 'deleteadmin']);
-        Route::get('adminselect', [AdminController::class, 'adminselect']);
     });
 
     Route::prefix('applications')->group(function () {
@@ -99,6 +99,24 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::post('editupcoming', [ElectionController::class, 'editupcoming']);
         Route::post('editongoing', [ElectionController::class, 'editongoing']);
         Route::post('editapplication', [ElectionController::class, 'editapplication']);
+        Route::get('positionselect', [ElectionController::class, 'positionselect']);
+        Route::get('checkifapplied', [ElectionController::class, 'checkifapplied']);
+        Route::post('sumbitapplication', [ElectionController::class, 'sumbitapplication']);
+        Route::get('deleteapplication', [ElectionController::class, 'deleteapplication']);
+        Route::get('viewapplications', [ElectionController::class, 'viewapplications']);
+        Route::get('approveapplication', [ElectionController::class, 'approveapplication']);
+        Route::get('rejectapplication', [ElectionController::class, 'rejectapplication']);
+        Route::get('liveresult', [ElectionController::class, 'liveresult']);
+        Route::get('archiveresult', [ElectionController::class, 'archiveresult']);
+        Route::get('votecandidates', [ElectionController::class, 'votecandidates']);
+        Route::post('submitvote', [ElectionController::class, 'submitvote']);
+        Route::post('myvotes', [ElectionController::class, 'myvotes']);
+    });
+
+    Route::prefix('mypages')->group(function () {
+        Route::get('/', [MyPageController::class, 'index']);
+        Route::get('myvotes', [MyPageController::class, 'myvotes']);
+
     });
 
 

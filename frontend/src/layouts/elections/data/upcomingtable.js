@@ -18,9 +18,9 @@ function Table({ elections, tablehead, HandleDATA, HandleRendering }) {
   const { size, fontWeightBold } = typography;
   const { borderWidth } = borders;
 
-  const handleViewResult = (pollid) => {
-    // HandleDATA(pollid);
-    // HandleRendering(2);
+  const handleViewApplication = (pollid) => {
+    HandleDATA(pollid);
+    HandleRendering(5);
   }
 
   const handleViewPoll = (pollid) => {
@@ -127,7 +127,7 @@ function Table({ elections, tablehead, HandleDATA, HandleRendering }) {
             borderBottom={`${borderWidth[1]} solid ${light.main}`}
             borderTop={`${borderWidth[1]} solid ${light.main}`}
           >
-            <SoftButton onClick={() => handleViewResult(row.pollid)} className="text-xxxs px-3 rounded-pill" size="small" variant="gradient" color="info">
+            <SoftButton onClick={() => handleViewApplication(row.pollid)} className="text-xxxs px-3 rounded-pill" size="small" variant="gradient" color="info">
                 <PeopleAltTwoToneIcon className="me-1 p-0"/> Candidates
             </SoftButton>
           </SoftBox>  

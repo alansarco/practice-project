@@ -91,6 +91,8 @@ class UsersController extends Controller
             'barangay' => 'required',
             'municipality' => 'required',
             'province' => 'required', 
+            'enrolled' => 'required', 
+            'year_enrolled' => 'required', 
         ]);
 
         if($validator->fails()) {
@@ -123,6 +125,8 @@ class UsersController extends Controller
                         'guardian' => strtoupper($request->guardian),   
                         'guardian_rel' => strtoupper($request->guardian_rel),   
                         'contact_rel' => $request->contact_rel,
+                        'enrolled' => $request->enrolled,
+                        'year_enrolled' => $request->year_enrolled,
                         'updated_by' => Auth::user()->username,
                     ]);
 
@@ -205,6 +209,8 @@ class UsersController extends Controller
             'barangay' => 'required',
             'municipality' => 'required',
             'province' => 'required', 
+            'enrolled' => 'required', 
+            'year_enrolled' => 'required', 
         ]);
 
         if($validator->fails()) {
@@ -238,6 +244,8 @@ class UsersController extends Controller
                     'guardian' => strtoupper($request->guardian),   
                     'guardian_rel' => strtoupper($request->guardian_rel),   
                     'contact_rel' => $request->contact_rel,
+                    'enrolled' => $request->enrolled,
+                    'year_enrolled' => $request->year_enrolled,
                     'created_by' => Auth::user()->username,
                 ]);
 

@@ -12,15 +12,22 @@ import typography from "assets/theme/base/typography";
 import borders from "assets/theme/base/borders";
 import SoftButton from "components/SoftButton";
 import RadioButtonCheckedTwoToneIcon from '@mui/icons-material/RadioButtonCheckedTwoTone';
+import PeopleAltTwoToneIcon from '@mui/icons-material/PeopleAltTwoTone';
+import { useStateContext } from "context/ContextProvider";
 
-function Table({ elections, tablehead, HandleDATA, HandleRendering }) {
+function Table({ authUser, elections, tablehead, HandleDATA, HandleRendering }) {
+  const {access, role} = useStateContext();
   const { light, secondary } = colors;
   const { size, fontWeightBold } = typography;
   const { borderWidth } = borders;
 
   const handleViewResult = (pollid) => {
-    // HandleDATA(pollid);
-    // HandleRendering(2);
+    HandleDATA(pollid);
+    HandleRendering(4);
+  }
+  const handleViewApplication = (pollid) => {
+    HandleDATA(pollid);
+    HandleRendering(5);
   }
 
   const handleViewPoll = (pollid) => {
@@ -127,9 +134,14 @@ function Table({ elections, tablehead, HandleDATA, HandleRendering }) {
             borderBottom={`${borderWidth[1]} solid ${light.main}`}
             borderTop={`${borderWidth[1]} solid ${light.main}`}
           >
-            <SoftButton onClick={() => handleViewResult(row.pollid)} className="text-xxxs px-3 rounded-pill" size="small" variant="gradient" color="primary">
+            <SoftButton onClick={() => handleViewApplication(row.pollid)} className="text-xxxs px-3 rounded-pill" size="small" variant="gradient" color="info">
+                <PeopleAltTwoToneIcon className="me-1 p-0"/> Candidates
+            </SoftButton>
+            {(access == 999 || access == 5 || authUser.username === row.admin_id) && row.allowed === "yes" &&
+            <SoftButton onClick={() => handleViewResult(row.pollid)} className="ms-2 text-xxxs px-3 rounded-pill" size="small" variant="gradient" color="primary">
                 <RadioButtonCheckedTwoToneIcon className="me-1 p-0"/> Live Results
             </SoftButton>
+            }            
           </SoftBox>  
         </TableRow>
     )});

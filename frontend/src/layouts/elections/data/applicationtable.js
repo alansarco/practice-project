@@ -21,9 +21,9 @@ function Table({ authUser, elections, tablehead, HandleDATA, HandleRendering }) 
   const { size, fontWeightBold } = typography;
   const { borderWidth } = borders;
 
-  const handleViewResult = (pollid) => {
-    // HandleDATA(pollid);
-    // HandleRendering(2);
+  const handleViewApplication = (pollid) => {
+    HandleDATA(pollid);
+    HandleRendering(5);
   }
 
   const handleViewPoll = (pollid) => {
@@ -33,7 +33,7 @@ function Table({ authUser, elections, tablehead, HandleDATA, HandleRendering }) 
 
   const handleSubmitApply = (pollid) => {
     HandleDATA(pollid);
-    HandleRendering(2);
+    HandleRendering(4);
   }
 
   const renderColumns = tablehead.map((head , key) => {
@@ -145,13 +145,13 @@ function Table({ authUser, elections, tablehead, HandleDATA, HandleRendering }) 
             borderBottom={`${borderWidth[1]} solid ${light.main}`}
             borderTop={`${borderWidth[1]} solid ${light.main}`}
           >
-            {access == 5 || authUser.username === row.admin_id ?
-            <SoftButton onClick={() => handleViewResult(row.pollid)} className="text-xxxs px-3 rounded-pill" size="small" variant="gradient" color="warning"
+            {(access == 999 || authUser.username === row.admin_id) && row.allowed === "yes"  ?
+            <SoftButton onClick={() => handleViewApplication(row.pollid)} className="text-xxxs px-3 rounded-pill" size="small" variant="gradient" color="warning"
               disabled = {currentDate < row.application_start}
             >
                 <DescriptionTwoToneIcon className="me-1 p-0"/> View Applications
             </SoftButton>
-            : access != 10 &&
+            : access == 5 && row.allowed === "yes" &&
               <SoftButton onClick={() => handleSubmitApply(row.pollid)} className="text-xxxs px-3 rounded-pill" size="small" variant="gradient" color="warning"
               disabled = {currentDate < row.application_start}
             >

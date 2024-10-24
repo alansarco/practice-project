@@ -32,6 +32,8 @@ import { passToSuccessLogs, passToErrorLogs } from "components/Api/Gateway";
 import { apiRoutes } from "components/Api/ApiRoutes";
 import { useDashboardData } from 'layouts/dashboard/data/dashboardRedux';
 import ElectionContainer from "layouts/elections/components/ElectionContainer";
+import CandidateList from "layouts/elections/components/CandidateList";
+import ArchiveContainer from "layouts/elections/components/ArchiveContainer";
 
 function Archive() {
   const currentFileName = "layouts/elections/archive.js";
@@ -57,7 +59,8 @@ function Archive() {
 
   useEffect(() => {
     if (!loadPolls && polls) {
-      setFetchdata(polls.filter(poll => poll.status === "archive" && poll.allowed === "yes"), []);
+      setFetchdata(polls.filter(poll => poll.status === "archive"), []);
+      // setFetchdata(polls.filter(poll => poll.status === "archive" && poll.allowed === "yes"), []);
     }
   }, [polls, loadPolls]);
 
@@ -87,10 +90,11 @@ function Archive() {
       setReload(true);
       axios.get(apiRoutes.pollsRetrieve, { params: { filter }, headers })
         .then(response => {
-            const retrieved = response.data.polls.filter(
-                poll => poll.status === "archive" && 
-                poll.allowed === "yes"
-            )
+            // const retrieved = response.data.polls.filter(
+            //     poll => poll.status === "archive" && 
+            //     poll.allowed === "yes"
+            // )
+            const retrieved = response.data.polls.filter(poll => poll.status === "archive")
             setFetchdata(retrieved);
             passToSuccessLogs(response.data, currentFileName);
             if(retrieved.length < 1) setFetching("No data Found!")        
@@ -113,6 +117,12 @@ function Archive() {
         <DashboardNavbar RENDERNAV={rendering} />
         {info && rendering == 2 ? 
             <ElectionContainer FROM="archive" authUser={authUser} INFO={info} HandleRendering={HandleRendering} HandleDATA={HandleDATA} /> 
+        :
+        rendering == 5 ?
+          <CandidateList FROM="ongoing" authUser={authUser} INFO={info} HandleRendering={HandleRendering} HandleDATA={HandleDATA} />
+        :
+          rendering == 4 ?
+          <ArchiveContainer FROM="ongoing" authUser={authUser} INFO={info} HandleRendering={HandleRendering} HandleDATA={HandleDATA} />
         :
         <SoftBox p={2}>
           <SoftBox >   

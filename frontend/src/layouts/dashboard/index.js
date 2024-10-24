@@ -35,16 +35,16 @@ function Dashboard() {
   const { 
     authUser,
     otherStats , loadOtherStats,
-    polls, loadPolls,
+    // polls, loadPolls,
   } = useDashboardData({
     authUser: true, 
     otherStats: true, 
-    polls: true, 
+    // polls: true, 
   });  
   
   // Extract "polls" and "sale_count" into separate arrays
-  const sale_label = polls.map(data => data.product_name);
-  const sale_data = polls.map(data => data.product_sale);
+  // const sale_label = polls.map(data => data.product_name);
+  // const sale_data = polls.map(data => data.product_sale);
 
 
   return (
@@ -104,7 +104,7 @@ function Dashboard() {
                     />  
                   </Grid>
                 </Grid>
-                <SoftTypography mt={3} mb={1} fontWeight="bold" color="success" textGradient fontSize="1rem">Poll Charts</SoftTypography>
+                {/* <SoftTypography mt={3} mb={1} fontWeight="bold" color="success" textGradient fontSize="1rem">Poll Charts</SoftTypography>
                 <Grid container spacing={3}>
                   <Grid item xs={12} sm={12} xl={12}>
                     <VerticalBarChart
@@ -121,7 +121,7 @@ function Dashboard() {
                       }}
                     />  
                   </Grid>
-                </Grid>
+                </Grid> */}
               </Grid>
               <Grid item xs={12} md={5} xl={4}>
               <TimelineList title="Events and Announcements" loading={loadOtherStats} >

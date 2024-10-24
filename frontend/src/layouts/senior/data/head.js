@@ -31,6 +31,16 @@ export const tablehead = [
     },
     {
       name: "course",
+      padding: "px-2",
+      align: "left",
+    },
+    {
+      name: "enrolled",
+      padding: "px-2",
+      align: "center",
+    },
+    {
+      name: "year enrolled",
       padding: "ps-2",
       align: "left",
     },

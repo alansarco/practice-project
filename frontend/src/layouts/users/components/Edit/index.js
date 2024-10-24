@@ -5,7 +5,7 @@ import SoftBox from "components/SoftBox";
 import SoftButton from "components/SoftButton";
 import SoftInput from "components/SoftInput";
 import SoftTypography from "components/SoftTypography";
-import { gradeSelect, years, genderSelect, currentDate, trackSelect, courseSelect, modalitySelect } from "components/General/Utils";
+import { gradeSelect,enrollStatus, years, genderSelect, currentDate, trackSelect, courseSelect, modalitySelect } from "components/General/Utils";
 import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import { messages } from "components/General/Messages";
@@ -45,6 +45,8 @@ function Edit({USER, HandleRendering, UpdateLoading, ReloadTable }) {
             guardian: USER.guardian == null ? "" : USER.guardian,
             guardian_rel: USER.guardian_rel == null ? "" : USER.guardian_rel,
             contact_rel: USER.contact_rel == null ? "" : USER.contact_rel, 
+            enrolled: USER.enrolled == null ? "" : USER.enrolled, 
+            year_enrolled: USER.year_enrolled == null ? "" : USER.year_enrolled, 
             agreement: false,   
       };
 
@@ -80,6 +82,8 @@ function Edit({USER, HandleRendering, UpdateLoading, ReloadTable }) {
                   "barangay",
                   "municipality",
                   "province",
+                  "enrolled",
+                  "year_enrolled",
             ];
             const emptyRequiredFields = requiredFields.filter(field => !formData[field]);
 
@@ -231,6 +235,30 @@ function Edit({USER, HandleRendering, UpdateLoading, ReloadTable }) {
                                                       {modalitySelect && modalitySelect.map((modality) => (
                                                       <option key={modality.value} value={modality.value}>
                                                             {modality.desc}
+                                                      </option>
+                                                      ))}
+                                                </select>
+                                          </Grid>
+                                          <Grid item xs={12} sm={6} md={3} px={1}>
+                                                <SoftTypography variant="button" className="me-1"> Currently Enrolled: </SoftTypography>
+                                                <SoftTypography variant="span" className="text-xxs text-danger fst-italic">*</SoftTypography>
+                                                <select className="form-control form-select form-select-sm text-secondary rounded-5 cursor-pointer" name="enrolled" value={formData.enrolled} onChange={handleChange} >
+                                                      <option value=""></option>
+                                                      {enrollStatus && enrollStatus.map((status) => (
+                                                      <option key={status.value} value={status.value}>
+                                                            {status.desc}
+                                                      </option>
+                                                      ))}
+                                                </select>
+                                          </Grid>
+                                          <Grid item xs={12} sm={6} md={3} px={1}>
+                                                <SoftTypography variant="button" className="me-1"> Year Enrolled: </SoftTypography>
+                                                <SoftTypography variant="span" className="text-xxs text-danger fst-italic">*</SoftTypography>
+                                                <select className="form-control form-select form-select-sm text-secondary rounded-5 cursor-pointer" name="year_enrolled" value={formData.year_enrolled} onChange={handleChange} >
+                                                      <option value=""></option>
+                                                      {years && years.map((year) => (
+                                                      <option key={year} value={year}>
+                                                            {year}
                                                       </option>
                                                       ))}
                                                 </select>

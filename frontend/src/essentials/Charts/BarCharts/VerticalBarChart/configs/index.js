@@ -1,7 +1,7 @@
 // React base styles
 import typography from "assets/theme/base/typography";
 
-function configs(labels, datasets) {
+function configs(labels, datasets, maxCount) {
   return {
     data: {
       labels,
@@ -23,7 +23,7 @@ function configs(labels, datasets) {
           anchor: 'end',
           align: 'end',
           font: {
-            size: 12,  // Adjust this size if needed
+            size: 15,  // Adjust this size if needed
             family: typography.fontFamily,
             style: "normal",
             weight: 'bold',
@@ -33,6 +33,16 @@ function configs(labels, datasets) {
       },
       scales: {
         y: {
+          title: {
+            display: true,
+            text: 'CANDIDATES',
+            font: {
+              size: 14,
+              family: typography.fontFamily,
+              weight: 'bold',
+            },
+            color: '#344767',
+          },
           grid: {
             drawBorder: false,
             display: true,
@@ -46,14 +56,23 @@ function configs(labels, datasets) {
             padding: 10,
             color: "#9ca2b7",
             font: {
-              size: 10,   
+              size: 12,   
               family: typography.fontFamily,
-              style: "normal",
               lineHeight: 1,
             },
           },
         },
         x: {
+          title: {
+            display: true,
+            text: 'VOTES',
+            font: {
+              size: 14,
+              family: typography.fontFamily,
+              weight: 'bold',
+            },
+            color: '#344767',
+          },
           grid: {
             drawBorder: false,
             display: false,
@@ -63,7 +82,7 @@ function configs(labels, datasets) {
           ticks: {
             display: true,
             color: "#9ca2b7",
-            padding: 5,
+            padding: 10,
             font: {
               size: 10,
               family: typography.fontFamily,
@@ -71,6 +90,8 @@ function configs(labels, datasets) {
               lineHeight: 1,
             },
           },
+          // Add this section to set the maximum value for the x-axis (Votes)
+          max: maxCount, // or use suggestedMax for a softer limit
         },
       },
     },

@@ -29,6 +29,16 @@ export const roleSelect = [
       { value: 999, desc: "Super Admin" },
 ];
 
+export const enrollStatus = [
+      { value: 1, desc: "Yes" },
+      { value: 0, desc: "No" },
+];
+
+export const enrolledSelect= [
+      { value: 1, desc: "Enrolled" },
+      { value: 0, desc: "Not Enrolled" },
+];
+
 export const participantSelect = [
       { value: "7,8,9,10,11,12", desc: "All Students" },
       { value: "7,8,9,10", desc: "All JHS" },
@@ -72,7 +82,10 @@ export const colorSelect = [
 const currentYear = new Date().getFullYear();
 export const years = Array.from({ length: currentYear - 1899 }, (_, index) => currentYear - index);
 
-export const currentDate = new Date().toISOString().split('T')[0];
+export const currentDate = new Date(new Date().getTime() + 8 * 60 * 60 * 1000)
+  .toISOString()
+  .split('T')[0];
+
     
 export function isEmpty(obj) {
       if (obj === null || obj === undefined) return true;

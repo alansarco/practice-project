@@ -135,7 +135,7 @@ function Add({HandleRendering, ReloadTable}) {
                                     <Grid container spacing={0} alignItems="center">
                                           <Grid item xs={12} px={1}>
                                                 <SoftTypography variant="button" className="me-1">Details:</SoftTypography>
-                                                <textarea name="details" value={formData.details} onChange={handleChange} className="form-control" rows="4"></textarea>
+                                                <textarea name="details" value={formData.details} onChange={handleChange} className="form-control text-xs" rows="4"></textarea>
                                           </Grid>  
                                           <Grid item xs={12} sm={6} md={4} lg={3} px={1}>
                                                 <SoftTypography variant="button" className="me-1"> Event Date: </SoftTypography>
