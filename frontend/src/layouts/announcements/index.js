@@ -26,11 +26,15 @@ import FixedLoading from "components/General/FixedLoading";
 import { passToSuccessLogs, passToErrorLogs } from "components/Api/Gateway";
 
 import React, { useState, useEffect } from "react";
-import { useDashboardData } from 'layouts/dashboard/data/dashboardRedux';
 import { useStateContext } from "context/ContextProvider";
 import { Navigate } from "react-router-dom";
 import axios from "axios";
 import { apiRoutes } from "components/Api/ApiRoutes";
+
+import { Calendar, momentLocalizer } from 'react-big-calendar';
+import moment from 'moment';
+import CalendarMonthTwoToneIcon from '@mui/icons-material/CalendarMonthTwoTone';
+import ListTwoToneIcon from '@mui/icons-material/ListTwoTone';
 
 function Announcements() {
   const currentFileName = "layouts/announcements/index.js";
@@ -50,15 +54,8 @@ function Announcements() {
   const [rendering, setRendering] = useState(1);
   const [fetchdata, setFetchdata] = useState([]);
   const [searchTriggered, setSearchTriggered] = useState(true);
-
-  const { 
-    authUser,
-    otherStats , loadOtherStats,
-  } = useDashboardData({
-    authUser: true, 
-    rendering,
-    otherStats: true, 
-  }); 
+  const [events, setEvents] = useState([]);
+  const [list, setList] = useState(true);
 
   const HandleRendering = (rendering) => {
     setRendering(rendering);
@@ -96,12 +93,24 @@ function Announcements() {
     });
   }
 
+  const formattedEvents = events.map(event => ({
+    title: event.title,
+    start: new Date(event.start), // JavaScript will correctly parse the ISO string
+    end: new Date(event.end),
+    color: 
+      event.color === "primary" ? "#cb0c9f" :
+      event.color === "success" ?  "#82d616" :
+      event.color === "warning" ? "#fbcf33" :
+      event.color === "info" ? "#17c1e8" : "#344767",
+  }));
+
   useEffect(() => {
     if (searchTriggered) {
       setReload(true);
       axios.get(apiRoutes.retrieveAnnouncement, {headers} )
         .then(response => {
           setFetchdata(response.data.calendars);
+          setEvents(response.data.calendars.events);
           passToSuccessLogs(response.data, currentFileName);
           setReload(false);
         })
@@ -112,6 +121,23 @@ function Announcements() {
         setSearchTriggered(false);
     }
   }, [searchTriggered]);
+
+  const eventStyleGetter = (event) => {
+    const backgroundColor = event.color;
+    const style = {
+      backgroundColor,
+      borderRadius: '5px',
+      opacity: 0.8,
+      color: 'white',
+      border: '0px',
+      fontSize: '15px',
+      display: 'block'
+    };
+    return {
+      style: style
+    };
+  };  
+  const localizer = momentLocalizer(moment);
 
   const handleDelete = async (id) => {
     Swal.fire({
@@ -171,18 +197,39 @@ function Announcements() {
         <SoftBox p={2}>
             <SoftBox className="px-md-4 px-3 py-2" display="flex" justifyContent="space-between" alignItems="center">
                 <SoftBox>
-                    <SoftTypography className="text-uppercase text-secondary" variant="h6" >Announcements and Events List</SoftTypography>
+                    <SoftTypography className="text-uppercase text-secondary" variant="h6" >Calendar of Events & Announcements</SoftTypography>
                 </SoftBox>
                 <SoftBox display="flex">
+                    <SoftButton onClick={() => setList(!list)} className="ms-2 py-0 px-3 d-flex rounded-pill" variant="gradient" color="success" size="medium" iconOnly >
+                      {list ? 
+                        <> <ListTwoToneIcon /> </>
+                         :
+                        <> <CalendarMonthTwoToneIcon /> </>
+                      }
+                    </SoftButton>
                     {access >= 10 && role === "ADMIN" && 
                     <SoftButton onClick={() => setRendering(3)} className="ms-2 py-0 px-3 d-flex rounded-pill" variant="gradient" color="success" size="small" >
-                      <Icon>add</Icon> Add Election
+                      <Icon>add</Icon> Add Event
                     </SoftButton>
                     }
-                    
                 </SoftBox>
             </SoftBox>
-            <Card className="bg-white rounded-5">
+            {list &&
+            <Card className="bg-white rounded-5 mb-3">
+              <SoftBox className="p-4">
+                <Calendar
+                  localizer={localizer}
+                  events={formattedEvents}
+                  startAccessor="start"
+                  endAccessor="end"
+                  style={{ height: 500 }}
+                  eventPropGetter={eventStyleGetter} // Apply custom styles
+                />
+              </SoftBox>
+            </Card>
+            }
+            {!list &&
+              <Card className="bg-white rounded-5">
                 <SoftBox mb={3} p={2} >
                     <Grid container spacing={3}>
                         <Grid item xs={12} >
@@ -254,7 +301,10 @@ function Announcements() {
                         </Grid>
                     </Grid>
                 </SoftBox>
-            </Card>
+              </Card>
+            }
+            
+            
         </SoftBox>
         }
         <Footer />

@@ -29,6 +29,7 @@ function Add({HandleRendering, ReloadTable}) {
             description: "",
             details: "",
             event_date: "",
+            event_date_end: "",
             time: "",
             hashtag1: "",
             hashtag2: "",
@@ -61,6 +62,7 @@ function Add({HandleRendering, ReloadTable}) {
                   "event_name",
                   "description",
                   "event_date",
+                  "event_date_end",
                   "hashtag1",
                   "hashtag2",
                   "hashtag3",
@@ -68,10 +70,17 @@ function Add({HandleRendering, ReloadTable}) {
             ];
             const emptyRequiredFields = requiredFields.filter(field => !formData[field]);
 
+            // Check if event_date_end is less than event_date
+            const eventDate = new Date(formData.event_date);
+            const eventDateEnd = new Date(formData.event_date_end);
+
             if (emptyRequiredFields.length === 0) {
                   if(!formData.agreement) {
                         toast.warning(messages.agreement, { autoClose: true });
-                  }
+                    }
+                    else if (eventDateEnd < eventDate) {
+                        toast.warning("End date cannot be before the start date!", { autoClose: true });
+                    }
                   else {      
                         setSubmitProfile(true);
                         try {
@@ -138,7 +147,7 @@ function Add({HandleRendering, ReloadTable}) {
                                                 <textarea name="details" value={formData.details} onChange={handleChange} className="form-control text-xs" rows="4"></textarea>
                                           </Grid>  
                                           <Grid item xs={12} sm={6} md={4} lg={3} px={1}>
-                                                <SoftTypography variant="button" className="me-1"> Event Date: </SoftTypography>
+                                                <SoftTypography variant="button" className="me-1"> Event Start Date: </SoftTypography>
                                                 <SoftTypography variant="span" className="text-xxs text-danger fst-italic">*</SoftTypography>
                                                 <input className="form-control form-control-sm text-secondary rounded-5"  min={currentDate} name="event_date" value={formData.event_date} onChange={handleChange} type="date" />
                                           </Grid>
@@ -146,8 +155,7 @@ function Add({HandleRendering, ReloadTable}) {
                                                 <SoftTypography variant="button" className="me-1"> Event Time: </SoftTypography>
                                                 <SoftTypography variant="span" className="text-xxs text-danger fst-italic">*</SoftTypography>
                                                 <input className="form-control form-control-sm text-secondary rounded-5" name="time" value={formData.time} onChange={handleChange} type="time" />
-                                          </Grid>
-                                          
+                                          </Grid>                                          
                                           <Grid item xs={12} sm={6} md={4} lg={2} px={1}>
                                                 <SoftTypography variant="button" className="me-1"> Color: </SoftTypography>
                                                 <SoftTypography variant="span" className="text-xxs text-danger fst-italic">*</SoftTypography>
@@ -163,15 +171,19 @@ function Add({HandleRendering, ReloadTable}) {
                                     </Grid> 
                                     <Grid container spacing={0} alignItems="center">
                                           <Grid item xs={12} sm={6} md={4} lg={3} px={1}>
+                                                <SoftTypography variant="button" className="me-1"> Event End Date: </SoftTypography>
+                                                <SoftTypography variant="span" className="text-xxs text-danger fst-italic">*</SoftTypography>
+                                                <input className="form-control form-control-sm text-secondary rounded-5"  min={currentDate} name="event_date_end" value={formData.event_date_end} onChange={handleChange} type="date" />
+                                          </Grid>
+                                    </Grid> 
+                                    <Grid container spacing={0} alignItems="center">
+                                          <Grid item xs={12} sm={6} md={4} lg={3} px={1}>
                                                 <SoftTypography variant="button" className="me-1"> Hashtags: </SoftTypography>
                                                 <SoftTypography variant="span" className="text-xxs text-danger fst-italic">*</SoftTypography>
                                                 <input placeholder="#hashtag1" className="form-control form-control-sm text-secondary rounded-5" name="hashtag1" value={formData.hashtag1} onChange={handleChange} />
                                                 <input placeholder="#hashtag2" className="form-control form-control-sm text-secondary rounded-5 mt-2" name="hashtag2" value={formData.hashtag2} onChange={handleChange} />
                                                 <input placeholder="#hashtag3" className="form-control form-control-sm text-secondary rounded-5 mt-2" name="hashtag3" value={formData.hashtag3} onChange={handleChange} />
                                           </Grid>
-                                    </Grid> 
-                                    <Grid container spacing={0} alignItems="center">
-                                          
                                     </Grid> 
                                     <Grid mt={3} container spacing={0} alignItems="center">
                                           <Grid item xs={12} pl={1}>

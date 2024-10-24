@@ -18,6 +18,7 @@ class Calendar extends Model
         'description', 
         'details', 
         'event_date', 
+        'event_date_end', 
         'time', 
         'hashtag1',
         'hashtag2',

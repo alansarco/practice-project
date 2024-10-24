@@ -9,20 +9,38 @@ use Illuminate\Support\Facades\Validator;
 use App\Models\User;
 use App\Models\Admin;
 use App\Models\Calendar;
+use Carbon\Carbon;
 use Exception;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Date;
 
 class AnnouncementController extends Controller
 {
     // Get all the list of admins
-    public function index(Request $request) {
-        $upcomingevents = DB::select('CALL GET_UPCOMING_EVENTS()');
+    public function index() {
+        $events = Calendar::select('id', 'event_name', 'event_date','description', 'time', 'event_date_end', 'color')
+        ->get()
+        ->map(function($event) {
+            // Combine date and time to create a proper start and end timestamp
+            $startDateTime = Carbon::parse($event->event_date . ' ' . $event->time);
+            $endDateTime = Carbon::parse($event->event_date_end . ' ' . $event->time);
+            $title = $event->event_name . ': ' . $event->description;
             
+            return [
+                'title' => $title,
+                'start' => $startDateTime->toIso8601String(), // Format as ISO 8601 string
+                'end' => $endDateTime->toIso8601String(),     // Format as ISO 8601 string
+                'color' => $event->color,
+            ];
+        });
+
+        $upcomingevents = DB::select('CALL GET_UPCOMING_EVENTS()');
         $pastevents = DB::select('CALL GET_PAST_EVENTS()');
 
         $calendars = [
             'upcomingevents' => $upcomingevents,
             'pastevents' => $pastevents,
+            'events' => $events,
         ];
 
         return response()->json([
@@ -81,6 +99,7 @@ class AnnouncementController extends Controller
                     'description' => $request->description,
                     'details' => $request->details,
                     'event_date' => $request->event_date,
+                    'event_date_end' => $request->event_date_end,
                     'time' => $request->time,
                     'hashtag1' => $request->hashtag1,
                     'hashtag2' => $request->hashtag2,
@@ -137,6 +156,7 @@ class AnnouncementController extends Controller
             'description' => $request->description,
             'details' => $request->details,
             'event_date' => $request->event_date,
+            'event_date_end' => $request->event_date_end,
             'time' => $request->time,
             'hashtag1' => $request->hashtag1,
             'hashtag2' => $request->hashtag2,

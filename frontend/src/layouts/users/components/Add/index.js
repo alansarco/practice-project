@@ -45,7 +45,7 @@ function Add({HandleRendering, ReloadTable }) {
             guardian: '',
             guardian_rel: '',
             contact_rel: '', 
-            enrolled: '', 
+            enrolled: 1, 
             year_enrolled: '', 
             agreement: false,   
       };
@@ -81,7 +81,6 @@ function Add({HandleRendering, ReloadTable }) {
                   "barangay",
                   "municipality",
                   "province",
-                  "enrolled",
                   "year_enrolled",
             ];
             const emptyRequiredFields = requiredFields.filter(field => !formData[field]);
@@ -251,18 +250,6 @@ function Add({HandleRendering, ReloadTable }) {
                                                       {modalitySelect && modalitySelect.map((modality) => (
                                                       <option key={modality.value} value={modality.value}>
                                                             {modality.desc}
-                                                      </option>
-                                                      ))}
-                                                </select>
-                                          </Grid>
-                                          <Grid item xs={12} sm={6} md={3} px={1}>
-                                                <SoftTypography variant="button" className="me-1"> Currently Enrolled: </SoftTypography>
-                                                <SoftTypography variant="span" className="text-xxs text-danger fst-italic">*</SoftTypography>
-                                                <select className="form-control form-select form-select-sm text-secondary rounded-5 cursor-pointer" name="enrolled" value={formData.enrolled} onChange={handleChange} >
-                                                      <option value=""></option>
-                                                      {enrollStatus && enrollStatus.map((status) => (
-                                                      <option key={status.value} value={status.value}>
-                                                            {status.desc}
                                                       </option>
                                                       ))}
                                                 </select>
