@@ -67,8 +67,8 @@ function List({ RESULT, CANDIDATES, POLL, HandleRendering, UpdateLoading, reload
     <>
       {reload && <FixedLoading />}
       {isLoading && <FixedLoading />}
-      <SoftBox mt={5} mb={3} px={3}>      
-            <SoftBox mb={5} p={4}>    
+      <SoftBox mt={5} mb={3} px={2}>      
+            <SoftBox mb={5}>    
                   <Grid container spacing={0} alignItems="center" justifyContent="end">
                         <Grid item xs={12} md={5} pl={1}>
                               <SoftBox display="flex" justifyContent="end">
@@ -109,9 +109,9 @@ function List({ RESULT, CANDIDATES, POLL, HandleRendering, UpdateLoading, reload
                                     </Grid>    
                                     {access >= 10 &&
                                     <>
-                                    <Grid item xs={12} sm={6} alignItems="center" justifyContent="center" display="flex" mt={4}>
-                                          <SoftTypography className="me-2" variant="h6">Filter Distribution Result:</SoftTypography>
-                                          <select className="form-control form-select form-select-sm text-secondary rounded-5 cursor-pointer w-25" name="distribute" value={formData.distribute} onChange={handleFilter} >
+                                    <Grid item xs={12} sm={6} alignItems="center" className="d-block d-md-flex" justifyContent="center" mt={4}>
+                                          <SoftTypography className="me-2 text-nowrap" variant="h6">Filter Distribution Result:</SoftTypography>
+                                          <select className="form-control form-select form-select-sm text-secondary rounded-5 cursor-pointer w-100" name="distribute" value={formData.distribute} onChange={handleFilter} >
                                                 {distributionSelect && distributionSelect.map((distribute) => (
                                                 <option key={distribute.value} value={distribute.value}>
                                                       {distribute.desc}

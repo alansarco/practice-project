@@ -124,7 +124,7 @@ function Edit({HandleRendering, REQUESTOR, HandleDATA, HandleNullRequestor, CAPT
       return (  
       <>
             {submitProfile && <FixedLoading />}   
-            <SoftBox mt={5} mb={3} px={3}>      
+            <SoftBox mt={5} mb={3} px={2}>      
                   <SoftBox mb={5} p={4} className="shadow-sm rounded-4 bg-white">
                         <SoftTypography fontWeight="medium" color="warning" textGradient>
                               Direction!

@@ -81,7 +81,7 @@ function Information({FROM, POLL, POSITIONS, HandleRendering}) {
   return (
     <>  
       {deleteData && <FixedLoading /> }
-      <SoftBox mt={5} mb={3} px={3}>
+      <SoftBox mt={5} mb={3} px={2}>
         <SoftBox p={4} className="shadow-sm rounded-4 bg-white" >
           <Grid container spacing={2}>
             <Grid item xs={12} md={6} xl={6}>
