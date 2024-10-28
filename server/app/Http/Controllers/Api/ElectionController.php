@@ -730,20 +730,50 @@ class ElectionController extends Controller
 
     public function liveresult(Request $request) {
         try {
-            $liveresult = Candidate::leftJoin('students', 'candidates.candidateid', '=', 'students.username')
-                ->leftJoin('positions', function($join) {
-                    $join->on('candidates.positionid', '=', 'positions.positionid')
-                        ->on('candidates.pollid', '=', 'positions.pollid');
-                })
-                ->select('candidates.candidateid', 'candidates.positionid', 'candidates.pollid', 
-                    'positions.position_name', 'candidates.party', 'candidates.platform', 'candidates.status', 'candidates.votes',
-                    DB::raw("CONCAT(positions.position_name, ': ', candidates.candidateid) as label"),
-                )
-                ->whereNotNull('positions.position_name')
-                ->where('candidates.pollid', $request->info)
-                ->orderBy('candidates.positionid', "ASC")
-                ->orderBy('candidates.votes', "DESC")
-                ->get();
+            $liveresult = Candidate::leftJoin('positions', function ($join) {
+                $join->on('candidates.positionid', '=', 'positions.positionid')
+                     ->on('candidates.pollid', '=', 'positions.pollid');
+            })
+            ->select(
+                'candidates.candidateid',
+                'candidates.positionid',
+                'candidates.pollid',
+                'positions.position_name',
+                'candidates.party',
+                'candidates.platform',
+                'candidates.status',
+                'candidates.votes',
+                DB::raw("CONCAT(positions.position_name, ': ', candidates.candidateid) as label"),
+                DB::raw('(
+                    SELECT 
+                        CONCAT(COUNT(CASE WHEN s.gender = "M" THEN 1 END), 
+                        ",", COUNT(CASE WHEN s.gender = "F" THEN 1 END)
+                        )
+                    FROM votes v
+                    LEFT JOIN students s 
+                        ON v.voterid = s.username 
+                    WHERE v.candidateid = candidates.candidateid
+                ) as voters_info'),
+                DB::raw('(
+                    SELECT 
+                        CONCAT(COUNT(CASE WHEN s.grade = "7" THEN 1 END), 
+                        ",", COUNT(CASE WHEN s.grade = "8" THEN 1 END),
+                        ",", COUNT(CASE WHEN s.grade = "9" THEN 1 END),
+                        ",", COUNT(CASE WHEN s.grade = "10" THEN 1 END),
+                        ",", COUNT(CASE WHEN s.grade = "11" THEN 1 END),
+                        ",", COUNT(CASE WHEN s.grade = "12" THEN 1 END)
+                        )
+                    FROM votes v
+                    LEFT JOIN students s 
+                        ON v.voterid = s.username 
+                    WHERE v.candidateid = candidates.candidateid
+                ) as voters_grade'),
+            )
+            ->whereNotNull('positions.position_name')
+            ->where('candidates.pollid', $request->info)
+            ->orderBy('candidates.positionid', 'ASC')
+            ->orderBy('candidates.votes', 'DESC')
+            ->get();
 
             if($liveresult) {
                 return response()->json([
@@ -766,12 +796,18 @@ class ElectionController extends Controller
     public function archiveresult(Request $request) {
         try {
             $grades = Poll::select('participant_grade', DB::raw("YEAR(created_at) AS created_year"))->where('pollid', $request->info)->first();
+            $currentYear = Carbon::now()->format('Y');
 
             if ($grades) {
                 $gradesArray = explode(',', $grades->participant_grade);
                 $totalparticipants = Student::whereIn('grade', $gradesArray)
                     // ->where('enrolled', 1)
                     ->where('year_enrolled', '<=', $grades->created_year)
+                    ->where(function ($query) use ($currentYear) {
+                        $query->whereNull('year_unenrolled')
+                            ->orWhere('year_unenrolled', '')
+                            ->orWhere('year_unenrolled', '>', $currentYear);
+                    })
                     ->count();
                 $participantslist = Student::select('username', 'name', 'grade',
                     DB::raw("IF(EXISTS(SELECT 1 FROM votes WHERE pollid = '$request->info' AND voterid = students.username),1,0) AS votestatus"),
@@ -781,6 +817,11 @@ class ElectionController extends Controller
                     ->whereIn('grade', $gradesArray)
                     // ->where('enrolled', 1)
                     ->where('year_enrolled', '<=', $grades->created_year)
+                    ->where(function ($query) use ($currentYear) {
+                        $query->whereNull('year_unenrolled')
+                            ->orWhere('year_unenrolled', '')
+                            ->orWhere('year_unenrolled', '>', $currentYear);
+                    })
                     ->orderBy('votestatus', 'DESC')
                     ->orderBy('vote_date', 'DESC')
                     ->get();
@@ -798,6 +839,30 @@ class ElectionController extends Controller
                 ->select('candidates.candidateid', 'candidates.positionid', 'candidates.pollid', 
                     'positions.position_name', 'candidates.party', 'candidates.platform', 'candidates.status', 'candidates.votes',
                     DB::raw("CONCAT(positions.position_name, ': ', students.name) as label"),
+                    DB::raw('(
+                        SELECT 
+                            CONCAT(COUNT(CASE WHEN s.gender = "M" THEN 1 END), 
+                            ",", COUNT(CASE WHEN s.gender = "F" THEN 1 END)
+                            )
+                        FROM votes v
+                        LEFT JOIN students s 
+                            ON v.voterid = s.username 
+                        WHERE v.candidateid = candidates.candidateid
+                    ) as voters_info'),
+                    DB::raw('(
+                        SELECT 
+                            CONCAT(COUNT(CASE WHEN s.grade = "7" THEN 1 END), 
+                            ",", COUNT(CASE WHEN s.grade = "8" THEN 1 END),
+                            ",", COUNT(CASE WHEN s.grade = "9" THEN 1 END),
+                            ",", COUNT(CASE WHEN s.grade = "10" THEN 1 END),
+                            ",", COUNT(CASE WHEN s.grade = "11" THEN 1 END),
+                            ",", COUNT(CASE WHEN s.grade = "12" THEN 1 END)
+                            )
+                        FROM votes v
+                        LEFT JOIN students s 
+                            ON v.voterid = s.username 
+                        WHERE v.candidateid = candidates.candidateid
+                    ) as voters_grade'),
                 )
                 ->whereNotNull('positions.position_name')
                 ->where('candidates.pollid', $request->info)
@@ -828,6 +893,7 @@ class ElectionController extends Controller
 
     public function votecandidates(Request $request) {
         $authUser = Auth::user();
+        $currentYear = Carbon::now()->format('Y');
 
         $alreadyvote = false;
         $vote = Vote::where('pollid', $request->info)->where('voterid', $authUser->username)->count();
@@ -841,6 +907,11 @@ class ElectionController extends Controller
             $totalparticipants = Student::whereIn('grade', $gradesArray)
                     // ->where('enrolled', 1)
                     ->where('year_enrolled', '<=', $grades->created_year)
+                    ->where(function ($query) use ($currentYear) {
+                        $query->whereNull('year_unenrolled')
+                            ->orWhere('year_unenrolled', '')
+                            ->orWhere('year_unenrolled', '>', $currentYear);
+                    })
                     ->count();
             $participantslist = Student::select('username', 'name', 'grade',
                 DB::raw("IF(EXISTS(SELECT 1 FROM votes WHERE pollid = '$request->info' AND voterid = students.username),1,0) AS votestatus"),
@@ -850,6 +921,11 @@ class ElectionController extends Controller
                 ->whereIn('grade', $gradesArray)
                 // ->where('enrolled', 1)
                 ->where('year_enrolled', '<=', $grades->created_year)
+                ->where(function ($query) use ($currentYear) {
+                    $query->whereNull('year_unenrolled')
+                        ->orWhere('year_unenrolled', '')
+                        ->orWhere('year_unenrolled', '>', $currentYear);
+                })
                 ->orderBy('votestatus', 'DESC')
                 ->orderBy('vote_date', 'DESC')
                 ->get();
@@ -910,7 +986,6 @@ class ElectionController extends Controller
         }
     }
 
-
     public function submitvote(Request $request) {
         $authUser = Auth::user();
 
@@ -951,7 +1026,6 @@ class ElectionController extends Controller
                     
                 $castvote = true;
             }
-            
         }
 
         if($castvote) {
@@ -960,7 +1034,6 @@ class ElectionController extends Controller
                 'message' => 'Vote submitted successfully!'
             ], 200);
         }
-
 
         return response()->json([
             'message' => 'Please vote at least one of any candidates!'

@@ -20,6 +20,7 @@ class Calendar extends Model
         'event_date', 
         'event_date_end', 
         'time', 
+        'time_end', 
         'hashtag1',
         'hashtag2',
         'hashtag3',

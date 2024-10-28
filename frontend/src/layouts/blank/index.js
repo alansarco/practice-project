@@ -19,13 +19,11 @@ import { useStateContext } from "context/ContextProvider";
 import { Navigate } from "react-router-dom";
 
 function NotFound() {
-
       const currentFileName = "layouts/users/index.js";
       const {token, access, updateTokenExpiration} = useStateContext();
-
       updateTokenExpiration();
       if (!token) {
-      return <Navigate to="/authentication/sign-in" />
+            return <Navigate to="/authentication/sign-in" />
       }
       const [rendering, setRendering] = useState(1);
 

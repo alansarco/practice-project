@@ -5,7 +5,15 @@ function configs(labels, datasets) {
   return {
     data: {
       labels,
-      datasets: [...datasets],
+      datasets: [
+        ...datasets.map(dataset => ({
+          ...dataset,
+          pointRadius: 3, // Sets the size of the circle at each point
+          pointBackgroundColor: "transparent",
+          pointStyle: "circle", // Sets the style to a circle
+          showLine: true, // Ensures the line is drawn through the points
+        })),
+      ],
     },
     options: {
       responsive: true,
@@ -14,6 +22,9 @@ function configs(labels, datasets) {
         legend: {
           display: false,
         },
+        datalabels: {
+          display: false, // Hides data labels on points
+        },
       },
       interaction: {
         intersect: false,
@@ -21,48 +32,69 @@ function configs(labels, datasets) {
       },
       scales: {
         y: {
+          title: {
+            display: true,
+            text: 'POPULATION',
+            font: {
+              size: 14,
+              family: typography.fontFamily,
+              weight: 'bold',
+            },
+            color: '#344767',
+          },
           grid: {
             drawBorder: false,
             display: true,
             drawOnChartArea: true,
             drawTicks: false,
             borderDash: [5, 5],
-          },
+          },  
           ticks: {
+            precision: 0,
             display: true,
             padding: 10,
-            color: "#b2b9bf",
+            color: "#9ca2b7",
             font: {
-              size: 11,
+              size: 12,   
               family: typography.fontFamily,
-              style: "normal",
               lineHeight: 1,
             },
           },
         },
         x: {
+          title: {
+            display: true,
+            text: 'YEARS (decade)',
+            font: {
+              size: 14,
+              family: typography.fontFamily,
+              weight: 'bold',
+            },
+            color: '#344767',
+          },
           grid: {
             drawBorder: false,
             display: false,
             drawOnChartArea: true,
             drawTicks: true,
-            borderDash: [5, 5],
           },
           ticks: {
             display: true,
-            color: "#b2b9bf",
-            padding: 5,
+            color: "#9ca2b7",
+            padding: 10,
             font: {
-              size: 11,
+              size: 10,
               family: typography.fontFamily,
               style: "normal",
-              lineHeight: 2,
+              lineHeight: 1,
             },
           },
+          // Add this section to set the maximum value for the x-axis (Votes)
         },
       },
     },
   };
 }
+
 
 export default configs;

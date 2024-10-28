@@ -16,6 +16,8 @@ import VerticalBarChart from "essentials/Charts/BarCharts/VerticalBarChart";
 import CachedTwoToneIcon from '@mui/icons-material/CachedTwoTone';
 import Table from "layouts/elections/components/ResultContainer/resulttable";
 import { tablehead } from "layouts/elections/components/ResultContainer/resulthead";
+import DefaultDoughnutChart from "essentials/Charts/DoughnutCharts/DefaultDoughnutChart";
+import { distributionSelect } from "components/General/Utils";
 
 function List({ RESULT, CANDIDATES, POLL, HandleRendering, UpdateLoading, reload, VOTE, MAXVOTERS, CURRENTVOTES, PARTICIPANTS }) {
       const [isLoading, setLoading] = useState(false);
@@ -46,9 +48,10 @@ function List({ RESULT, CANDIDATES, POLL, HandleRendering, UpdateLoading, reload
 
       // Initialize state for the form
       const initialState = {
-      positionSelections: {},  // Object to store selected candidate per position
-      pollid: POLL.pollid,
-      agreement: false,        // Agreement checkbox
+            positionSelections: {},  // Object to store selected candidate per position
+            pollid: POLL.pollid,
+            distribute: 1,
+            agreement: false,        // Agreement checkbox
       };
 
       const [formData, setFormData] = useState(initialState);
@@ -66,6 +69,16 @@ function List({ RESULT, CANDIDATES, POLL, HandleRendering, UpdateLoading, reload
                   [name]: value  // Store selected candidate by position
                   }
                   });
+            }
+      };
+
+      
+      const handleFilter = (e) => {
+            const { name, value, type } = e.target;
+            if (type === "checkbox") {
+                  setFormData({ ...formData, [name]: !formData[name]});
+            } else {
+                  setFormData({ ...formData, [name]: value });
             }
       };
 
@@ -94,7 +107,7 @@ function List({ RESULT, CANDIDATES, POLL, HandleRendering, UpdateLoading, reload
                                           toast.success(`${response.data.message}`, { autoClose: true });
                                           setFormData(initialState);
                                           UpdateLoading(true);
-                                          setTabtitle(!tabtitle);
+                                          setTabtitle(1);
                                     } else {
                                           toast.error(`${response.data.message}`, { autoClose: true });
                                     }
@@ -134,7 +147,7 @@ function List({ RESULT, CANDIDATES, POLL, HandleRendering, UpdateLoading, reload
                                           Participants
                                     </SoftButton>
                                     }          
-                                    {VOTE && access == 5 && 
+                                    {!VOTE && access == 5 && 
                                     <SoftButton onClick={handleVoteTab} className="mt-2 mt-sm-0 mx-1 w-100 text-xxs px-5 rounded-pill text-nowrap" size="small" color={tabtitle == 3 ? "dark" : "white"}>
                                           Vote Now
                                     </SoftButton>
@@ -143,14 +156,13 @@ function List({ RESULT, CANDIDATES, POLL, HandleRendering, UpdateLoading, reload
                         </Grid>   
                   </Grid>   
                   {tabtitle == 1 && 
-
                   <SoftBox mt={2}>
                         <SoftBox className="px-md-0 px-2" >
-                              <Grid mt={3} container spacing={0} alignItems="center" justifyContent="end">
+                              <Grid mt={3} container spacing={0} alignItems="center" justifyContent="center">
                                     <Grid item xs={12} sm={12} xl={12}>
                                     <VerticalBarChart
                                           title={POLL.pollname}
-                                          nodata={RESULT.data && RESULT.data.every(value => value === "0")}
+                                          nodata={RESULT.candidateid && RESULT.candidateid.every(value => value === "0")}
                                           height="20rem"
                                           maxCount={MAXVOTERS}
                                           currentCount={CURRENTVOTES}
@@ -162,8 +174,69 @@ function List({ RESULT, CANDIDATES, POLL, HandleRendering, UpdateLoading, reload
                                           }],
                                           }}
                                     />
-                                    </Grid>                                
-                              </Grid>     
+                                    </Grid>    
+                                    {access >= 10 &&
+                                    <>
+                                    <Grid item xs={12} sm={6} alignItems="center" justifyContent="center" display="flex" mt={4}>
+                                          <SoftTypography className="me-2" variant="h6">Filter Distribution Result:</SoftTypography>
+                                          <select className="form-control form-select form-select-sm text-secondary rounded-5 cursor-pointer w-25" name="distribute" value={formData.distribute} onChange={handleFilter} >
+                                                {distributionSelect && distributionSelect.map((distribute) => (
+                                                <option key={distribute.value} value={distribute.value}>
+                                                      {distribute.desc}
+                                                </option>
+                                                ))}
+                                          </select>
+                                    </Grid> 
+                                    </>
+                                    }
+                                    {access >= 10 && formData.distribute == 1 &&
+                                    <Grid item xs={12} sm={12} xl={12}>
+                                          <SoftTypography mt={3} fontWeight="bold" color="info" textGradient fontSize="1.5rem">DISTRIBUTION OF VOTES BY GENDER</SoftTypography>
+                                          <Grid container spacing={2} alignItems="center" justifyContent="start">
+                                                {RESULT && RESULT.voters_info.map((event, index) => (
+                                                <Grid item xs={12} md={6} lg={4}>
+                                                      <DefaultDoughnutChart
+                                                      key={index} 
+                                                      title={RESULT.candidateid[index]} 
+                                                      chart={{
+                                                            labels: ["Male", "Female"],
+                                                            datasets: {
+                                                            label: "Elections",
+                                                            backgroundColors: ["dark", "primary"],
+                                                            data: Object.values(event), 
+                                                            },
+                                                      }}
+                                                      />
+                                                </Grid> 
+                                                ))}
+                                          </Grid>   
+                                    </Grid> 
+                                    } 
+                                    {access >= 10 && formData.distribute == 2 &&
+                                    <Grid item xs={12} sm={12} xl={12}>
+                                          <SoftTypography mt={3} fontWeight="bold" color="info" textGradient fontSize="1.5rem">DISTRIBUTION OF VOTES BY GRADE LEVEL</SoftTypography>
+                                          <Grid container spacing={2} alignItems="center" justifyContent="start">
+                                                {RESULT && RESULT.voters_grade.map((event, index) => (
+                                                <Grid item xs={12} md={6} lg={4}>
+                                                      <DefaultDoughnutChart
+                                                      key={index} 
+                                                      title={RESULT.candidateid[index]} 
+                                                      chart={{
+                                                            labels: ["Grade 7", "Grade 8", "Grade 9", "Grade 10", "Grade 11", "Grade 12"],  
+                                                            datasets: {
+                                                                  label: "Elections",
+                                                                  backgroundColors: ["dark", "success", "primary", "warning", "info", "error"],
+                                                                  data: Object.values(event), 
+                                                            },
+                                                      }}
+                                                      />
+                                                </Grid> 
+                                                ))}
+                                          </Grid>   
+                                    </Grid>   
+                                    } 
+                                    
+                              </Grid>   
                         </SoftBox>
                         <Grid mt={3} container spacing={0} alignItems="center" justifyContent="end">
                               <Grid item xs={12} sm={4} md={2} pl={1}>

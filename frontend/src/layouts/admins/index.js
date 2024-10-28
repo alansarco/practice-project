@@ -71,7 +71,7 @@ function Admins() {
   };
 
   const ReloadTable = () => {
-    axios.get(apiRoutes.adminRetrieve, + '?page=' + page, { params: { filter }, headers })
+    axios.get(apiRoutes.adminRetrieve + '?page=' + page, { params: { filter }, headers })
     .then(response => {
       setFetchdata(response.data.admins);
       passToSuccessLogs(response.data, currentFileName);
@@ -97,7 +97,7 @@ function Admins() {
   useEffect(() => {
     if (searchTriggered) {
       setReload(true);
-      axios.get(apiRoutes.adminRetrieve, { params: { filter }, headers })
+      axios.get(apiRoutes.adminRetrieve + '?page=' + page, { params: { filter }, headers })
         .then(response => {
           setFetchdata(response.data.admins);
           passToSuccessLogs(response.data, currentFileName);

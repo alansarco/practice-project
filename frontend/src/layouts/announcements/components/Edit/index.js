@@ -33,6 +33,7 @@ function Edit({DATA, HandleRendering, ReloadTable }) {
         event_date: DATA.event_date == null ? "" : DATA.event_date,
         event_date_end: DATA.event_date_end == null ? "" : DATA.event_date_end,
         time: DATA.time == null ? "" : DATA.time,
+        time_end: DATA.time_end == null ? "" : DATA.time_end,
         hashtag1: DATA.hashtag1 == null ? "" : DATA.hashtag1,
         hashtag2: DATA.hashtag2 == null ? "" : DATA.hashtag2,
         hashtag3: DATA.hashtag3 == null ? "" : DATA.hashtag3,
@@ -65,6 +66,8 @@ function Edit({DATA, HandleRendering, ReloadTable }) {
                 "description",
                 "event_date",
                 "event_date_end",
+                "time",
+                "time_end",
                 "hashtag1",
                 "hashtag2",
                 "hashtag3",
@@ -149,12 +152,12 @@ function Edit({DATA, HandleRendering, ReloadTable }) {
                                         <textarea name="details" value={formData.details} onChange={handleChange} className="form-control text-xs" rows="4"></textarea>
                                     </Grid>  
                                     <Grid item xs={12} sm={6} md={4} lg={3} px={1}>
-                                        <SoftTypography variant="button" className="me-1"> Event Start Date: </SoftTypography>
+                                        <SoftTypography variant="button" className="me-1"> Event Date Start: </SoftTypography>
                                         <SoftTypography variant="span" className="text-xxs text-danger fst-italic">*</SoftTypography>
                                         <input className="form-control form-control-sm text-secondary rounded-5"  min={currentDate} name="event_date" value={formData.event_date} onChange={handleChange} type="date" />
                                     </Grid>
                                     <Grid item xs={12} sm={6} md={4} lg={2} px={1}>
-                                        <SoftTypography variant="button" className="me-1"> Event Time: </SoftTypography>
+                                        <SoftTypography variant="button" className="me-1"> Event Time Start: </SoftTypography>
                                         <SoftTypography variant="span" className="text-xxs text-danger fst-italic">*</SoftTypography>
                                         <input className="form-control form-control-sm text-secondary rounded-5" name="time" value={formData.time} onChange={handleChange} type="time" />
                                     </Grid>
@@ -174,10 +177,15 @@ function Edit({DATA, HandleRendering, ReloadTable }) {
                             </Grid> 
                             <Grid container spacing={0} alignItems="center">
                                 <Grid item xs={12} sm={6} md={4} lg={3} px={1}>
-                                    <SoftTypography variant="button" className="me-1"> Event End Date: </SoftTypography>
+                                    <SoftTypography variant="button" className="me-1"> Event Date End: </SoftTypography>
                                     <SoftTypography variant="span" className="text-xxs text-danger fst-italic">*</SoftTypography>
                                     <input className="form-control form-control-sm text-secondary rounded-5"  min={currentDate} name="event_date_end" value={formData.event_date_end} onChange={handleChange} type="date" />
                                 </Grid>
+                                <Grid item xs={12} sm={6} md={4} lg={2} px={1}>
+                                    <SoftTypography variant="button" className="me-1"> Event End Time: </SoftTypography>
+                                    <SoftTypography variant="span" className="text-xxs text-danger fst-italic">*</SoftTypography>
+                                    <input className="form-control form-control-sm text-secondary rounded-5" name="time_end" value={formData.time_end} onChange={handleChange} type="time" />
+                                </Grid> 
                             </Grid> 
                             <Grid container spacing={0} alignItems="center">
                                     <Grid item xs={12} sm={6} md={4} lg={3} px={1}>

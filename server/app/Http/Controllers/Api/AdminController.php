@@ -11,44 +11,43 @@ use App\Models\Admin;
 use Exception;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Pagination\LengthAwarePaginator;
 
 class AdminController extends Controller
 {
     // Get all the list of admins
     public function index(Request $request) {
-        try {
-            $admins = User::leftJoin('admins', 'users.username', '=', 'admins.username')
-                ->select('admins.username', 'admins.name', 'admins.contact', 'admins.birthdate',
-                    'admins.gender', 'users.access_level', 
-                    DB::raw("CONCAT(DATE_FORMAT(users.last_online, '%M %d, %Y %h:%i %p')) as last_online"),
-                    DB::raw("CONCAT(DATE_FORMAT(users.created_at, '%M %d, %Y')) as admin_since"),
-                )
-                ->where(function ($query) use ($request) {
-                    $query->where('admins.name', 'like', '%' . $request->filter . '%');
-                    $query->orWhere('admins.username', 'like', '%' . $request->filter . '%');
-                    })
-                ->where('users.account_status', 1)
-                ->orderBy('admins.name', 'ASC')
-                ->orderBy('admins.username', 'ASC')
-                ->paginate(50);
+        $filter = $request->filter ?? '';
 
-            if($admins->count() > 0) {
-                return response()->json([
-                    'admins' => $admins,
-                    'message' => 'Admins retrieved!',
-                ]);
-            }   
-            else {
-                return response()->json([
-                    'message' => 'No Admin Accounts found!'
-                ]);
-            }
-        }
-        catch (Exception $e) {
+        $users = DB::select('CALL GET_ADMIN_USERS(?)', [$filter]);
+
+        // Convert the results into a collection
+        $usersCollection = collect($users);
+
+        // Set pagination variables
+        $perPage = 50; // Number of items per page
+        $currentPage = LengthAwarePaginator::resolveCurrentPage(); // Get the current page
+
+        // Slice the collection to get the items for the current page
+        $currentPageItems = $usersCollection->slice(($currentPage - 1) * $perPage, $perPage)->values();
+
+        // Create a LengthAwarePaginator instance
+        $paginatedUsers = new LengthAwarePaginator($currentPageItems, $usersCollection->count(), $perPage, $currentPage, [
+            'path' => $request->url(), // Set the base URL for pagination links
+            'query' => $request->query(), // Preserve query parameters in pagination links
+        ]);
+
+        // Return the response
+        if ($paginatedUsers->count() > 0) {
             return response()->json([
-                'status' => 404,
-                'message' => $e->getMessage()
-            ], 404);
+                'admins' => $paginatedUsers,
+                'message' => 'Admins retrieved!',
+            ], 200);
+        } else {
+            return response()->json([
+                'message' => 'No Admin Accounts found!',
+                'users' => $paginatedUsers
+            ]);
         }
     }
 
@@ -63,8 +62,10 @@ class AdminController extends Controller
         $user = User::leftJoin('admins', 'users.username', '=', 'admins.username')
         ->select('admins.*', 'users.password_change', 'users.account_status as account_status', 'users.access_level', 
             DB::raw("CONCAT(DATE_FORMAT(admins.birthdate, '%M %d, %Y')) as birthday"),
-            DB::raw("CONCAT(DATE_FORMAT(users.created_at, '%M %d, %Y')) as date_added"),
-            DB::raw("CONCAT(DATE_FORMAT(users.last_online, '%M %d, %Y')) as last_online")
+            DB::raw("CONCAT(DATE_FORMAT(users.created_at, '%M %d, %Y %h:%i %p')) as date_added"),
+            DB::raw("CONCAT(DATE_FORMAT(users.last_online, '%M %d, %Y %h:%i %p')) as last_online"),
+            DB::raw("CONCAT(DATE_FORMAT(admins.created_at, '%M %d, %Y %h:%i %p')) as created_date"),
+            DB::raw("CONCAT(DATE_FORMAT(admins.updated_at, '%M %d, %Y %h:%i %p')) as updated_date"),
         )
         ->where('users.username', $request->username)->first();
 
@@ -86,12 +87,13 @@ class AdminController extends Controller
 
     // update specific admin's information
     public function update(Request $request) {
-
+        $authUser = Admin::select('name')->where('username', Auth::user()->username)->first();
         $validator = Validator::make($request->all(), [
             'name' => 'required',
             'gender' => 'required',
             'access' => 'required',
             'contact' => 'required',
+            'organization' => 'required',
         ]);
 
         if($validator->fails()) {
@@ -109,7 +111,8 @@ class AdminController extends Controller
                         'gender' => $request->gender,   
                         'contact' => $request->contact, 
                         'birthdate' => $request->birthdate,  
-                        'updated_by' => Auth::user()->username,
+                        'organization' => $request->organization,  
+                        'updated_by' => $authUser->name,
                     ]);
                     User::where('username', $request->username)
                     ->update([
@@ -142,9 +145,9 @@ class AdminController extends Controller
     }
 
     public function addadmin(Request $request) {
-        $authUser = Auth::user();
+        $authUser = Admin::select('name')->where('username', Auth::user()->username)->first();
         
-        if($authUser->role !== "ADMIN" || $authUser->access_level < 10) {
+        if(Auth::user()->role !== "ADMIN" || Auth::user()->role < 10) {
             return response()->json([
                 'message' => 'You are not allowed to perform this action!'
             ]);
@@ -157,6 +160,7 @@ class AdminController extends Controller
             'gender' => 'required',
             'access' => 'required',
             'contact' => 'required',
+            'organization' => 'required',
         ]);
 
         if($validator->fails()) {
@@ -165,7 +169,6 @@ class AdminController extends Controller
             ]);
         }
         
-
         $validateUser = User::where('username', $request->username)->first();
         $validateAdmin = Admin::where('username', $request->username)->first();
 
@@ -188,7 +191,9 @@ class AdminController extends Controller
             'contact' => $request->contact,
             'gender' => $request->gender,
             'birthdate' => $request->birthdate,
-            'created_by' => Auth::user()->username,
+            'organization' => $request->organization,
+            'created_by' => $authUser->name,
+            'updated_by' => $authUser->name,
         ]);
 
         $hashedPassword = Hash::make($request->newpassword);

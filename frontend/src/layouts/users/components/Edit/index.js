@@ -251,6 +251,7 @@ function Edit({USER, HandleRendering, UpdateLoading, ReloadTable }) {
                                                       ))}
                                                 </select>
                                           </Grid>
+                                          {formData.enrolled != 0 &&
                                           <Grid item xs={12} sm={6} md={3} px={1}>
                                                 <SoftTypography variant="button" className="me-1"> Year Enrolled: </SoftTypography>
                                                 <SoftTypography variant="span" className="text-xxs text-danger fst-italic">*</SoftTypography>
@@ -263,6 +264,8 @@ function Edit({USER, HandleRendering, UpdateLoading, ReloadTable }) {
                                                       ))}
                                                 </select>
                                           </Grid>
+                                          }
+                                          
                                     </Grid>     
                                     <SoftTypography mt={3} fontWeight="medium" textTransform="capitalize" color="success" textGradient>
                                           Address Information

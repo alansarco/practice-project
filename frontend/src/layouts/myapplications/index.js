@@ -29,7 +29,7 @@ import { apiRoutes } from "components/Api/ApiRoutes";
 
 function MyApplications() {
   const currentFileName = "layouts/announcements/index.js";
-  const {token, access, role, updateTokenExpiration} = useStateContext();
+  const {token, access, updateTokenExpiration} = useStateContext();
   updateTokenExpiration();
   if (!token) {
     return <Navigate to="/authentication/sign-in" />

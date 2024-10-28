@@ -19,6 +19,7 @@ class Admin extends Model
         'contact', 
         'gender', 
         'birthdate',
+        'organization',
         'created_by',
         'updated_by'
     ];

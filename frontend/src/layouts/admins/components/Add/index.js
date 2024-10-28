@@ -32,6 +32,7 @@ function Add({HandleRendering, ReloadTable }) {
             gender: "",
             contact: "",
             birthdate: "",
+            organization: "",
             agreement: false,   
       };
 
@@ -63,6 +64,7 @@ function Add({HandleRendering, ReloadTable }) {
                   "access",
                   "contact",
                   "birthdate",
+                  "organization",
             ];
             const emptyRequiredFields = requiredFields.filter(field => !formData[field]);
 
@@ -137,6 +139,11 @@ function Add({HandleRendering, ReloadTable }) {
                                                       </option>
                                                       ))}
                                                 </select>
+                                          </Grid>  
+                                          <Grid item xs={12} sm={6} md={4} lg={3} px={1}>
+                                                <SoftTypography variant="button" className="me-1">Organization:</SoftTypography>
+                                                <SoftTypography variant="span" className="text-xxs text-danger fst-italic">*</SoftTypography>
+                                                <SoftInput name="organization" value={formData.organization} onChange={handleChange} size="small" /> 
                                           </Grid>  
                                     </Grid> 
                                     <SoftTypography fontWeight="medium" textTransform="capitalize" color="success" textGradient>

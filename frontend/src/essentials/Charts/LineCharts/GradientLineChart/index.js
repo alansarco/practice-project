@@ -34,7 +34,7 @@ function GradientLineChart({ title, description, height, chart, loading, current
     const chartDatasets = chart.datasets
       ? chart.datasets.map((dataset) => ({
           ...dataset,
-          tension: 0.3,
+          tension: 0.2,
           pointRadius: 0,
           borderWidth: 3,
           borderColor: colors[dataset.color]
@@ -59,7 +59,7 @@ function GradientLineChart({ title, description, height, chart, loading, current
         <SoftBox px={description ? 1 : 0} pt={description ? 1 : 0}>
           {title && (
             <SoftBox mb={1}>
-              <SoftTypography variant="h6">{title} <span className="text-info  text-gradient">({currentpopulation} residents)</span></SoftTypography>
+              <SoftTypography variant="h6">{title} <span className="text-info  text-gradient">({currentpopulation} students)</span></SoftTypography>
             </SoftBox>
           )}
           <SoftBox mb={2}>

@@ -78,6 +78,11 @@ export const colorSelect = [
       { value: "dark", desc: "Dark" },
 ];
 
+export const distributionSelect = [
+      { value: 1, desc: "By Gender" },
+      { value: 2, desc: "By Grade" },
+];
+
 
 const currentYear = new Date().getFullYear();
 export const years = Array.from({ length: currentYear - 1899 }, (_, index) => currentYear - index);

@@ -35,6 +35,7 @@ class Student extends Model
         'contact_rel', 
         'enrolled', 
         'year_enrolled', 
+        'year_unenrolled', 
         'modality', 
         'created_by',
         'updated_by'

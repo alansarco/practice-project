@@ -104,7 +104,7 @@ function Information({USER, HandleRendering, ReloadTable}) {
                   Password_Change: USER.password_change == "1" ? "Yes" : "No",
                   Enrolled: USER.enrolled == "1" ? "Yes" : "No",
                   Year_Enrolled: USER.year_enrolled == null ? " " : USER.year_enrolled,
-                  Date_Added: USER.date_added,
+                  Year_Unenrolled: USER.year_unenrolled == null ? "N/A" : USER.year_unenrolled,
                   Last_Online: USER.last_online,
                 }}
               />
@@ -131,6 +131,17 @@ function Information({USER, HandleRendering, ReloadTable}) {
                       Guardian: USER.guardian == null ? "N/A" : USER.guardian,
                       Contact: USER.contact_rel == null ? " " : USER.contact_rel,
                     }}
+                  />
+                </Grid>
+                <Grid item xs={12}>
+                  <ProfileInfoCard
+                      title="Other Information"
+                      info={{
+                      Updated_Date: USER.created_date == null ? " " : USER.created_date,
+                      Updated_By: USER.updated_by == null ? " " : USER.updated_by,
+                      Created_Date: USER.created_date == null ? " " : USER.created_date,
+                      Created_by: USER.created_by == null ? " " : USER.created_by,
+                      }}
                   />
                 </Grid>
               </Grid>

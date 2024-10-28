@@ -35,7 +35,7 @@ export const tablehead = [
       align: "left",
     },
     {
-      name: "enrolled",
+      name: "currently enrolled",
       padding: "px-2",
       align: "center",
     },

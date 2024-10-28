@@ -10,6 +10,7 @@ use App\Models\Election;
 use App\Models\Calendar;
 use App\Models\Poll;
 use App\Models\User;
+use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 
@@ -20,8 +21,51 @@ class DashboardController extends Controller
     //returns data of Ither Statistics
     public function OtherStatistics() 
     {
-        $data1 = User::where('role', "ADMIN")->where('account_status', 1)->count();
-        $data2 = User::where('role', "USER")->where('account_status', 1)->count();
+        $currentYear = Carbon::now()->format('Y');
+        $populationCount = [];
+        
+        for ($x = 0; $x <= 10; $x++) {
+            $population = Student::where('year_enrolled', '<=', $currentYear)
+                ->where(function ($query) use ($currentYear) {
+                    $query->whereNull('year_unenrolled')
+                        ->orWhere('year_unenrolled', '')
+                        ->orWhere('year_unenrolled', '>=', $currentYear);
+                })
+                ->count();
+
+            $populationCount[$currentYear] = $population;
+            $currentYear--;
+        }
+
+        $currentYear1 = Carbon::now()->format('Y');
+        $unenrollCount = [];
+        
+        for ($x = 0; $x <= 10; $x++) {
+            $population = Student::where('year_unenrolled', '<=', $currentYear1)->count();
+
+            $unenrollCount[$currentYear1] = $population;
+            $currentYear1--;
+        }
+
+        $events = Calendar::select('id', 'event_name', 'event_date','description', 'time', 'event_date_end', 'color', 'time_end')
+        ->get()
+        ->map(function($event) {
+            // Combine date and time to create a proper start and end timestamp
+            $startDateTime = Carbon::parse($event->event_date . ' ' . $event->time);
+            $endDateTime = Carbon::parse($event->event_date_end . ' ' . $event->time_end);
+            $title = $event->event_name . ': ' . $event->description;
+            
+            return [
+                'title' => $title,
+                'start' => $startDateTime->toIso8601String(), // Format as ISO 8601 string
+                'end' => $endDateTime->toIso8601String(),     // Format as ISO 8601 string
+                'color' => $event->color,
+            ];
+        });
+
+        $data0 = User::where('access_level', 999)->where('account_status', 1)->count();
+        $data1 = User::where('access_level', 10)->where('account_status', 1)->count();
+        $data2 = User::where('access_level', 5)->where('account_status', 1)->count();
         $data7 = Student::where('grade', 7)->where('enrolled', 1)->count();
         $data8 = Student::where('grade', 8)->where('enrolled', 1)->count();
         $data9 = Student::where('grade', 9)->where('enrolled', 1)->count();
@@ -41,6 +85,7 @@ class DashboardController extends Controller
             ->get();
 
         $otherStats = [
+            'data0' => $data0,
             'data1' => $data1,
             'data2' => $data2,
             'data7' => $data7,
@@ -51,6 +96,9 @@ class DashboardController extends Controller
             'data12' => $data12,
             'upcomingevents' => $upcomingevents,
             'pastevents' => $pastevents,
+            'populationCount' => $populationCount,
+            'unenrollCount' => $unenrollCount,
+            'events' => $events,
         ];
 
         return response()->json([

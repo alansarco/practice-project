@@ -102,11 +102,23 @@ function ArchiveContainer({authUser, FROM, INFO, HandleRendering}) {
           // Extract labels (candidateid) and data (votes)
           const candidateid_array = liveresult.map(item => item.label);
           const candidateid_votes = liveresult.map(item => item.votes);
+
+          const voters_info_array = liveresult.map(item => {
+            // Split the concatenated string by comma and trim spaces
+            return item.voters_info.split(',').map(voter => voter.trim());
+          });
+          
+          const voters_grade_array = liveresult.map(item => {
+            // Split the concatenated string by comma and trim spaces
+            return item.voters_grade.split(',').map(voter => voter.trim());
+          });
   
           // Update the chart data state
           setFetchResult({
             candidateid: candidateid_array,
-            votes: candidateid_votes
+            votes: candidateid_votes,
+            voters_info: voters_info_array,
+            voters_grade: voters_grade_array
           });
           setTotalParticipants(response.data.totalparticipants);
           setCurrentVotes(response.data.currentvotes);

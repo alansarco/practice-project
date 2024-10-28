@@ -35,7 +35,7 @@ function Information({USER, HandleRendering, ReloadTable}) {
       <SoftBox mt={5} mb={3} px={3}>
         <SoftBox p={4} className="shadow-sm rounded-4 bg-white" >
           <Grid container spacing={2}>
-            <Grid item xs={12} md={6} xl={4}>
+            <Grid item xs={12} md={6}>
               <ProfileInfoCard
                 title="Account Information"
                 info={{
@@ -43,10 +43,20 @@ function Information({USER, HandleRendering, ReloadTable}) {
                   Contact: USER.contact == null ? " " : USER.contact,
                   Gender: USER.gender == null ? " " : USER.gender,
                   Role: USER.access_level == null ? " " : USER.access_level == 999 ? "Super Admin" : "Admin",
-                  Birthdate: USER.birthdate == null ? " " : USER.birthdate ,
-                  Date_Added: USER.date_added,
+                  Birthdate: USER.birthday == null ? " " : USER.birthday ,
                   Last_Online: USER.last_online,
                 }}
+              />
+            </Grid>
+            <Grid item xs={12} md={6}>
+              <ProfileInfoCard
+                  title="Other Information"
+                  info={{
+                  Updated_Date: USER.created_date == null ? " " : USER.created_date,
+                  Updated_By: USER.updated_by == null ? " " : USER.updated_by,
+                  Created_Date: USER.created_date == null ? " " : USER.created_date,
+                  Created_by: USER.created_by == null ? " " : USER.created_by,
+                  }}
               />
             </Grid>
           </Grid>

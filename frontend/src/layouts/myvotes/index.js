@@ -26,7 +26,7 @@ import { apiRoutes } from "components/Api/ApiRoutes";
 
 function MyVotes() {
   const currentFileName = "layouts/announcements/index.js";
-  const {token, access, role, updateTokenExpiration} = useStateContext();
+  const {token, access, updateTokenExpiration} = useStateContext();
   updateTokenExpiration();
   if (!token) {
     return <Navigate to="/authentication/sign-in" />

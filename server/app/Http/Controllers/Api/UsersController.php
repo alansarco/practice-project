@@ -5,43 +5,51 @@ namespace App\Http\Controllers\Api;
 use Exception;
 use Illuminate\Support\Facades\Validator;
 use App\Http\Controllers\Controller;
+use App\Models\Admin;
 use App\Models\Student;
 use Illuminate\Http\Request;
 use App\Models\User;
+use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Pagination\Paginator;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Pagination\LengthAwarePaginator;
 
 class UsersController extends Controller
 {
     // displays all list of users
     public function index(Request $request) {
-        $users = User::leftJoin('students', 'users.username', '=', 'students.username')
-        ->select('students.username', 'students.name', 'students.contact', 'students.grade', 
-            'students.gender',  'users.password_change', 'users.last_online', 'students.birthdate',
-            DB::raw("CONCAT(DATE_FORMAT(users.last_online, '%M %d, %Y %h:%i %p')) as last_online"),
-            DB::raw("CONCAT(DATE_FORMAT(students.birthdate, '%M %d, %Y %h:%i %p')) as format_birthdate "),
-        )
-        ->where(function ($query) use ($request) {
-            $query->where('students.name', 'like', '%' . $request->filter . '%');
-            $query->orWhere('students.username', 'like', '%' . $request->filter . '%');
-            })
-        ->where('users.account_status', 1)
-        ->orderBy('students.name', 'ASC')
-        ->orderBy('students.username', 'ASC')
-        ->paginate(50);
+        $filter = $request->filter ?? '';
 
-        if($users->count() > 0) {
+        $users = DB::select('CALL GET_STUDENT_USERS(?)', [$filter]);
+
+        // Convert the results into a collection
+        $usersCollection = collect($users);
+
+        // Set pagination variables
+        $perPage = 50; // Number of items per page
+        $currentPage = LengthAwarePaginator::resolveCurrentPage(); // Get the current page
+
+        // Slice the collection to get the items for the current page
+        $currentPageItems = $usersCollection->slice(($currentPage - 1) * $perPage, $perPage)->values();
+
+        // Create a LengthAwarePaginator instance
+        $paginatedUsers = new LengthAwarePaginator($currentPageItems, $usersCollection->count(), $perPage, $currentPage, [
+            'path' => $request->url(), // Set the base URL for pagination links
+            'query' => $request->query(), // Preserve query parameters in pagination links
+        ]);
+
+        // Return the response
+        if ($paginatedUsers->count() > 0) {
             return response()->json([
                 'status' => 200,
                 'message' => 'Users retrieved!',
-                'users' => $users
+                'users' => $paginatedUsers
             ], 200);
-        }
-        else {
+        } else {
             return response()->json([
                 'message' => 'No users found!',
-                'users' => $users
+                'users' => $paginatedUsers
             ]);
         }
     }
@@ -57,8 +65,10 @@ class UsersController extends Controller
         $user = Student::leftJoin('users', 'students.username', '=', 'users.username')
         ->select('students.*', 'users.password_change', 'users.account_status as account_status', 
             DB::raw("CONCAT(DATE_FORMAT(students.birthdate, '%M %d, %Y')) as birthday"),
-            DB::raw("CONCAT(DATE_FORMAT(users.created_at, '%M %d, %Y')) as date_added"),
-            DB::raw("CONCAT(DATE_FORMAT(users.last_online, '%M %d, %Y')) as last_online")
+            DB::raw("CONCAT(DATE_FORMAT(users.created_at, '%M %d, %Y %h:%i %p')) as date_added"),
+            DB::raw("CONCAT(DATE_FORMAT(users.last_online, '%M %d, %Y %h:%i %p')) as last_online"),
+            DB::raw("CONCAT(DATE_FORMAT(students.created_at, '%M %d, %Y %h:%i %p')) as created_date"),
+            DB::raw("CONCAT(DATE_FORMAT(students.updated_at, '%M %d, %Y %h:%i %p')) as updated_date"),
         )
         ->where('students.username', $request->username)->first();
 
@@ -80,6 +90,7 @@ class UsersController extends Controller
 
     // update specific user's information
     public function update(Request $request) {
+        $authUser = Admin::select('name')->where('username', Auth::user()->username)->first();
 
         $validator = Validator::make($request->all(), [
             'name' => 'required',
@@ -101,6 +112,11 @@ class UsersController extends Controller
             ]);
         }
         else {
+            $currentYear = null;
+            if($request->enrolled == 0) {
+                $currentYear = Carbon::now()->format('Y');
+            }
+
             $user = DB::table('students')->where('username', $request->username)->first();
             if($user) {
                 try {
@@ -127,7 +143,8 @@ class UsersController extends Controller
                         'contact_rel' => $request->contact_rel,
                         'enrolled' => $request->enrolled,
                         'year_enrolled' => $request->year_enrolled,
-                        'updated_by' => Auth::user()->username,
+                        'year_unenrolled' => $currentYear,
+                        'updated_by' => $authUser->name,
                     ]);
 
                 if($update) {
@@ -157,6 +174,8 @@ class UsersController extends Controller
 
     // Delete / deactivate user
     public function delete(Request $request) {
+        $currentYear = Carbon::now()->format('Y');
+
         $authUser = Auth::user();
         if($authUser->role !== "ADMIN" || $authUser->access_level < 10) {
             return response()->json([
@@ -167,6 +186,7 @@ class UsersController extends Controller
         $user = DB::table('students')->where('username', $request->username)->first();
         if($user) {
             try {
+                Student::where('username', $request->username) ->update(['year_unenrolled' => $currentYear]);
                 $delete = Student::where('username', $request->username)->delete();
                 User::where('username', $request->username)->delete();
                 if ($delete) {
@@ -193,8 +213,9 @@ class UsersController extends Controller
     }
 
     public function addstudent(Request $request) {
-        $authUser = Auth::user();
-        if($authUser->role !== "ADMIN" || $authUser->access_level < 10) {
+        $authUser = Admin::select('name')->where('username', Auth::user()->username)->first();
+
+        if(Auth::user()->role !== "ADMIN" || Auth::user()->role < 10) {
             return response()->json([
                 'message' => 'You are not allowed to perform this action!'
             ]);
@@ -246,7 +267,9 @@ class UsersController extends Controller
                     'contact_rel' => $request->contact_rel,
                     'enrolled' => $request->enrolled,
                     'year_enrolled' => $request->year_enrolled,
-                    'created_by' => Auth::user()->username,
+                    'year_unenrolled' => null,
+                    'created_by' => $authUser->name,
+                    'updated_by' => $authUser->name,
                 ]);
 
             if($add) {

@@ -18,12 +18,12 @@ class AnnouncementController extends Controller
 {
     // Get all the list of admins
     public function index() {
-        $events = Calendar::select('id', 'event_name', 'event_date','description', 'time', 'event_date_end', 'color')
+        $events = Calendar::select('id', 'event_name', 'event_date','description', 'time', 'event_date_end', 'color', 'time_end')
         ->get()
         ->map(function($event) {
             // Combine date and time to create a proper start and end timestamp
             $startDateTime = Carbon::parse($event->event_date . ' ' . $event->time);
-            $endDateTime = Carbon::parse($event->event_date_end . ' ' . $event->time);
+            $endDateTime = Carbon::parse($event->event_date_end . ' ' . $event->time_end);
             $title = $event->event_name . ': ' . $event->description;
             
             return [
@@ -101,6 +101,7 @@ class AnnouncementController extends Controller
                     'event_date' => $request->event_date,
                     'event_date_end' => $request->event_date_end,
                     'time' => $request->time,
+                    'time_end' => $request->time_end,
                     'hashtag1' => $request->hashtag1,
                     'hashtag2' => $request->hashtag2,
                     'hashtag3' => $request->hashtag3,
@@ -158,6 +159,7 @@ class AnnouncementController extends Controller
             'event_date' => $request->event_date,
             'event_date_end' => $request->event_date_end,
             'time' => $request->time,
+            'time_end' => $request->time_end,
             'hashtag1' => $request->hashtag1,
             'hashtag2' => $request->hashtag2,
             'hashtag3' => $request->hashtag3,

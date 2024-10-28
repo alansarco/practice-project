@@ -21,7 +21,7 @@ function DefaultDoughnutChart({ title, description, height, chart, loading, noda
         <SoftBox px={description ? 1 : 0} pt={description ? 1 : 0}>
           {title && (
             <SoftBox mb={1}>
-              <SoftTypography className="text-center" variant="h6">{title}</SoftTypography> 
+              <SoftTypography className="text-left" variant="h6">{title}</SoftTypography> 
             </SoftBox>
           )}
 

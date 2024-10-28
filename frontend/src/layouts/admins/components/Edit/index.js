@@ -31,6 +31,7 @@ function Edit({USER, HandleRendering, UpdateLoading, ReloadTable }) {
             contact: USER.contact == null ? "" : USER.contact,
             access: USER.access_level == null ? " " : USER.access_level,
             birthdate: USER.birthdate == null ? "" : USER.birthdate,
+            organization: USER.organization == null ? "" : USER.organization,
             agreement: false,   
       };
 
@@ -59,6 +60,7 @@ function Edit({USER, HandleRendering, UpdateLoading, ReloadTable }) {
                   "name", 
                   "birthdate",
                   "gender",
+                  "organization",
                   "contact",
             ];
             const emptyRequiredFields = requiredFields.filter(field => !formData[field]);
@@ -129,6 +131,11 @@ function Edit({USER, HandleRendering, UpdateLoading, ReloadTable }) {
                                                       </option>
                                                       ))}
                                                 </select>
+                                          </Grid>  
+                                          <Grid item xs={12} sm={6} md={4} lg={3} px={1}>
+                                                <SoftTypography variant="button" className="me-1">Organization:</SoftTypography>
+                                                <SoftTypography variant="span" className="text-xxs text-danger fst-italic">*</SoftTypography>
+                                                <SoftInput name="organization" value={formData.organization} onChange={handleChange} size="small" /> 
                                           </Grid>  
                                     </Grid> 
                                     <Grid container spacing={0} alignItems="center">

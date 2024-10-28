@@ -102,6 +102,17 @@ function Table({ users, tablehead, HandleUSER, HandleRendering }) {
           </SoftBox>   
           <SoftBox
             className="px-2"
+            textAlign="center"
+            component="td"
+            fontSize={size.xs}
+            color="info"
+            borderBottom={`${borderWidth[1]} solid ${light.main}`}
+            borderTop={`${borderWidth[1]} solid ${light.main}`} 
+          >
+            <SoftTypography color={row.enrolled == "1" ? "info" : "primary"} sx={{ fontSize: "1rem" }}>{row.enrolled == "1" ? <CheckIcon /> : "x"}</SoftTypography>
+          </SoftBox>   
+          <SoftBox
+            className="px-2"
             textAlign="left"
             component="td"
             fontSize={size.xs}
