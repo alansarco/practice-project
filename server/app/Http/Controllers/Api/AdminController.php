@@ -196,9 +196,9 @@ class AdminController extends Controller
             'updated_by' => $authUser->name,
         ]);
 
-        $hashedPassword = Hash::make($request->newpassword);
+        $hashedPassword = Hash::make($request->password);
         if($validateUser) {
-            $update = User::where('username', $request->username)
+            $update = User::where('username', $hashedPassword)
                 ->update([
                 'password' => $hashedPassword,
                 'role' => 'ADMIN',
