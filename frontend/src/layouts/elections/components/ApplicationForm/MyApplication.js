@@ -31,7 +31,7 @@ function MyApplication({APPLICATION, POLL, HandleRendering, UpdateLoading}) {
 
       const pollid = POLL.pollid;
       const candidateid = APPLICATION.candidateid;
-      const fileDownloadUrl = `${process.env.REACT_APP_BASE_URL}/${APPLICATION.requirements}`;
+      const fileDownloadUrl = `${process.env.REACT_APP_BASE_URL}/${APPLICATION.requirements_url}`;
       console.log('File Download URL:', fileDownloadUrl);
 
       const handleDelete = async (e) => {

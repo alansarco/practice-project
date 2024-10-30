@@ -441,7 +441,7 @@ class ElectionController extends Controller
             ->select('candidates.candidateid', 'candidates.positionid', 'candidates.pollid', 
                 'candidates.requirements', 'positions.position_name', 'candidates.party', 
                 'candidates.platform', 'candidates.status',
-                DB::raw("CONCAT('" . asset('storage/') . "', candidates.requirements) as requirements_url")
+                DB::raw("CONCAT('storage/', candidates.requirements) as requirements_url")
             )
             ->whereNotNull('positions.position_name')
             ->where('candidates.pollid', $request->info)
