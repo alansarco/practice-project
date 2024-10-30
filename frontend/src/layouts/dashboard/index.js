@@ -17,8 +17,6 @@ import typography from "assets/theme/base/typography";
 
 // Data
 import DefaultDoughnutChart from "essentials/Charts/DoughnutCharts/DefaultDoughnutChart";
-import VerticalBarChart from "essentials/Charts/BarCharts/VerticalBarChart";
-import MiniStatisticsCard from "essentials/Cards/StatisticsCards/MiniStatisticsCard";
 import TimelineList from "essentials/Timeline/TimelineList";
 import TimelineItem from "essentials/Timeline/TimelineItem";
 

@@ -20,6 +20,7 @@ class Candidate extends Model
         'candidate_name',
         'party',
         'grade',
+        'requirements',
         'platform',
         'candidacy_status',
         'votes',

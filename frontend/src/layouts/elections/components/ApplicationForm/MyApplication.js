@@ -31,6 +31,8 @@ function MyApplication({APPLICATION, POLL, HandleRendering, UpdateLoading}) {
 
       const pollid = POLL.pollid;
       const candidateid = APPLICATION.candidateid;
+      const fileDownloadUrl = `${process.env.REACT_APP_BASE_URL}/${APPLICATION.requirements}`;
+      console.log('File Download URL:', fileDownloadUrl);
 
       const handleDelete = async (e) => {
         e.preventDefault();     
@@ -93,6 +95,24 @@ function MyApplication({APPLICATION, POLL, HandleRendering, UpdateLoading}) {
                         <ul className="text-danger fw-bold">
                               <li className="text-xxs fst-italic">You will receive an SMS notification once application is approved</li>
                         </ul>
+                        {/* Download Button */}
+                        {APPLICATION.requirements && (
+                            <Grid container spacing={0} alignItems="center">
+                                <Grid item xs={12} md={6} lg={4} px={1}>
+                                    <SoftButton 
+                                        component="a" 
+                                        href={fileDownloadUrl} 
+                                        target="_blank" 
+                                        download 
+                                        variant="gradient" 
+                                        color="primary" 
+                                        size="small"
+                                    >
+                                        Download Requirements
+                                    </SoftButton>
+                                </Grid>
+                            </Grid>
+                        )}
                         <SoftBox mt={2}>
                               <SoftBox className="px-md-0 px-2" >
                                     <SoftTypography fontWeight="medium" textTransform="capitalize" color="success" textGradient>

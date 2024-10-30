@@ -73,6 +73,7 @@ class MyPageController extends Controller
                     ON v.pollid = p.pollid 
                     AND v.positionid = p.positionid
                 WHERE v.pollid = polls.pollid
+                    AND v.voterid = '.$authUser->username.'
             ) as myvotes'),
             DB::raw('DATE_FORMAT((
                 SELECT MAX(v.created_at)

@@ -18,6 +18,7 @@ import Table from "layouts/elections/components/ResultContainer/resulttable";
 import { tablehead } from "layouts/elections/components/ResultContainer/resulthead";
 import DefaultDoughnutChart from "essentials/Charts/DoughnutCharts/DefaultDoughnutChart";
 import { distributionSelect } from "components/General/Utils";
+import NotificationsTwoToneIcon from '@mui/icons-material/NotificationsTwoTone';
 
 function List({ RESULT, CANDIDATES, POLL, HandleRendering, UpdateLoading, reload, VOTE, MAXVOTERS, CURRENTVOTES, PARTICIPANTS }) {
       const [isLoading, setLoading] = useState(false);
@@ -254,11 +255,16 @@ function List({ RESULT, CANDIDATES, POLL, HandleRendering, UpdateLoading, reload
                         <SoftBox className="px-md-0 px-2" > 
                               <Card className="bg-white px-4 pt-5">
                                     <SoftBox display="flex" justifyContent="end">
-                                          <SoftTypography color="info" className="text-center" variant="h6">
+                                          <SoftBox display="flex" justifyContent="end" className="my-auto me-2">
+                                                <SoftButton variant="gradient" className="my-auto rounded-pill" size="medium" color="info" iconOnly>
+                                                      <NotificationsTwoToneIcon/>
+                                                </SoftButton>
+                                          </SoftBox>
+                                          <SoftTypography color="info" className="text-center my-auto" variant="h6">
                                                 Total Voters:
                                                 <b className="text-dark">{MAXVOTERS || 0}</b>
                                           </SoftTypography>
-                                          <SoftTypography color="info" className="text-center ms-3" variant="h6">
+                                          <SoftTypography color="info" className="text-center ms-3 my-auto" variant="h6">
                                                 Casted Votes:
                                                 <b className="text-dark">{CURRENTVOTES || 0}</b>
                                           </SoftTypography>

@@ -432,19 +432,23 @@ class ElectionController extends Controller
     public function checkifapplied(Request $request) {
         $authUser = Auth::user();
         
+        //this will check if there is existing application under this user
         $application = Candidate::leftJoin('students', 'candidates.candidateid', '=', 'students.username')
             ->leftJoin('positions', function($join) {
                 $join->on('candidates.positionid', '=', 'positions.positionid')
                     ->on('candidates.pollid', '=', 'positions.pollid');
             })
             ->select('candidates.candidateid', 'candidates.positionid', 'candidates.pollid', 
-                'positions.position_name', 'candidates.party', 'candidates.platform', 'candidates.status'
+                'candidates.requirements', 'positions.position_name', 'candidates.party', 
+                'candidates.platform', 'candidates.status',
+                DB::raw("CONCAT('" . asset('storage/') . "', candidates.requirements) as requirements_url")
             )
             ->whereNotNull('positions.position_name')
             ->where('candidates.pollid', $request->info)
             ->where('candidates.candidateid', $authUser->username)
             ->first();
 
+        //this will check if there are other applications under his name
         $otherapplication = Candidate::leftJoin('polls', 'candidates.pollid', '=', 'polls.pollid')
             ->select('candidates.candidateid', 'candidates.positionid', 'candidates.pollid', 
                 'candidates.party', 'candidates.platform', 'candidates.status', 'polls.voting_end'
@@ -478,6 +482,7 @@ class ElectionController extends Controller
             'pollid' => 'required',
             'party' => 'required',
             'platform' => 'required',
+            'requirements' => 'required|mimes:zip|max:10240', 
         ]); 
 
         if($validator->fails()) {
@@ -486,6 +491,14 @@ class ElectionController extends Controller
             ]);
         } 
 
+        // Process the validated data, like storing the file, etc.
+        $requirementsPath = null; // Initialize the variable to hold the file path
+        if ($request->hasFile('requirements')) {
+            $file = $request->file('requirements');
+            $requirementsPath = $file->store('uploads/requirements'); // Store the file and get its path
+            // $requirementsPath = $file->store('uploads/requirements', 'public');
+        }
+        
         $existingApplication = Candidate::where('pollid', $request->pollid)
         ->where('positionid', $request->positionid)
         ->where('party', strtoupper($request->party))  // Check for the same party
@@ -536,6 +549,7 @@ class ElectionController extends Controller
                 'party' => strtoupper($request->party),
                 'grade' => strtoupper($authUser->grade),
                 'platform' => $request->platform,
+                'requirements' => $requirementsPath,
                 'status' => 0,
                 'created_by' => $authUser->name,
                 'updated_by' => $authUser->name
@@ -753,6 +767,7 @@ class ElectionController extends Controller
                     LEFT JOIN students s 
                         ON v.voterid = s.username 
                     WHERE v.candidateid = candidates.candidateid
+                        AND v.pollid = positions.pollid
                 ) as voters_info'),
                 DB::raw('(
                     SELECT 
@@ -767,6 +782,7 @@ class ElectionController extends Controller
                     LEFT JOIN students s 
                         ON v.voterid = s.username 
                     WHERE v.candidateid = candidates.candidateid
+                        AND v.pollid = positions.pollid
                 ) as voters_grade'),
             )
             ->whereNotNull('positions.position_name')
@@ -848,6 +864,7 @@ class ElectionController extends Controller
                         LEFT JOIN students s 
                             ON v.voterid = s.username 
                         WHERE v.candidateid = candidates.candidateid
+                            AND v.pollid = positions.pollid
                     ) as voters_info'),
                     DB::raw('(
                         SELECT 
@@ -862,6 +879,7 @@ class ElectionController extends Controller
                         LEFT JOIN students s 
                             ON v.voterid = s.username 
                         WHERE v.candidateid = candidates.candidateid
+                            AND v.pollid = positions.pollid
                     ) as voters_grade'),
                 )
                 ->whereNotNull('positions.position_name')

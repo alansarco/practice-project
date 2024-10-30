@@ -35,6 +35,7 @@ import { passToErrorLogs } from "components/Api/Gateway";
 import { passToSuccessLogs } from "components/Api/Gateway";
 import CustomPagination from "components/General/CustomPagination";
 import { enrolledSelect } from "components/General/Utils";
+import CloudUploadTwoToneIcon from '@mui/icons-material/CloudUploadTwoTone';
 
 function Juniors() {
     const currentFileName = "layouts/juniors/index.js";
@@ -157,12 +158,15 @@ function Juniors() {
         :
           <SoftBox p={2}>
             <SoftBox >   
-              <SoftBox className="px-md-4 px-3 py-2" display="flex" justifyContent="space-between" alignItems="center">
+              <SoftBox className="px-md-4 px-3 py-2 d-block d-sm-flex" justifyContent="space-between" alignItems="center">
                 <SoftBox>
                   <SoftTypography className="text-uppercase text-secondary" variant="h6" >Junior High Student List</SoftTypography>
                 </SoftBox>
                 {access == 999 && role === "ADMIN" &&
                 <SoftBox display="flex" >
+                  <SoftButton className="ms-2 py-0 px-3 d-flex rounded-pill" variant="gradient" color="info" size="small" >
+                    <CloudUploadTwoToneIcon size="15px" className="me-1" /> upload excel
+                  </SoftButton>
                   <SoftButton onClick={() => setRendering(3)} className="ms-2 py-0 px-3 d-flex rounded-pill" variant="gradient" color="success" size="small" >
                     <Icon>add</Icon> Add Student
                   </SoftButton>
@@ -172,8 +176,9 @@ function Juniors() {
               <Card className="px-md-4 px-2 pt-3 pb-md-3 pb-2">
                 <SoftBox component="form" role="form" className="px-md-0 px-2" onSubmit={handleSubmit}>
                     <Grid container spacing={1} py={1} pb={2}>  
-                        <Grid item xs={12} md={8} display="">
-                            <SoftTypography variant="button" className="me-2">Filter Result:</SoftTypography>
+                        <Grid item xs={12} lg={8} className="d-block d-md-flex">
+                            <SoftTypography variant="button" className="me-2 my-auto">Filter Result:</SoftTypography>
+                            <SoftBox className="my-auto">
                             <select className="form-select-sm text-secondary rounded-5 me-2 cursor-pointer border span" name="grade" value={formData.grade} onChange={handleChange} >
                                 <option value="">All JHS</option>
                                 {juniorSelect && juniorSelect.map((grade) => (
@@ -190,8 +195,9 @@ function Juniors() {
                                 </option>
                                 ))}
                             </select>
+                            </SoftBox>
                         </Grid>   
-                        <Grid item xs={12} md={4}>  
+                        <Grid item xs={12} lg={4}>  
                             <SoftBox className="px-md-0 px-2" display="flex" margin="0" justifyContent="end">
                                 <SoftInput 
                                     value={formData.filter}

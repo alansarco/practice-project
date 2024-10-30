@@ -153,7 +153,7 @@ function Table({ authUser, elections, tablehead, HandleDATA, HandleRendering }) 
             </SoftButton>
             : access == 5 && row.allowed === "yes" &&
               <SoftButton onClick={() => handleSubmitApply(row.pollid)} className="text-xxxs px-3 rounded-pill" size="small" variant="gradient" color="warning"
-              disabled = {currentDate < row.application_start}
+              disabled = {currentDate < row.application_start || currentDate > row.application_end}
             >
                 <DescriptionTwoToneIcon className="me-1 p-0"/> Apply for Candidacy
             </SoftButton>
