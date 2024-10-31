@@ -14,7 +14,6 @@ const DownloadButton = ({ candidateId, handleLoading }) => {
     const handleDownload = async () => {
         try {
             handleLoading(true);
-            console.log(apiRoutes.downloadRequirements);
             const response = await axios.get(apiRoutes.downloadRequirements, {
                 params: { candidateId },
                 headers,
