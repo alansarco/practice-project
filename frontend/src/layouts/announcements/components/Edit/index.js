@@ -198,7 +198,12 @@ function Edit({DATA, HandleRendering, ReloadTable }) {
                             </Grid> 
                             <Grid mt={3} container spacing={0} alignItems="center">
                                     <Grid item xs={12} pl={1}>
-                                        <Checkbox name="agreement" checked={formData.agreement} onChange={handleChange} />
+                                        <Checkbox 
+                                            className={` ${formData.agreement ? '' : 'border-2 border-success'}`} 
+                                            name="agreement" 
+                                            checked={formData.agreement} 
+                                            onChange={handleChange} 
+                                        />
                                         <SoftTypography variant="button" className="me-1 ms-2">Verify Data </SoftTypography>
                                         <SoftTypography variant="p" className="text-xxs text-secondary fst-italic">(Confirming that the information above are true and accurate) </SoftTypography>
                                         <SoftTypography variant="span" className="text-xxs text-danger fst-italic">*</SoftTypography>

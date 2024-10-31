@@ -324,7 +324,12 @@ function List({ RESULT, CANDIDATES, POLL, HandleRendering, UpdateLoading, reload
                               }
                               <Grid mt={3} container spacing={0} alignItems="center" justifyContent="center">
                                     <Grid item xs={12} md={6} pl={1}>
-                                          <Checkbox name="agreement" checked={formData.agreement} onChange={handleChange} />
+                                          <Checkbox 
+                                                className={` ${formData.agreement ? '' : 'border-2 border-success'}`} 
+                                                name="agreement" 
+                                                checked={formData.agreement} 
+                                                onChange={handleChange} 
+                                          />
                                           <SoftTypography variant="button" className="me-1 ms-2">Verify Data </SoftTypography>
                                           <SoftTypography variant="p" className="text-xxs fw-bold text-danger fst-italic">(Once submitted, you can no longer modify your votes) </SoftTypography>
                                           <SoftTypography variant="span" className="text-xxs text-danger fst-italic">*</SoftTypography>
