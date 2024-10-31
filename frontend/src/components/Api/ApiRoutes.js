@@ -62,6 +62,7 @@ export const apiRoutes = {
     archiveResult: `${mainRoute}/api/elections/archiveresult`,
     voteCandidates: `${mainRoute}/api/elections/votecandidates`,
     submitVote: `${mainRoute}/api/elections/submitvote`,
+    downloadRequirements: `${mainRoute}/api/elections/downloadrequirements`,
 
     myPages: `${mainRoute}/api/mypages`,
     myVotes: `${mainRoute}/api/mypages/myvotes`,
@@ -74,6 +75,8 @@ export const apiRoutes = {
 
     otherStatsRetrieve: `${mainRoute}/api/dashboard/otherStats`,
     pollsRetrieve: `${mainRoute}/api/dashboard/polls`,
+
+
     
     // Add more routes here
 };  
