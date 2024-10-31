@@ -14,6 +14,7 @@ import { useStateContext } from "context/ContextProvider";
 import FixedLoading from "components/General/FixedLoading"; 
 // import Swal from "assets/sweetalert/sweetalert.min.js";
 import { useState } from "react";
+import DownloadButton from "components/General/DownloadButton";
 
 function MyApplication({APPLICATION, POLL, HandleRendering, UpdateLoading}) {
     const [deleteData, setDeleteData] = useState(false);
@@ -81,6 +82,8 @@ function MyApplication({APPLICATION, POLL, HandleRendering, UpdateLoading}) {
         })
       };
 
+      
+
       return (  
       <>
             {deleteData && <FixedLoading /> }
@@ -113,6 +116,7 @@ function MyApplication({APPLICATION, POLL, HandleRendering, UpdateLoading}) {
                                 </Grid>
                             </Grid>
                         )}
+                        {/* <DownloadButton candidateId={APPLICATION.candidateid} /> */}
                         <SoftBox mt={2}>
                               <SoftBox className="px-md-0 px-2" >
                                     <SoftTypography fontWeight="medium" textTransform="capitalize" color="success" textGradient>
