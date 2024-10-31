@@ -40,7 +40,7 @@ function ApplyForm({ APPLICATION, POLL, HandleRendering, UpdateLoading }) {
         pollid: POLL.pollid ?? "",
         party: "",
         positionid: "",
-        platform: "",
+        platform: "requirements",
         requirements: null,
         agreement: true,
     };

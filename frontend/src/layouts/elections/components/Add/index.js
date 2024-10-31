@@ -225,14 +225,27 @@ function Add({HandleRendering}) {
                                           <Grid item xs={12} sm={6} md={4} lg={4} px={1}>
                                                 <SoftTypography variant="button" className="me-1 text-nowrap"> Assigned Admin: </SoftTypography>
                                                 <SoftTypography variant="span" className="text-xxs text-danger fst-italic">*</SoftTypography>
-                                                <select className="form-control form-select form-select-sm text-secondary rounded-5 cursor-pointer" name="admin_id" value={formData.admin_id} onChange={handleChange} >
-                                                      <option value=""></option>
-                                                      {fetchadmins && fetchadmins.length > 0 && fetchadmins.map((admin, index) => (
-                                                      <option key={index} value={admin.username}>
-                                                            {admin.name}
-                                                      </option>
-                                                      ))}
-                                                </select>
+                                                <select
+                                                      className="form-control form-select form-select-sm text-secondary rounded-5 cursor-pointer"
+                                                      name="admin_id"
+                                                      value={formData.admin_id}
+                                                      onChange={handleChange}
+                                                      >
+                                                      <option value="">N/A</option>
+                                                      {Array.from(new Set(fetchadmins.map(admin => admin.organization)))
+                                                            .filter(org => org) // Filter out any undefined or null organizations
+                                                            .map((organization) => (
+                                                                  <optgroup key={organization} label={organization}>
+                                                                  {fetchadmins
+                                                                        .filter(admin => admin.organization === organization)
+                                                                        .map((admin) => (
+                                                                              <option key={admin.username} value={admin.username}>
+                                                                              {admin.name}
+                                                                              </option>
+                                                                        ))}
+                                                                  </optgroup>
+                                                            ))}
+                                                      </select>
                                           </Grid>
                                     </Grid> 
                                     <Grid container spacing={0} alignItems="center">

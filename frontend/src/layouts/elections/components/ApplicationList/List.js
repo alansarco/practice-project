@@ -15,6 +15,7 @@ import FixedLoading from "components/General/FixedLoading";
 // import Swal from "assets/sweetalert/sweetalert.min.js";
 import { useState } from "react";
 import SoftBadge from "components/SoftBadge";
+import DownloadButton from "components/General/DownloadButton";
 
 function List({APPLICATION, POLL, HandleRendering, UpdateLoading}) {
       const [deleteData, setDeleteData] = useState(false);
@@ -38,6 +39,10 @@ function List({APPLICATION, POLL, HandleRendering, UpdateLoading}) {
       };
       const rejectTab = () => {
             setTab(3);
+      };
+
+      const handleLoading = (value) => {
+            setDeleteData(value);
       };
 
 
@@ -249,7 +254,12 @@ function List({APPLICATION, POLL, HandleRendering, UpdateLoading}) {
                                                                   Reject
                                                                   </SoftButton>
                                                                   </SoftBox>
-                                                            </Grid>                                
+                                                            </Grid>    
+                                                            <Grid item xs={12} sm={6} lg={4}>
+                                                                  <SoftBox display="flex" justifyContent="end">
+                                                                  <DownloadButton candidateId={candidate.candidateid} handleLoading={handleLoading}/>
+                                                                  </SoftBox>
+                                                            </Grid>                               
                                                             </Grid>     
                                                       </SoftBox>
                                                       : 
@@ -343,6 +353,11 @@ function List({APPLICATION, POLL, HandleRendering, UpdateLoading}) {
                                                                   </SoftButton>
                                                                   </SoftBox>
                                                             </Grid>                                        
+                                                            <Grid item xs={12} sm={6} lg={4}>
+                                                                  <SoftBox display="flex" justifyContent="end">
+                                                                  <DownloadButton candidateId={candidate.candidateid} handleLoading={handleLoading}/>
+                                                                  </SoftBox>
+                                                            </Grid>                                        
                                                             </Grid>     
                                                       </SoftBox>
                                                       : 
@@ -428,6 +443,11 @@ function List({APPLICATION, POLL, HandleRendering, UpdateLoading}) {
                                                                   <SoftButton onClick={() => handleApprove(candidate)} className="mx-1 mt-1 mt-md-0 w-100 text-xxs px-2 rounded-pill" size="small" color="info">
                                                                   Approve
                                                                   </SoftButton>
+                                                                  </SoftBox>
+                                                            </Grid>   
+                                                            <Grid item xs={12} sm={6} lg={4}>
+                                                                  <SoftBox display="flex" justifyContent="end">
+                                                                  <DownloadButton Color="success" candidateId={candidate.candidateid} handleLoading={handleLoading}/>
                                                                   </SoftBox>
                                                             </Grid>                                        
                                                             </Grid>     

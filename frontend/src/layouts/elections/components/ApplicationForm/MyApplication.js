@@ -30,10 +30,14 @@ function MyApplication({APPLICATION, POLL, HandleRendering, UpdateLoading}) {
         HandleRendering(1);
       };
 
+    const handleLoading = (value) => {
+      setDeleteData(value);
+      };
+      
+
       const pollid = POLL.pollid;
       const candidateid = APPLICATION.candidateid;
       const fileDownloadUrl = `${process.env.REACT_APP_BASE_URL}/${APPLICATION.requirements_url}`;
-      console.log('File Download URL:', fileDownloadUrl);
 
       const handleDelete = async (e) => {
         e.preventDefault();     
@@ -97,26 +101,18 @@ function MyApplication({APPLICATION, POLL, HandleRendering, UpdateLoading}) {
                         </SoftTypography> 
                         <ul className="text-danger fw-bold">
                               <li className="text-xxs fst-italic">You will receive an SMS notification once application is approved</li>
+                              <li className="text-xxs fst-italic">You can apply one position only</li>
+                              <li className="text-xxs fst-italic">Once aproved, you can no longer delete it</li>
+                              <li className="text-xxs fst-italic">Your application will be approved by the admin</li>
                         </ul>
                         {/* Download Button */}
-                        {APPLICATION.requirements && (
+                        {APPLICATION.requirements_base64 && (
                             <Grid container spacing={0} alignItems="center">
                                 <Grid item xs={12} md={6} lg={4} px={1}>
-                                    <SoftButton 
-                                        component="a" 
-                                        href={fileDownloadUrl} 
-                                        target="_blank" 
-                                        download 
-                                        variant="gradient" 
-                                        color="primary" 
-                                        size="small"
-                                    >
-                                        Download Requirements
-                                    </SoftButton>
+                                  <DownloadButton candidateId={APPLICATION.candidateid} handleLoading={handleLoading}/>
                                 </Grid>
                             </Grid>
                         )}
-                        {/* <DownloadButton candidateId={APPLICATION.candidateid} /> */}
                         <SoftBox mt={2}>
                               <SoftBox className="px-md-0 px-2" >
                                     <SoftTypography fontWeight="medium" textTransform="capitalize" color="success" textGradient>

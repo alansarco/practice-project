@@ -1,8 +1,11 @@
 import React from 'react';
 import axios from 'axios';
 import { useStateContext } from "context/ContextProvider";
+import { apiRoutes } from 'components/Api/ApiRoutes';
+import { toast } from "react-toastify";
+import SoftButton from 'components/SoftButton';
 
-const DownloadButton = ({ candidateId }) => {
+const DownloadButton = ({ candidateId, handleLoading, color }) => {
     const {token} = useStateContext();  
     const YOUR_ACCESS_TOKEN = token; 
     const headers = {
@@ -10,10 +13,12 @@ const DownloadButton = ({ candidateId }) => {
     };
     const handleDownload = async () => {
         try {
-            const response = await axios.get(`${process.env.REACT_APP_BASE_URL}/download-requirement/${candidateId}`, {
-                responseType: 'blob', // Important to set response type
+            handleLoading(true);
+            const response = await axios.get(apiRoutes.downloadRequirements, {
+                params: { candidateId },
+                headers,
+                responseType: 'blob' // Important to set response type to blob for binary data
             });
-
             // Create a URL for the file
             const url = window.URL.createObjectURL(new Blob([response.data]));
 
@@ -24,16 +29,21 @@ const DownloadButton = ({ candidateId }) => {
             document.body.appendChild(link);
             link.click();
             link.remove();
+            handleLoading(false);
+            toast.success("Downloading file successfull!", { autoClose: true });
         } catch (error) {
-            console.error('Error downloading the file:', error);
-            alert('Failed to download the file.');
+            toast.error("No file or requiremnts to download!", { autoClose: true });
+            handleLoading(false);
         }
     };
 
     return (
-        <button onClick={handleDownload}>
+        <>
+        <SoftButton className="mx-1 mt-1 mt-md-0 w-100 text-xxs px-2 rounded-pill text-nowrap" onClick={handleDownload} variant="gradient"  color="success"  size="small">
             Download Requirements
-        </button>
+        </SoftButton>
+        </>
+        
     );
 };
 

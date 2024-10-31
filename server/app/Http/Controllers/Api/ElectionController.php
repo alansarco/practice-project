@@ -21,10 +21,10 @@ class ElectionController extends Controller
 {
     public function adminselect() {
         $admins = User::leftJoin('admins', 'users.username', '=', 'admins.username')
-                ->select('admins.username', 'admins.name')
+                ->select('admins.username', 'admins.name', 'admins.organization')
                 ->where('users.account_status', 1)
                 ->where('users.role', 'ADMIN')
-                ->where('users.access_level', 999)
+                ->where('users.access_level', 10)
                 ->orderBy('admins.name', 'ASC')
                 ->get();
 
@@ -439,9 +439,8 @@ class ElectionController extends Controller
                     ->on('candidates.pollid', '=', 'positions.pollid');
             })
             ->select('candidates.candidateid', 'candidates.positionid', 'candidates.pollid', 
-                'candidates.requirements', 'positions.position_name', 'candidates.party', 
-                'candidates.platform', 'candidates.status',
-                DB::raw("CONCAT('storage/', candidates.requirements) as requirements_url")
+                'positions.position_name', 'candidates.party', 'candidates.platform', 'candidates.status',
+                DB::raw("TO_BASE64(candidates.requirements) as requirements_base64"),
             )
             ->whereNotNull('positions.position_name')
             ->where('candidates.pollid', $request->info)
@@ -475,6 +474,22 @@ class ElectionController extends Controller
         }
     }
 
+    public function downloadrequirements(Request $request) {
+        $application = Candidate::where('candidateid', $request->candidateId)->first();
+    
+        if (!$application || !$application->requirements) {
+            return response()->json(['message' => 'File not found'], 404);
+        }
+    
+        $fileName = 'requirements.zip'; // Adjust the file name as needed
+        return response()->stream(function () use ($application) {
+            echo $application->requirements; // Output the file content
+        }, 200, [
+            'Content-Type' => 'application/zip',
+            'Content-Disposition' => "attachment; filename=\"$fileName\"",
+        ]);
+    }
+
     public function sumbitapplication(Request $request) {
         $authUser = Student::select('name', 'username', 'grade')->where('username', Auth::user()->username)->first();
 
@@ -492,11 +507,10 @@ class ElectionController extends Controller
         } 
 
         // Process the validated data, like storing the file, etc.
-        $requirementsPath = null; // Initialize the variable to hold the file path
+        $requirementsData = null; // Initialize the variable to hold the file path
         if ($request->hasFile('requirements')) {
             $file = $request->file('requirements');
-            $requirementsPath = $file->store('uploads/requirements'); // Store the file and get its path
-            // $requirementsPath = $file->store('uploads/requirements', 'public');
+            $requirementsData = file_get_contents($file->getRealPath()); // Get the file content as a string
         }
         
         $existingApplication = Candidate::where('pollid', $request->pollid)
@@ -549,7 +563,7 @@ class ElectionController extends Controller
                 'party' => strtoupper($request->party),
                 'grade' => strtoupper($authUser->grade),
                 'platform' => $request->platform,
-                'requirements' => $requirementsPath,
+                'requirements' => $requirementsData,
                 'status' => 0,
                 'created_by' => $authUser->name,
                 'updated_by' => $authUser->name
@@ -655,7 +669,7 @@ class ElectionController extends Controller
                         ->on('candidates.pollid', '=', 'positions.pollid');
                 })
                 ->select('candidates.candidateid', 'candidates.positionid', 'candidates.pollid', 
-                    'positions.position_name', 'candidates.party', 'candidates.platform', 'candidates.status'
+                    'positions.position_name', 'candidates.party', 'candidates.platform', 'candidates.status',
                 )
                 ->whereNotNull('positions.position_name')
                 ->where('candidates.pollid', $request->info)
