@@ -34,6 +34,7 @@ const DownloadButton = ({ candidateId, handleLoading, color }) => {
         } catch (error) {
             toast.error("No file or requiremnts to download!", { autoClose: true });
             handleLoading(false);
+            console.log(error);
         }
     };
 
