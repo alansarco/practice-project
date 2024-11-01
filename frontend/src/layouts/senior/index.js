@@ -35,6 +35,7 @@ import { passToErrorLogs } from "components/Api/Gateway";
 import { passToSuccessLogs } from "components/Api/Gateway";
 import CustomPagination from "components/General/CustomPagination";
 import CloudUploadTwoToneIcon from '@mui/icons-material/CloudUploadTwoTone';
+import UploadStudents from "layouts/junior/components/UploadStudents";
 
 function Seniors() {
     const currentFileName = "layouts/juniors/index.js";
@@ -157,6 +158,9 @@ function Seniors() {
           rendering == 3 ?
             <Add HandleRendering={HandleRendering} ReloadTable={ReloadTable} />
         :
+        rendering == 4 ?
+            <UploadStudents HandleRendering={HandleRendering} ReloadTable={ReloadTable} />
+        :
           <SoftBox p={2}>
             <SoftBox >   
               <SoftBox className="px-md-4 px-3 py-2 d-block d-sm-flex" justifyContent="space-between" alignItems="center">
@@ -165,7 +169,7 @@ function Seniors() {
                 </SoftBox>
                 {access == 999 && role === "ADMIN" &&
                 <SoftBox display="flex" >
-                  <SoftButton className="ms-2 py-0 px-3 d-flex rounded-pill" variant="gradient" color="info" size="small" >
+                  <SoftButton onClick={() => setRendering(4)} className="ms-2 py-0 px-3 d-flex rounded-pill" variant="gradient" color="info" size="small" >
                     <CloudUploadTwoToneIcon size="15px" className="me-1" /> upload excel
                   </SoftButton>
                   <SoftButton onClick={() => setRendering(3)} className="ms-2 py-0 px-3 d-flex rounded-pill" variant="gradient" color="success" size="small" >
