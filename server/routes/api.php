@@ -59,6 +59,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('deleteuser', [UserController::class, 'deleteuser']);
         Route::post('adduser', [UserController::class, 'adduser']);
         Route::get('userselect', [UserController::class, 'userselect']);
+        Route::post('uploadexcel', [UserController::class, 'uploadexcel']);
 
     });
 

@@ -1,5 +1,5 @@
-// export const mainRoute = "http://127.0.0.1:8000";
-export const mainRoute = "https://seahorse-app-to578.ondigitalocean.app/app";
+export const mainRoute = "http://127.0.0.1:8000";
+// export const mainRoute = "https://seahorse-app-to578.ondigitalocean.app/app";
 
 export const apiRoutes = {  
     login: `${mainRoute}/api/login`,
@@ -24,6 +24,7 @@ export const apiRoutes = {
     addUser: `${mainRoute}/api/users/adduser`,
     userSelect: `${mainRoute}/api/users/userselect`,
     deleteUser: `${mainRoute}/api/users/deleteuser`,
+    uploadExcel: `${mainRoute}/api/users/uploadexcel`,
 
     juniorRetrieve: `${mainRoute}/api/juniors`,
     seniorRetrieve: `${mainRoute}/api/seniors`,
