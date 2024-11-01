@@ -289,26 +289,31 @@ class UserController extends Controller
                         $birthdate = $cells[4]->getValue();
                         $grade = $cells[5]->getValue();
                         $section = $cells[6]->getValue();
-                        $track = $cells[7]->getValue();
-                        $course = $cells[8]->getValue();
-                        $religion = $cells[9]->getValue();
-                        $house_no = $cells[10]->getValue();
-                        $barangay = $cells[11]->getValue();
-                        $municipality = $cells[12]->getValue();
-                        $province = $cells[13]->getValue();
-                        $father_name = $cells[14]->getValue();
-                        $mother_name = $cells[15]->getValue();
-                        $guardian = $cells[16]->getValue();
-                        $guardian_rel = $cells[17]->getValue();
-                        $contact_rel = $cells[18]->getValue();
-                        $enrolled = $cells[19]->getValue();
-                        $year_enrolled = $cells[20]->getValue();
-                        $modality = $cells[21]->getValue();
+                        $program = $cells[7]->getValue();
+                        $track = $cells[8]->getValue();
+                        $course = $cells[9]->getValue();
+                        $religion = $cells[10]->getValue();
+                        $house_no = $cells[11]->getValue();
+                        $barangay = $cells[12]->getValue();
+                        $municipality = $cells[13]->getValue();
+                        $province = $cells[14]->getValue();
+                        $father_name = $cells[15]->getValue();
+                        $mother_name = $cells[16]->getValue();
+                        $guardian = $cells[17]->getValue();
+                        $guardian_rel = $cells[18]->getValue();
+                        $contact_rel = $cells[19]->getValue();
+                        $enrolled = $cells[20]->getValue();
+                        $year_enrolled = $cells[21]->getValue();
+                        $modality = $cells[22]->getValue();
 
                         // Validation
                         if ($grade < 11) {
                             $track = null;
                             $course = null;
+                        }
+
+                        if ($grade > 10) {
+                            $program = null;
                         }
 
                         if(!$year_enrolled) {
@@ -350,6 +355,7 @@ class UserController extends Controller
                                 'birthdate' => $birthdate,
                                 'grade' => $grade,
                                 'section' => strtoupper($section),
+                                'program' => strtoupper($program),
                                 'track' => strtoupper($track),
                                 'course' => strtoupper($course),
                                 'religion' => $religion,

@@ -92,10 +92,22 @@ class UsersController extends Controller
     public function update(Request $request) {
         $authUser = Admin::select('name')->where('username', Auth::user()->username)->first();
 
-        if(strlen($request->username) != 12) {
+        if(!is_numeric($request->username) || strlen($request->username) != 12) {
             return response()->json([
                 'message' => 'LRN must be an exact 12 digit number!'
             ]);
+        }
+
+        $track = $request->track;
+        $course = $request->course;
+        $program = $request->program;
+        // Validation
+        if ($request->grade < 11) {
+            $track = NULL;
+            $course = NULL;
+        }
+        else if ($request->grade > 10) {
+            $program = NULL;
         }
 
         $validator = Validator::make($request->all(), [
@@ -131,8 +143,9 @@ class UsersController extends Controller
                         'name' => strtoupper($request->name),
                         'grade' => $request->grade,
                         'section' => strtoupper($request->section),   
-                        'track' => strtoupper($request->track),   
-                        'course' => strtoupper($request->course),   
+                        'program' => strtoupper($program),   
+                        'track' => strtoupper($track),   
+                        'course' => strtoupper($course),   
                         'gender' => $request->gender,   
                         'contact' => $request->contact,   
                         'religion' => strtoupper($request->religion),   
@@ -246,10 +259,22 @@ class UsersController extends Controller
             ]);
         }
 
-        if(strlen($request->username) != 12) {
+        if(!is_numeric($request->username) || strlen($request->username) != 12) {
             return response()->json([
                 'message' => 'LRN must be an exact 12 digit number!'
             ]);
+        }
+
+        $track = $request->track;
+        $course = $request->course;
+        $program = $request->program;
+        // Validation
+        if ($request->grade < 11) {
+            $track = NULL;
+            $course = NULL;
+        }
+        else if ($request->grade > 10) {
+            $program = NULL;
         }
 
         $studentExist = Student::where('username', $request->username)->first();
@@ -261,8 +286,9 @@ class UsersController extends Controller
                     'name' => strtoupper($request->name),
                     'grade' => $request->grade,
                     'section' => strtoupper($request->section),   
-                    'track' => strtoupper($request->track),   
-                    'course' => strtoupper($request->course),   
+                    'track' => strtoupper($track),   
+                    'program' => strtoupper($program),   
+                    'course' => strtoupper($course),   
                     'gender' => $request->gender,   
                     'contact' => $request->contact,   
                     'religion' => strtoupper($request->religion),   

@@ -56,6 +56,14 @@ export const trackSelect = [
       { value: "TECH-VOCATIONAL", desc: "TECH-VOCATIONAL" },
 ];
 
+export const programSelect = [
+      { value: "REGULAR PROGRAM", desc: "REGULAR PROGRAM" },
+      { value: "SPECIAL PROGRAM IN THE ARTS", desc: "SPECIAL PROGRAM IN THE ARTS" },
+      { value: "SPECIAL PROGRAM IN SPORTS", desc: "SPECIAL PROGRAM IN SPORTS" },
+      { value: "SCIENCE TECHNOLOGY & ENGINEERING PROGRAM", desc: "SCIENCE, TECHNOLOGY & ENGINEERING PROGRAM" },
+      { value: "OPEN HIGH SCHOOL PROGRAM", desc: "OPEN HIGH SCHOOL PROGRAM" },
+];
+
 export const modalitySelect = [
       { value: "FACE TO FACE", desc: "FACE TO FACE" },
       { value: "BLENDEND LEARNING", desc: "BLENDEND LEARNING" },

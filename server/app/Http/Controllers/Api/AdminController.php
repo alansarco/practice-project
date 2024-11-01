@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 use App\Models\User;
 use App\Models\Admin;
+use Carbon\Carbon;
 use Exception;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
@@ -234,36 +235,29 @@ class AdminController extends Controller
     }
 
     public function deleteadmin(Request $request) {
-        $authUser = Auth::user();
+        $currentYear = Carbon::now()->format('Y');
 
+        $authUser = Auth::user();
         if($authUser->role !== "ADMIN" || $authUser->access_level < 10) {
             return response()->json([
                 'message' => 'You are not allowed to perform this action!'
             ]);
         }
-
-        $user = User::where('username', $request->username)->first();
+        
+        $user = DB::table('admins')->where('username', $request->username)->first();
         if($user) {
             try {
-                $users = DB::table('users')->where('username', $request->username)->first();
-                if($users) {
-                    $update = DB::table('users')->where('username', $request->username)->update([ 
-                        'role' => 'USER',
-                        'access_level' => 10,
-                    ]);
-                    if($update) {
-                        return response()->json([
-                            'status' => 200,
-                            'message' => 'Admin removed successfully!'
-                        ], 200);
-                    }
+                $delete = Admin::where('username', $request->username)->delete();
+                DB::table('users')->where('username', $request->username)->delete();
+                User::where('username', $request->username)->delete();
+                if ($delete) {
                     return response()->json([
+                        'status' => 200,
+                        'message' => 'Admin deleted successfully!'
+                    ], 200);
+                } else {
+                    return response()->json([   
                         'message' => 'Something went wrong!'
-                    ]);
-                }
-                else {
-                    return response()->json([
-                        'message' => 'Admin not found!'
                     ]);
                 }
             } catch (Exception $e) {
@@ -271,11 +265,11 @@ class AdminController extends Controller
                     'message' => $e->getMessage()
                 ]);
             }
-        } else {
+        }
+        else {
             return response()->json([
-                'message' => 'Master not found!'
+                'message' => 'Admin not found!'
             ]);
         }
     }
-    
 }

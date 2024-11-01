@@ -40,9 +40,9 @@ function ApplyForm({ APPLICATION, POLL, HandleRendering, UpdateLoading }) {
         pollid: POLL.pollid ?? "",
         party: "",
         positionid: "",
-        platform: "requirements",
+        platform: "",
         requirements: null,
-        agreement: true,
+        agreement: false,
     };
 
     const [formData, setFormData] = useState(initialState);
@@ -139,6 +139,7 @@ function ApplyForm({ APPLICATION, POLL, HandleRendering, UpdateLoading }) {
                             <li className="text-xxs fst-italic">Once aproved, you can no longer delete it</li>
                             <li className="text-xxs fst-italic">You cant apply position if party member has applied already</li>
                             <li className="text-xxs fst-italic">Your application will be approved by the admin</li>
+                            <li className="text-xxs fst-italic">REQUIREMENTS must be in a .zip file</li>
                     </ul>
                     <SoftBox mt={2}>
                         <SoftBox component="form" role="form" className="px-md-0 px-2" onSubmit={handleSubmit}>

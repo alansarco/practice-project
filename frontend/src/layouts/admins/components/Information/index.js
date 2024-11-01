@@ -16,10 +16,13 @@ import { useState } from "react";
 import FixedLoading from "components/General/FixedLoading"; 
 import { messages } from "components/General/Messages";
 import axios from "axios";  
-import { genderSelect } from "components/General/Utils";
 
 function Information({USER, HandleRendering, ReloadTable}) {  
+  const [deleteUser, setDeleteUser] = useState(false);
+  const currentFileName = "layouts/users/components/Information/index.js";
   const {token, role, access} = useStateContext();  
+  const username = USER.username;
+
   const YOUR_ACCESS_TOKEN = token; 
   const headers = {
     'Authorization': `Bearer ${YOUR_ACCESS_TOKEN}`
@@ -30,8 +33,56 @@ function Information({USER, HandleRendering, ReloadTable}) {
     ReloadTable();
   };
 
+  const handleDelete = async (e) => {
+    e.preventDefault();     
+    Swal.fire({
+      customClass: {
+        title: 'alert-title',
+        icon: 'alert-icon',
+        confirmButton: 'alert-confirmButton',
+        cancelButton: 'alert-cancelButton',
+        container: 'alert-container',
+        popup: 'alert-popup'
+      },
+      title: 'Delete Admin?',
+      text: "Are you sure you want to delete this data? You won't be able to revert this!",
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',  
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'Yes, delete it!'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        setDeleteUser(true);
+          if (!token) {
+            toast.error(messages.prohibit, { autoClose: true });
+          }
+          else {  
+            axios.get(apiRoutes.deleteAdmin, { params: { username }, headers })
+              .then(response => {
+                if (response.data.status == 200) {
+                  toast.success(`${response.data.message}`, { autoClose: true });
+                } else {
+                  toast.error(`${response.data.message}`, { autoClose: true });
+                }
+                passToSuccessLogs(response.data, currentFileName);
+                HandleRendering(1);
+                ReloadTable();
+                setDeleteUser(false);
+              })  
+              .catch(error => {
+                setDeleteUser(false);
+                toast.error("Cant delete admin", { autoClose: true });
+                passToErrorLogs(error, currentFileName);
+              });
+          }
+      }
+    })
+  };
+
   return (
     <>  
+      {deleteUser && <FixedLoading /> }
       <SoftBox mt={5} mb={3} px={2}>
         <SoftBox p={4} className="shadow-sm rounded-4 bg-white" >
           <Grid container spacing={2}>
@@ -68,6 +119,14 @@ function Information({USER, HandleRendering, ReloadTable}) {
                 </SoftButton>
               </SoftBox>
             </Grid>
+            {access >= 999 && role === "ADMIN" && 
+            <Grid item xs={12} sm={4} md={2} pl={1}>
+              <SoftBox mt={2} display="flex" justifyContent="end">
+                <SoftButton onClick={handleDelete} variant="gradient" color="success" className="mx-2 w-100 text-xxs px-3 rounded-pill" size="small">
+                  Delete
+                </SoftButton>
+              </SoftBox>
+            </Grid>}
           </Grid>   
         </SoftBox>
       </SoftBox>

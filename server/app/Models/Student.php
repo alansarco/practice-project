@@ -22,6 +22,7 @@ class Student extends Model
         'birthdate',
         'grade', 
         'section', 
+        'program', 
         'track', 
         'course', 
         'religion', 

@@ -5,7 +5,7 @@ import SoftBox from "components/SoftBox";
 import SoftButton from "components/SoftButton";
 import SoftInput from "components/SoftInput";
 import SoftTypography from "components/SoftTypography";
-import { gradeSelect, enrollStatus, years, genderSelect, currentDate, trackSelect, courseSelect, modalitySelect } from "components/General/Utils";
+import { gradeSelect, programSelect, years, genderSelect, currentDate, trackSelect, courseSelect, modalitySelect } from "components/General/Utils";
 import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import { messages } from "components/General/Messages";
@@ -29,6 +29,7 @@ function Add({HandleRendering, ReloadTable }) {
             name: '',
             grade: '',
             section: '',
+            program: '',
             track: '',
             course: '',
             gender: '',
@@ -70,18 +71,18 @@ function Add({HandleRendering, ReloadTable }) {
             toast.dismiss();
              // Check if all required fields are empty
              const requiredFields = [
-                  "username", 
-                  "name", 
-                  "grade",
-                  "section",
-                  "birthdate",
-                  "gender",
-                  "contact",
-                  "modality",
-                  "barangay",
-                  "municipality",
-                  "province",
-                  "year_enrolled",
+                  // "username", 
+                  // "name", 
+                  // "grade",
+                  // "section",
+                  // "birthdate",
+                  // "gender",
+                  // "contact",
+                  // "modality",
+                  // "barangay",
+                  // "municipality",
+                  // "province",
+                  // "year_enrolled",
             ];
             const emptyRequiredFields = requiredFields.filter(field => !formData[field]);
             if (emptyRequiredFields.length === 0) {
@@ -91,14 +92,11 @@ function Add({HandleRendering, ReloadTable }) {
                   else if (formData.username.length != 12) {
                         toast.warning("Invalid LRN format!", { autoClose: true });
                   }
-                  else if(formData.grade < 11 && (formData.track != "" || formData.course != "")) {
-                        toast.warning("Only Grade 11 and 12 can select a track and course!", { autoClose: true });
+                  else if (formData.grade < 11 && formData.program == "") {
+                        toast.warning("Please select program!", { autoClose: true });
                   }
-                  else if (formData.grade > 10 && formData.track == "") {
-                        toast.warning("Please select a track!", { autoClose: true });
-                  }
-                  else if(formData.track != "" && formData.course == "") {
-                        toast.warning("Please select course!", { autoClose: true });
+                  else if(formData.grade > 10 && (formData.track == "" || formData.course == "")) {
+                        toast.warning("Please select a track and course!", { autoClose: true });
                   }
                   else {      
                         setSubmitProfile(true);
@@ -194,7 +192,23 @@ function Add({HandleRendering, ReloadTable }) {
                                                 <SoftTypography variant="span" className="text-xxs text-danger fst-italic">*</SoftTypography>
                                                 <SoftInput name="section" value={formData.section.toUpperCase()} onChange={handleChange} size="small" /> 
                                           </Grid>
+                                          {formData.grade < 11 && formData.grade != '' &&
                                           <Grid item xs={12} sm={6} md={4} px={1}>
+                                                <SoftTypography variant="button" className="me-1"> Program: </SoftTypography>
+                                                <SoftTypography variant="span" className="text-xxs text-danger fst-italic">*</SoftTypography>
+                                                <select className="form-control form-select form-select-sm text-secondary rounded-5 cursor-pointer" name="program" value={formData.program} onChange={handleChange} >
+                                                      <option value="">N/A</option>
+                                                      {programSelect && programSelect.map((program) => (
+                                                      <option key={program.value} value={program.value}>
+                                                            {program.desc}
+                                                      </option>
+                                                      ))}
+                                                </select>
+                                          </Grid>
+                                          }
+                                          {formData.grade > 10 && formData.grade != '' &&
+                                          <>
+                                          <Grid item xs={12} sm={6} md={3} px={1}>
                                                 <SoftTypography variant="button" className="me-1"> Track: </SoftTypography>
                                                 <SoftTypography variant="span" className="text-xxs text-danger fst-italic">*</SoftTypography>
                                                 <select className="form-control form-select form-select-sm text-secondary rounded-5 cursor-pointer" name="track" value={formData.track} onChange={handleChange} >
@@ -227,7 +241,10 @@ function Add({HandleRendering, ReloadTable }) {
                                                       ))}
                                                 </select>
                                           </Grid>
-                                          <Grid item xs={12} sm={6} md={5} px={1}>
+                                          </>
+                                          }
+                                          
+                                          <Grid item xs={12} sm={6} md={4} px={1}>
                                                 <SoftTypography variant="button" className="me-1">Religion:</SoftTypography>
                                                 <SoftTypography variant="span" className="text-xxs text-danger fst-italic">*</SoftTypography>
                                                 <SoftInput name="religion" value={formData.religion.toUpperCase()} onChange={handleChange} size="small" /> 
