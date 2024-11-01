@@ -54,7 +54,7 @@ function configs(labels, datasets, maxCount) {
             precision: 0,
             display: true,
             padding: 10,
-            color: "#9ca2b7",
+            color: "#1f1f1f",
             font: {
               size: 12,   
               family: typography.fontFamily,

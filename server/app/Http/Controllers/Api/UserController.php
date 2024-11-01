@@ -4,13 +4,16 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Models\App_Info;
+use App\Models\Student;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use App\Models\User;
+use Box\Spout\Reader\Common\Creator\ReaderEntityFactory;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Auth;
 use Exception;
+use Illuminate\Support\Facades\Storage;
 
 class UserController extends Controller
 {
@@ -248,4 +251,170 @@ class UserController extends Controller
             }
         }
     }
+
+    public function uploadexcel(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'data' => 'required|file|mimes:xlsx,xls|max:2048',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'message' => $validator->messages()->all()
+            ]);
+        }
+
+        $path = $request->file('data')->store('uploads');
+        $fullPath = storage_path('app/' . $path);
+        $reader = ReaderEntityFactory::createReaderFromFile(storage_path('app/' . $path));
+        $reader->open(storage_path('app/' . $path));
+
+        DB::beginTransaction(); // Begin a transaction
+        $firstRow = true;
+
+        try {
+            foreach ($reader->getSheetIterator() as $sheet) {
+                foreach ($sheet->getRowIterator() as $row) {
+                    if ($firstRow) {
+                        $firstRow = false; // Skip the first row (header)
+                        continue;
+                    }
+
+                    $cells = $row->getCells();
+                    if (isset($cells[0])) {
+                        $username = $cells[0]->getValue();
+                        $name = $cells[1]->getValue();
+                        $contact = $cells[2]->getValue();
+                        $gender = $cells[3]->getValue();
+                        $birthdate = $cells[4]->getValue();
+                        $grade = $cells[5]->getValue();
+                        $section = $cells[6]->getValue();
+                        $track = $cells[7]->getValue();
+                        $course = $cells[8]->getValue();
+                        $religion = $cells[9]->getValue();
+                        $house_no = $cells[10]->getValue();
+                        $barangay = $cells[11]->getValue();
+                        $municipality = $cells[12]->getValue();
+                        $province = $cells[13]->getValue();
+                        $father_name = $cells[14]->getValue();
+                        $mother_name = $cells[15]->getValue();
+                        $guardian = $cells[16]->getValue();
+                        $guardian_rel = $cells[17]->getValue();
+                        $contact_rel = $cells[18]->getValue();
+                        $enrolled = $cells[19]->getValue();
+                        $year_enrolled = $cells[20]->getValue();
+                        $modality = $cells[21]->getValue();
+
+                        // Validation
+                        if ($grade < 11) {
+                            $track = null;
+                            $course = null;
+                        }
+
+                        if(!$year_enrolled) {
+                            $year_enrolled = date('Y');
+                        }
+                        
+
+                        // Custom validations
+                        if (!is_numeric($username) || strlen($username) != 12) {
+                            throw new \Exception("Invalid username: $username");
+                        }
+                        if (!is_numeric($contact)) {
+                            throw new \Exception("Invalid contact of LRN $username: $contact");
+                        }
+                        if (!in_array($gender, ['M', 'F'])) {
+                            throw new \Exception("Invalid gender of LRN $username: $gender");
+                        }
+                        if (!preg_match('/\d{4}-\d{2}-\d{2}/', $birthdate)) {
+                            throw new \Exception("Invalid birthdate format of LRN $username: $birthdate");
+                        }
+                        if ($grade < 7 || $grade > 12) {
+                            throw new \Exception("Invalid grade of LRN $username: $grade");
+                        }
+                        if (!in_array($enrolled, [0, 1])) {
+                            throw new \Exception("Invalid enrolled value  of LRN $username: $enrolled");
+                        }
+                        if (!preg_match('/^\d{4}$/', $year_enrolled)) {
+                            throw new \Exception("Invalid year enrolled  of LRN $username: $year_enrolled");
+                        }
+
+                        
+                        // Update or create student record
+                        Student::updateOrCreate(
+                            ['username' => $username],
+                            [
+                                'name' => strtoupper($name),
+                                'contact' => $contact,
+                                'gender' => strtoupper($gender),
+                                'birthdate' => $birthdate,
+                                'grade' => $grade,
+                                'section' => strtoupper($section),
+                                'track' => strtoupper($track),
+                                'course' => strtoupper($course),
+                                'religion' => $religion,
+                                'house_no' => $house_no,
+                                'barangay' => strtoupper($barangay),
+                                'municipality' => strtoupper($municipality),
+                                'province' => strtoupper($province),
+                                'father_name' => strtoupper($father_name),
+                                'mother_name' => strtoupper($mother_name),
+                                'guardian' => strtoupper($guardian),
+                                'guardian_rel' => $guardian_rel,
+                                'contact_rel' => $contact_rel,
+                                'enrolled' => $enrolled,
+                                'year_enrolled' => $year_enrolled,
+                                'modality' => $modality,
+                            ]
+                        );
+                    }
+                }
+            }
+
+            DB::commit(); // Commit transaction if all rows pass validation
+            $reader->close();
+            // Remove soft-deleted duplicates for `username`
+            DB::table('students')
+                ->select('username')
+                ->whereNotNull('deleted_at')
+                ->groupBy('username')
+                ->havingRaw('COUNT(username) > 1')
+                ->pluck('username')
+                ->each(function ($username) {
+                    Student::where('username', $username)
+                        ->whereNotNull('deleted_at')
+                        ->forceDelete(); // Permanently delete soft-deleted duplicates
+                });
+            
+                sleep(1);
+
+                // Try deleting with Storage, and if it fails, use unlink
+                try {
+                    Storage::delete($path) || unlink($fullPath);
+                } catch (\Exception $e) {
+                    // Handle deletion error
+                    return response()->json(['status' => 500, 'message' => 'Failed to delete uploaded file: ' . $e->getMessage()]);
+                }
+
+            return response()->json(['status' => 200, 'message' => 'Students data uploaded successfully!']);
+            
+        } catch (\Exception $e) {
+            DB::rollBack(); // Rollback transaction if any error occurs
+            $reader->close();
+
+            // Delay to ensure file handlers are released
+            sleep(1);
+
+            // Try deleting with Storage, and if it fails, use unlink
+            try {
+                Storage::delete($path) || unlink($fullPath);
+            } catch (\Exception $e) {
+                // Handle deletion error
+                return response()->json(['status' => 500, 'message' => 'Failed to delete uploaded file: ' . $e->getMessage()]);
+            }
+
+            return response()->json(['status' => 500, 'message' => 'Failed to upload data: ' . $e->getMessage()]);
+        }
+    }
+
 }
