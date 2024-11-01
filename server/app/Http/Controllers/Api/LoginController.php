@@ -188,7 +188,7 @@ class LoginController extends Controller {
 
         if ($verifyUser) {
             $hashedPassword = Hash::make($request->newpassword);
-            $update = User::where('username', $request->username)
+            $update = User::where('username', $verifyUser->username)
                 ->update([ 'password' => $hashedPassword, 'password_change' => 1, 'account_status' => 1]);
             if($update) {   
                 return response()->json([

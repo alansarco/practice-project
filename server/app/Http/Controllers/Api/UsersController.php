@@ -92,6 +92,12 @@ class UsersController extends Controller
     public function update(Request $request) {
         $authUser = Admin::select('name')->where('username', Auth::user()->username)->first();
 
+        if(strlen($request->username) != 12) {
+            return response()->json([
+                'message' => 'LRN must be an exact 12 digit number!'
+            ]);
+        }
+
         $validator = Validator::make($request->all(), [
             'name' => 'required',
             'grade' => 'required',
@@ -237,6 +243,12 @@ class UsersController extends Controller
         if($validator->fails()) {
             return response()->json([
                 'message' => $validator->messages()->all()
+            ]);
+        }
+
+        if(strlen($request->username) != 12) {
+            return response()->json([
+                'message' => 'LRN must be an exact 12 digit number!'
             ]);
         }
 

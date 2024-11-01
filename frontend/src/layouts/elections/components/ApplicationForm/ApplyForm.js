@@ -133,6 +133,13 @@ function ApplyForm({ APPLICATION, POLL, HandleRendering, UpdateLoading }) {
                     <SoftTypography variant="p" className="text-xxs text-secondary span fst-italic">
                         (Please read before filling up the form)
                     </SoftTypography>
+                    <ul className="text-danger fw-bold">
+                            <li className="text-xxs fst-italic">You will receive an SMS notification once application is approved</li>
+                            <li className="text-xxs fst-italic">You can apply one position only</li>
+                            <li className="text-xxs fst-italic">Once aproved, you can no longer delete it</li>
+                            <li className="text-xxs fst-italic">You cant apply position if party member has applied already</li>
+                            <li className="text-xxs fst-italic">Your application will be approved by the admin</li>
+                    </ul>
                     <SoftBox mt={2}>
                         <SoftBox component="form" role="form" className="px-md-0 px-2" onSubmit={handleSubmit}>
                             <SoftTypography fontWeight="medium" textTransform="capitalize" color="success" textGradient>

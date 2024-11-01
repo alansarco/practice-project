@@ -110,9 +110,18 @@ function UploadStudents({ HandleRendering, ReloadTable }) {
                     <SoftTypography fontWeight="medium" color="success" textGradient>
                         Direction!
                     </SoftTypography>
-                    <SoftTypography fontWeight="bold" className="text-xs">
-                        Please fill in the required fields. Rest assured that data is secured.     
-                    </SoftTypography> 
+                    <SoftTypography fontWeight="bold" className="text-xxs mt-2">
+                        REMINDERS:
+                    </SoftTypography>
+                    <SoftTypography variant="p" className="text-xxs text-secondary span fst-italic">
+                        (Please read before filling up the form)
+                    </SoftTypography>
+                    <ul className="text-danger fw-bold">
+                            <li className="text-xxs fst-italic">When LRN matches the existing record in database, they will be replaced by new data</li>
+                            <li className="text-xxs fst-italic">Existing LRN in database that does not matches the new master list will be retain to maintain data integrity</li>
+                            <li className="text-xxs fst-italic">Make sure to check the masterlist as uploading will be not successfult once data are not in correct format</li>
+                            <li className="text-xxs fst-italic">Only the super admin can upload master list</li>
+                    </ul>
                     <SoftBox mt={2}>
                         <SoftBox component="form" role="form" className="px-md-0 px-2" onSubmit={handleSubmit}>
                             <Grid container spacing={0} alignItems="center">

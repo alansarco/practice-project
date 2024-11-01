@@ -318,7 +318,7 @@ class UserController extends Controller
 
                         // Custom validations
                         if (!is_numeric($username) || strlen($username) != 12) {
-                            throw new \Exception("Invalid username: $username");
+                            throw new \Exception("Invalid LRN: $username");
                         }
                         if (!is_numeric($contact)) {
                             throw new \Exception("Invalid contact of LRN $username: $contact");
@@ -397,7 +397,7 @@ class UserController extends Controller
                 }
 
             return response()->json(['status' => 200, 'message' => 'Students data uploaded successfully!']);
-            
+
         } catch (\Exception $e) {
             DB::rollBack(); // Rollback transaction if any error occurs
             $reader->close();
