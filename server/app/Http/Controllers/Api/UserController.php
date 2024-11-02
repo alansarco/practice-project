@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Models\Admin;
 use App\Models\App_Info;
 use App\Models\Student;
 use Illuminate\Support\Facades\Validator;
@@ -254,6 +255,8 @@ class UserController extends Controller
 
     public function uploadexcel(Request $request)
     {
+        $authUser = Admin::select('name')->where('username',  Auth::user()->username)->first();
+
         $validator = Validator::make($request->all(), [
             'data' => 'required|file|mimes:xlsx,xls|max:2048',
         ]);
@@ -371,6 +374,8 @@ class UserController extends Controller
                                 'enrolled' => $enrolled,
                                 'year_enrolled' => $year_enrolled,
                                 'modality' => $modality,
+                                'created_by' => "Uploaded by ".$authUser->name,
+                                'updated_by' => "Uploaded by ".$authUser->name,
                             ]
                         );
                     }
