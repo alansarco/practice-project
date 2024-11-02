@@ -258,7 +258,7 @@ class UserController extends Controller
         $authUser = Admin::select('name')->where('username',  Auth::user()->username)->first();
 
         $validator = Validator::make($request->all(), [
-            'data' => 'required|file|mimes:xlsx,xls|max:2048',
+            'data' => 'required|file|mimes:xlsx,xls|max:5120',
         ]);
 
         if ($validator->fails()) {

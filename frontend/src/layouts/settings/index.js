@@ -43,6 +43,9 @@ function Settings() {
   const [reload, setReload] = useState(true);
   const [edit, setEdit] = useState(false);
   const [fetchdata, setFetchdata] = useState([]);
+  const [imagePreview, setImagePreview] = useState(null);
+  const [success, setSuccess] = useState(true);
+  const [originalImage, setOriginalImage] = useState(null);
 
   const initialState = {
     schoolid: "",
@@ -50,17 +53,32 @@ function Settings() {
     superadmin_limit: "",
     event_notif: "",
     requirements_link: "",
+    system_info: "",
+    org_structure: null ,
     agreement: false,
   };
 
   const [formData, setFormData] = useState(initialState);
 
   const handleChange = (e) => {
-    const { name, value, type } = e.target;
-    setFormData({
-      ...formData,
-      [name]: type === "checkbox" ? !formData[name] : value
-    });
+    const { name, value, type, files } = e.target;
+    if (type === "file") {
+      const file = files[0];
+      if (file) {
+        setFormData({
+          ...formData,
+          [name]: file,
+        });
+        setImagePreview(URL.createObjectURL(file));
+      } else {
+        setImagePreview(originalImage);
+      }
+    } else {
+      setFormData({
+        ...formData,
+        [name]: type === "checkbox" ? !formData[name] : value,
+      });
+    }
   };
 
   const handleSubmit = async (e) => {
@@ -72,6 +90,7 @@ function Settings() {
       "superadmin_limit",
       "event_notif",
       "requirements_link",
+      "system_info",
     ];
 
     const emptyRequiredFields = requiredFields.filter(field => !formData[field]);
@@ -79,28 +98,42 @@ function Settings() {
     if (emptyRequiredFields.length === 0) {
       if (!formData.agreement) {
         toast.warning(messages.agreement, { autoClose: true });
-      } 
-      else {
+      } else {
+        setSuccess(false);
         setReload(true);
         try {
           if (!token) {
             toast.error(messages.prohibit, { autoClose: true });
           } else {
-            const response = await axios.post(apiRoutes.updateSettings, formData, { headers });
+            const submissionData = new FormData();
+            submissionData.append("schoolid", formData.schoolid);
+            submissionData.append("security_code", formData.security_code);
+            submissionData.append("superadmin_limit", formData.superadmin_limit);
+            submissionData.append("event_notif", formData.event_notif);
+            submissionData.append("requirements_link", formData.requirements_link);
+            submissionData.append("system_info", formData.system_info);
+            if (formData.org_structure instanceof File) {
+              submissionData.append("org_structure", formData.org_structure);
+            }
+            submissionData.append("agreement", formData.agreement);
+
+            const response = await axios.post(apiRoutes.updateSettings, submissionData, { headers });
             if (response.data.status === 200) {
               toast.success(`${response.data.message}`, { autoClose: true });
+              setSuccess(true);
               setEdit(false);
-              // setFormData(initialState);
+              
             } else {
               toast.error(`${response.data.message}`, { autoClose: true });
             }
+            setReload(false);
             passToSuccessLogs(response.data, currentFileName);
           }
         } catch (error) {
           toast.error("Error submitting data.", { autoClose: true });
+          setReload(false);
           passToErrorLogs(error, currentFileName);
         }
-        setReload(false);
       }
     } else {
       toast.warning("Please fill in all required fields.", { autoClose: true });
@@ -113,16 +146,19 @@ function Settings() {
         setFetchdata(response.data.settings);
         passToSuccessLogs(response.data, currentFileName);
         setReload(false);
+        setSuccess(true);
       })
       .catch(error => {
         passToErrorLogs(`Settings not Fetched!  ${error}`, currentFileName);
+        setSuccess(false);
         setReload(false);
       });
   };
 
   useEffect(() => {
-    if (reload) {
+    if (reload && success) {
       setReload(true);
+      setSuccess(true);
       reloadTable();
     }
   }, [reload]);
@@ -135,8 +171,14 @@ function Settings() {
         superadmin_limit: fetchdata[0].superadmin_limit || "",
         requirements_link: fetchdata[0].requirements_link || "",
         event_notif: fetchdata[0].event_notif || "",
+        system_info: fetchdata[0].system_info || "",
+        org_structure: fetchdata[0].org_structure || null,
         agreement: fetchdata[0].agreement || false,
       });
+      // Set initial image preview
+      const initialImage = `data:image/png;base64,${fetchdata[0].org_structure}`;
+      setImagePreview(initialImage);
+      setOriginalImage(initialImage); ;
     }
   }, [fetchdata]);
 
@@ -192,6 +234,34 @@ function Settings() {
                     <SoftTypography variant="span" className="text-xxs text-danger fst-italic">*</SoftTypography>
                     <SoftInput disabled={!edit} name="requirements_link" value={formData.requirements_link} onChange={handleChange} size="small" />
                   </Grid>
+                  <Grid item xs={12} px={1}>
+                    <SoftTypography variant="button" className="me-1">System Info:</SoftTypography>
+                    <textarea disabled={!edit} name="system_info" value={formData.system_info} onChange={handleChange} className="form-control text-xs rounded-5" rows="4"></textarea>
+                  </Grid>  
+                </Grid>
+                <Grid container spacing={0} alignItems="center" px={1}>
+                  <Grid item xs={12} md={6}>
+                    <SoftTypography variant="button" className="me-1">Organization Structure:</SoftTypography>
+                    {edit &&
+                      <input
+                      type="file"
+                      name="org_structure"
+                      accept="image/*"
+                      className="form-control form-control-sm rounded-5 text-xs"
+                      onChange={handleChange}
+                      disabled={!edit}
+                      
+                    />
+                    }
+                    {imagePreview && (
+                      <img
+                        src={imagePreview}
+                        alt="Organization Structure Preview"
+                        className="text-xxs border"
+                        style={{ width: "100%", marginTop: "10px", borderRadius: "5px" }}
+                      />
+                    )}
+                  </Grid>
                 </Grid>
                 {edit &&
                 <>
@@ -211,9 +281,18 @@ function Settings() {
                 <Grid mt={3} container spacing={0} alignItems="center" justifyContent="end">
                   <Grid item xs={12} sm={4} md={2} pl={1}>
                     <SoftBox mt={2} display="flex" justifyContent="end">
-                    <SoftButton onClick={() => setEdit(false)} className="ms-2 py-0 px-3 d-flex rounded-pill" variant="gradient" color="secondary" size="small">
-                      Cancel Edit
-                    </SoftButton>
+                      <SoftButton
+                        onClick={() => {
+                          setEdit(false);
+                          // setImagePreview(originalImage); // Reset to original image preview
+                        }}
+                        className="ms-2 py-0 px-3 d-flex rounded-pill"
+                        variant="gradient"
+                        color="secondary"
+                        size="small"
+                      >
+                        Cancel Edit
+                      </SoftButton>
                     </SoftBox>
                   </Grid>
                   <Grid item xs={12} sm={4} md={2} pl={1}>

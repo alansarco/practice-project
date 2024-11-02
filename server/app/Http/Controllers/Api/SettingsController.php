@@ -17,9 +17,13 @@ use Illuminate\Support\Facades\Date;
 
 class SettingsController extends Controller
 {
-    // Get all the list of admins
+    // Get all the list of system info
     public function index() {
-        $settings = App_Info::get();
+        $settings = App_Info::select('*',
+            DB::raw("TO_BASE64(org_structure) as org_structure"),
+            DB::raw("TO_BASE64(logo) as logo"),
+            )
+            ->get();
 
         return response()->json([
             'settings' => $settings,
@@ -41,6 +45,8 @@ class SettingsController extends Controller
             'superadmin_limit' => 'required',
             'requirements_link' => 'required',
             'event_notif' => 'required',
+            'system_info' => 'required',
+            'org_structure' => 'nullable|file|mimes:jpeg,png,jpg,gif|max:5120',
         ]);
 
         if($validator->fails()) {
@@ -50,26 +56,40 @@ class SettingsController extends Controller
         }
         else {
             try {
-                $update = App_Info::where('school_id', $request->schoolid)
-                ->update([
+                $requirementsData = null; // Initialize the variable to hold the file path
+                if ($request->hasFile('org_structure')) {
+                    $file = $request->file('org_structure');
+                    $requirementsData = file_get_contents($file->getRealPath()); // Get the file content as a string
+                }
+
+                $updateData = [
                     'security_code' => $request->security_code,
                     'superadmin_limit' => $request->superadmin_limit,
                     'requirements_link' => $request->requirements_link,
+                    'system_info' => $request->system_info,
                     'event_notif' => $request->event_notif,
                     'updated_by' => Auth::user()->username,
-                ]);
+                ];
+                
+                // Conditionally include org_structure if a new file is uploaded
+                if ($request->hasFile('org_structure')) {
+                    $updateData['org_structure'] = $requirementsData;
+                }
+                
+                // Perform the update with the conditional data array
+                $update = App_Info::where('school_id', $request->schoolid)->update($updateData);
 
-            if($update) {
-                return response()->json([
-                    'status' => 200,
-                    'message' => 'System updated successfully!'
-                ], 200);
-            }
-            else {
-                return response()->json([
-                    'message' => 'Something went wrong!'
-                ]);
-            }
+                if($update) {
+                    return response()->json([
+                        'status' => 200,
+                        'message' => 'System updated successfully!'
+                    ], 200);
+                }
+                else {
+                    return response()->json([
+                        'message' => 'Something went wrong!'
+                    ]);
+                }
             } catch (Exception $e) {
                 return response()->json([
                     'message' => $e->getMessage()

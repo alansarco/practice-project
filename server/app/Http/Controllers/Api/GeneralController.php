@@ -7,6 +7,7 @@ use App\Models\App_Info;
 use App\Http\Controllers\AESCipher;
 use Carbon\Carbon;
 use Exception;
+use Illuminate\Support\Facades\DB;
 
 class GeneralController extends Controller {
 
@@ -19,10 +20,14 @@ class GeneralController extends Controller {
         try {
             $currentDate = Carbon::now();
 
-            $app_info = App_info::where('subscription', 1)  
-            ->where('expires_at', '>', $currentDate)
-            ->whereNotNull('starts_at')
-            ->first();
+            $app_info = App_info::select('*',
+                DB::raw("TO_BASE64(org_structure) as org_structure"),
+                DB::raw("TO_BASE64(logo) as logo"),
+                )
+                ->where('subscription', 1)  
+                ->where('expires_at', '>', $currentDate)
+                ->whereNotNull('starts_at')
+                ->first();
 
             if($app_info) {
                 return response()->json([

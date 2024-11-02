@@ -14,6 +14,7 @@ import Application from "layouts/elections/application";
 import MyApplications from "layouts/myapplications";
 import MyVotes from "layouts/myvotes";
 import Settings from "layouts/settings";
+import Abouts from "layouts/abouts";
 
 import SignIn from "layouts/authentication/sign-in";
 import AdminSignIn from "layouts/authentication/sign-in/admin";
@@ -168,7 +169,7 @@ const routes = (access) => [
     key: "about",
     route: "/about",
     icon: <InfoTwoToneIcon size="12px" />,
-    component: <Blank />,
+    component: <Abouts />,
     noCollapse: true,
   },
   {

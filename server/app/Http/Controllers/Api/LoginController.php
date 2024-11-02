@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\AESCipher;
+use App\Models\App_Info;
 use Illuminate\Support\Facades\Hash;
 use App\Models\Student;
 use App\Models\Password;
@@ -224,9 +225,16 @@ class LoginController extends Controller {
             ->where('users.username', $authUser->username)
             ->first();
 
+        $sysem_detail = App_Info::select('system_info',
+            DB::raw("TO_BASE64(org_structure) as org_structure"),
+            DB::raw("TO_BASE64(logo) as logo"),
+            )
+        ->first();
+
         if($userInfo) {
             return response()->json([
                 'authorizedUser' => $userInfo,
+                'sysem_detail' => $sysem_detail,                
                 'message' => "Access Granted!",
             ]);
         }

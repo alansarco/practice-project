@@ -11264,3 +11264,9 @@ textarea.form-control-lg {
       -ms-flex: none;
           flex: none;
 }
+
+.paragraph_format {
+  white-space: pre-line !important; /* Preserves line breaks */
+  text-align: justify !important;; /* Justifies the text */
+  text-indent: 1.5em !important;; /* Adds indentation on the first line of each paragraph */
+}
