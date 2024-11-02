@@ -99,7 +99,7 @@ function Abouts() {
                 <Grid container spacing={0} alignItems="center" px={1} mt={3}>
                   <Grid item xs={12} justifyContent="center" className="d-flex">
                     <SoftTypography  className="h1 fw-bold text-uppercase text-center" color="dark">
-                      Campus Organizaational Structure
+                      Campus Organizational Structure
                     </SoftTypography>
                   </Grid>
                   <Grid item xs={12} justifyContent="center">
