@@ -91,17 +91,17 @@ class AdminController extends Controller
     public function update(Request $request) {
         $authUser = Admin::select('name')->where('username', Auth::user()->username)->first();
 
-        $superadmin = User::leftJoin('admins', 'users.username', '=', 'admins.username')
+        if($request->access == 999) {
+            $superadmin = User::leftJoin('admins', 'users.username', '=', 'admins.username')
             ->where('role', 'ADMIN')
             ->where('access_level', 999)
             ->count();
-    
-        $superadmin_limit = App_Info::select('superadmin_limit')->first();
-
-        if($superadmin >= $superadmin_limit->superadmin_limit) {
-            return response()->json([
-                'message' => 'Maximum Super Admin reached!'
-            ]);
+            $superadmin_limit = App_Info::select('superadmin_limit')->first();
+            if($superadmin >= $superadmin_limit->superadmin_limit) {
+                return response()->json([
+                    'message' => 'Maximum Super Admin reached!'
+                ]);
+            }
         }
 
         $validator = Validator::make($request->all(), [
@@ -163,17 +163,17 @@ class AdminController extends Controller
     public function addadmin(Request $request) {
         $authUser = Admin::select('name')->where('username', Auth::user()->username)->first();
 
-        $superadmin = User::leftJoin('admins', 'users.username', '=', 'admins.username')
+        if($request->access == 999) {
+            $superadmin = User::leftJoin('admins', 'users.username', '=', 'admins.username')
             ->where('role', 'ADMIN')
             ->where('access_level', 999)
             ->count();
-    
-        $superadmin_limit = App_Info::select('superadmin_limit')->first();
-
-        if($superadmin >= $superadmin_limit->superadmin_limit) {
-            return response()->json([
-                'message' => 'Maximum Super Admin reached!'
-            ]);
+            $superadmin_limit = App_Info::select('superadmin_limit')->first();
+            if($superadmin >= $superadmin_limit->superadmin_limit) {
+                return response()->json([
+                    'message' => 'Maximum Super Admin reached!'
+                ]);
+            }
         }
         
         if(Auth::user()->role !== "ADMIN" || Auth::user()->role < 10) {
