@@ -12,6 +12,8 @@ import Seniors from "layouts/senior";
 import Profile from "layouts/profile";
 import Application from "layouts/elections/application";
 import MyApplications from "layouts/myapplications";
+import MyVotes from "layouts/myvotes";
+import Settings from "layouts/settings";
 
 import SignIn from "layouts/authentication/sign-in";
 import AdminSignIn from "layouts/authentication/sign-in/admin";
@@ -31,7 +33,7 @@ import PollTwoToneIcon from '@mui/icons-material/PollTwoTone';
 import InfoTwoToneIcon from '@mui/icons-material/InfoTwoTone';
 import CalendarMonthTwoToneIcon from '@mui/icons-material/CalendarMonthTwoTone';
 import DescriptionTwoToneIcon from '@mui/icons-material/DescriptionTwoTone';
-import MyVotes from "layouts/myvotes";
+import SettingsTwoToneIcon from '@mui/icons-material/SettingsTwoTone';
 
 // Accept access as a parameter
 const routes = (access) => [
@@ -149,6 +151,15 @@ const routes = (access) => [
     route: "/announcements",
     icon: <CampaignTwoToneIcon size="12px" />,
     component: <Announcements />,
+    noCollapse: true,
+  },
+  access == 999 && {
+    type: "collapse",
+    name: "System Settings",
+    key: "settings",
+    route: "/settings",
+    icon: <SettingsTwoToneIcon size="12px" />,
+    component: <Settings />,
     noCollapse: true,
   },
   {

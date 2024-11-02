@@ -12,6 +12,7 @@ use App\Http\Controllers\Api\SignupController;
 use App\Http\Controllers\Api\JuniorController;
 use App\Http\Controllers\Api\MyPageController;
 use App\Http\Controllers\Api\SeniorController;
+use App\Http\Controllers\Api\SettingsController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -119,6 +120,11 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/', [MyPageController::class, 'index']);
         Route::get('myvotes', [MyPageController::class, 'myvotes']);
 
+    });
+
+    Route::prefix('settings')->group(function () {
+        Route::get('/', [SettingsController::class, 'index']);
+        Route::post('updatesettings', [SettingsController::class, 'updatesettings']);
     });
 
 

@@ -34,6 +34,11 @@ export const enrollStatus = [
       { value: 0, desc: "No" },
 ];
 
+export const yesnoSelect = [
+      { value: 1, desc: "Yes" },
+      { value: 0, desc: "No" },
+];
+
 export const enrolledSelect= [
       { value: 1, desc: "Enrolled" },
       { value: 0, desc: "Not Enrolled" },

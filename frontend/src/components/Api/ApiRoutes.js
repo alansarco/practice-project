@@ -77,6 +77,9 @@ export const apiRoutes = {
     otherStatsRetrieve: `${mainRoute}/api/dashboard/otherStats`,
     pollsRetrieve: `${mainRoute}/api/dashboard/polls`,
 
+    retrieveSettings: `${mainRoute}/api/settings`,
+    updateSettings: `${mainRoute}/api/settings/updatesettings`,
+
 
     
     // Add more routes here

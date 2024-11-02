@@ -17,6 +17,8 @@ class App_Info extends Model
         'school_id',
         'school_name',
         'acronym',
+        'org_structure',
+        'event_notif',
         'subscription',
         'security_code',
         'times_subscribe',

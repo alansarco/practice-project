@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 use App\Models\User;
 use App\Models\Admin;
+use App\Models\App_Info;
 use Carbon\Carbon;
 use Exception;
 use Illuminate\Support\Facades\Auth;
@@ -89,6 +90,20 @@ class AdminController extends Controller
     // update specific admin's information
     public function update(Request $request) {
         $authUser = Admin::select('name')->where('username', Auth::user()->username)->first();
+
+        $superadmin = User::leftJoin('admins', 'users.username', '=', 'admins.username')
+            ->where('role', 'ADMIN')
+            ->where('access_level', 999)
+            ->count();
+    
+        $superadmin_limit = App_Info::select('superadmin_limit')->first();
+
+        if($superadmin >= $superadmin_limit->superadmin_limit) {
+            return response()->json([
+                'message' => 'Maximum Super Admin reached!'
+            ]);
+        }
+
         $validator = Validator::make($request->all(), [
             'name' => 'required',
             'gender' => 'required',
@@ -147,6 +162,19 @@ class AdminController extends Controller
 
     public function addadmin(Request $request) {
         $authUser = Admin::select('name')->where('username', Auth::user()->username)->first();
+
+        $superadmin = User::leftJoin('admins', 'users.username', '=', 'admins.username')
+            ->where('role', 'ADMIN')
+            ->where('access_level', 999)
+            ->count();
+    
+        $superadmin_limit = App_Info::select('superadmin_limit')->first();
+
+        if($superadmin >= $superadmin_limit->superadmin_limit) {
+            return response()->json([
+                'message' => 'Maximum Super Admin reached!'
+            ]);
+        }
         
         if(Auth::user()->role !== "ADMIN" || Auth::user()->role < 10) {
             return response()->json([
@@ -235,8 +263,6 @@ class AdminController extends Controller
     }
 
     public function deleteadmin(Request $request) {
-        $currentYear = Carbon::now()->format('Y');
-
         $authUser = Auth::user();
         if($authUser->role !== "ADMIN" || $authUser->access_level < 10) {
             return response()->json([
