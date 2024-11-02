@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Models\Admin;
+use App\Models\App_Info;
 use App\Models\Candidate;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -431,6 +432,9 @@ class ElectionController extends Controller
 
     public function checkifapplied(Request $request) {
         $authUser = Auth::user();
+
+        //Get Requirements Link
+        $requirements_link = App_Info::select('requirements_link')->first();
         
         //this will check if there is existing application under this user
         $application = Candidate::leftJoin('students', 'candidates.candidateid', '=', 'students.username')
@@ -462,12 +466,14 @@ class ElectionController extends Controller
             return response()->json([
                 'application' => $application,
                 'otherapplication' => $otherapplication,
+                'requirements_link' => $requirements_link->requirements_link,
                 'message' => 'Application Retrieved!',
             ]);
         }   
         else {
             return response()->json([
                 'application' => $application,
+                'requirements_link' => $requirements_link->requirements_link,
                 'otherapplication' => $otherapplication,
                 'message' => 'No application found!'
             ]);

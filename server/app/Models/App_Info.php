@@ -21,6 +21,7 @@ class App_Info extends Model
         'event_notif',
         'subscription',
         'security_code',
+        'requirements_link',
         'times_subscribe',
         'logo',
         'starts_at',

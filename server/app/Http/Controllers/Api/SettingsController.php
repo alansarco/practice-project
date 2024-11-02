@@ -39,6 +39,7 @@ class SettingsController extends Controller
         $validator = Validator::make($request->all(), [
             'security_code' => 'required',
             'superadmin_limit' => 'required',
+            'requirements_link' => 'required',
             'event_notif' => 'required',
         ]);
 
@@ -53,6 +54,7 @@ class SettingsController extends Controller
                 ->update([
                     'security_code' => $request->security_code,
                     'superadmin_limit' => $request->superadmin_limit,
+                    'requirements_link' => $request->requirements_link,
                     'event_notif' => $request->event_notif,
                     'updated_by' => Auth::user()->username,
                 ]);

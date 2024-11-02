@@ -13,7 +13,7 @@ import { apiRoutes } from "components/Api/ApiRoutes";
 import { useEffect, useState } from "react";
 import VotingDateValidation from "components/General/VotingDateValidation";
 
-function ApplyForm({ APPLICATION, POLL, HandleRendering, UpdateLoading }) {
+function ApplyForm({ APPLICATION, REQ_LINK, POLL, HandleRendering, UpdateLoading }) {
     const currentFileName = "layouts/admins/components/Add/index.js";
     const [submitProfile, setSubmitProfile] = useState(false);
     const { token } = useStateContext();
@@ -140,7 +140,21 @@ function ApplyForm({ APPLICATION, POLL, HandleRendering, UpdateLoading }) {
                             <li className="text-xxs fst-italic">You cant apply position if party member has applied already</li>
                             <li className="text-xxs fst-italic">Your application will be approved by the admin</li>
                             <li className="text-xxs fst-italic">REQUIREMENTS must be in a .zip file</li>
+                            <li className="text-xxs fst-italic">DOWNLOAD the necessary requirements by clicking the blue button</li>
                     </ul>
+                    <SoftBox mt={2}>
+                        <SoftButton
+                            component="a"
+                            href={REQ_LINK}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            variant="gradient"
+                            color="info"
+                            className="mx-2 text-xxs px-3 rounded-pill"
+                        >
+                            Download Necessary Requirements
+                        </SoftButton>
+                    </SoftBox>
                     <SoftBox mt={2}>
                         <SoftBox component="form" role="form" className="px-md-0 px-2" onSubmit={handleSubmit}>
                             <SoftTypography fontWeight="medium" textTransform="capitalize" color="success" textGradient>

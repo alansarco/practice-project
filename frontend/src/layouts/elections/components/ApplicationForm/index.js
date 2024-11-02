@@ -86,6 +86,7 @@ function ApplicationForm({authUser, FROM, INFO, HandleRendering}) {
   const [reload, setReload] = useState(true);
   const [fetchapplication, setFetchApplication] = useState([]);
   const [otherapplication, setOtherApplication] = useState([]);
+  const [requirementslink, setRequirementsLink] = useState([]);
 
   const UpdateLoading = (reloading) => {
     setReload(reloading);
@@ -98,6 +99,7 @@ function ApplicationForm({authUser, FROM, INFO, HandleRendering}) {
         .then(response => {
           setFetchApplication(response.data.application);
           setOtherApplication(response.data.otherapplication);
+          setRequirementsLink(response.data.requirements_link);
           passToSuccessLogs(response.data, currentFileName);
           setReload(false);
           setIsLoading(false);
@@ -206,7 +208,7 @@ function ApplicationForm({authUser, FROM, INFO, HandleRendering}) {
     {menu === "details" && <Information UpdateLoading={UpdateLoading} FROM={FROM} POSITIONS={Position} POLL={Poll} HandleRendering={HandleRendering}  />}
     
     {menu === "apply" && FROM === "application" && (!fetchapplication && !otherapplication) &&
-      <ApplyForm APPLICATION={fetchapplication} UpdateLoading={UpdateLoading} POLL={Poll} HandleRendering={HandleRendering} />
+      <ApplyForm REQ_LINK = {requirementslink} APPLICATION={fetchapplication} UpdateLoading={UpdateLoading} POLL={Poll} HandleRendering={HandleRendering} />
     }
     {menu === "apply" && FROM === "application" && 
       ((fetchapplication && !otherapplication) || (fetchapplication && otherapplication)) &&

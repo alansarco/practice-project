@@ -49,6 +49,7 @@ function Settings() {
     security_code: "",
     superadmin_limit: "",
     event_notif: "",
+    requirements_link: "",
     agreement: false,
   };
 
@@ -70,6 +71,7 @@ function Settings() {
       "security_code", 
       "superadmin_limit",
       "event_notif",
+      "requirements_link",
     ];
 
     const emptyRequiredFields = requiredFields.filter(field => !formData[field]);
@@ -131,6 +133,7 @@ function Settings() {
         schoolid: fetchdata[0].school_id || "",
         security_code: fetchdata[0].security_code || "",
         superadmin_limit: fetchdata[0].superadmin_limit || "",
+        requirements_link: fetchdata[0].requirements_link || "",
         event_notif: fetchdata[0].event_notif || "",
         agreement: fetchdata[0].agreement || false,
       });
@@ -183,7 +186,12 @@ function Settings() {
                           </option>
                           ))}
                     </select>
-                </Grid>
+                  </Grid>
+                  <Grid item xs={12} sm={12} lg={9} px={1}>
+                    <SoftTypography variant="button" className="me-1">Requirements Link:</SoftTypography>
+                    <SoftTypography variant="span" className="text-xxs text-danger fst-italic">*</SoftTypography>
+                    <SoftInput disabled={!edit} name="requirements_link" value={formData.requirements_link} onChange={handleChange} size="small" />
+                  </Grid>
                 </Grid>
                 {edit &&
                 <>
