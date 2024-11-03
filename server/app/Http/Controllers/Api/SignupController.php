@@ -17,30 +17,7 @@ use Illuminate\Support\Facades\Mail;
 
 class SignupController extends Controller
 {
-    public function signupsuffix() {
-        try {
-            $suffix = Suffix::select("id", "title")->orderBy("id", "ASC")->get();
-
-            if($suffix->count() > 0) {
-                return response()->json([
-                    'suffix' => $suffix,
-                    'message' => 'Suffix retrieved!',
-                ]);
-            }
-            else {
-                return response()->json([
-                    'message' => 'No suffix found!'
-                ]);
-            }
-        }
-        catch (Exception $e) {
-            return response()->json([
-                'status' => 404,
-                'message' => $e->getMessage()
-            ], 404);
-        }
-    }
-
+    
     public function createotp(Request $request) {
         try {
             $easyguess = Password::where('list', $request->password)->first();

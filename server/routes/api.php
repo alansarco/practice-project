@@ -8,6 +8,7 @@ use App\Http\Controllers\Api\GeneralController;
 use App\Http\Controllers\Api\LoginController;
 use App\Http\Controllers\Api\UserController;
 use App\Http\Controllers\Api\ElectionController;
+use App\Http\Controllers\Api\ForgotPasswordController;
 use App\Http\Controllers\Api\SignupController;
 use App\Http\Controllers\Api\JuniorController;
 use App\Http\Controllers\Api\MyPageController;
@@ -30,7 +31,10 @@ Route::post('setpermanentpassword', [LoginController::class, 'setpermanentpasswo
 Route::get('app_info', [GeneralController::class, 'app_info']);
 Route::get('signupsuffix', [SignupController::class, 'signupsuffix']);
 Route::post('signupuser', [SignupController::class, 'signupuser']);
-Route::post('createotp', [SignupController::class, 'createotp']);
+Route::post('createotp', [ForgotPasswordController::class, 'createotp']);
+Route::post('createstudentotp', [ForgotPasswordController::class, 'createstudentotp']);
+Route::post('validateotp', [ForgotPasswordController::class, 'validateotp']);
+Route::post('submitpassword', [ForgotPasswordController::class, 'submitpassword']);
 
 Route::middleware('auth:sanctum')->group(function () {
     Route::get('user', [LoginController::class, 'user']);

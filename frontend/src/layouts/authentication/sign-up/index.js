@@ -27,17 +27,6 @@ function Signup() {
       if (token) {
         return <Navigate to="/dashboard" />
       }
-        
-      useEffect(() => {
-            axios.get(apiRoutes.signupsuffixRetrieve)
-                  .then(response => {
-                      setSuffixList(response.data.suffix);
-                      passToSuccessLogs(response.data, currentFileName);
-                  })    
-                  .catch(error => {
-                      passToErrorLogs(`Suffix Data not Fetched!  ${error}`, currentFileName);
-                });
-      }, []);
 
       const initialState = {
             username: "",

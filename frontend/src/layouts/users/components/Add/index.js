@@ -34,6 +34,7 @@ function Add({HandleRendering, ReloadTable }) {
             course: '',
             gender: '',
             contact: '',
+            email: '',
             religion: '',
             modality: '',
             birthdate: '',
@@ -71,18 +72,19 @@ function Add({HandleRendering, ReloadTable }) {
             toast.dismiss();
              // Check if all required fields are empty
              const requiredFields = [
-                  // "username", 
-                  // "name", 
-                  // "grade",
-                  // "section",
-                  // "birthdate",
-                  // "gender",
-                  // "contact",
-                  // "modality",
-                  // "barangay",
-                  // "municipality",
-                  // "province",
-                  // "year_enrolled",
+                  "username", 
+                  "name", 
+                  "grade",
+                  "section",
+                  "birthdate",
+                  "gender",
+                  "contact",
+                  "email",
+                  "modality",
+                  "barangay",
+                  "municipality",
+                  "province",
+                  "year_enrolled",
             ];
             const emptyRequiredFields = requiredFields.filter(field => !formData[field]);
             if (emptyRequiredFields.length === 0) {
@@ -162,6 +164,11 @@ function Add({HandleRendering, ReloadTable }) {
                                                 <SoftTypography variant="button" className="me-1">Fullname:</SoftTypography>
                                                 <SoftTypography variant="span" className="text-xxs text-danger fst-italic">*</SoftTypography>
                                                 <SoftInput name="name" value={formData.name.toUpperCase()} onChange={handleChange} size="small" /> 
+                                          </Grid>     
+                                          <Grid item xs={12} sm={6} md={4} px={1}>
+                                                <SoftTypography variant="button" className="me-1">Email:</SoftTypography>
+                                                <SoftTypography variant="span" className="text-xxs text-danger fst-italic">*</SoftTypography>
+                                                <SoftInput name="email" value={formData.email} onChange={handleChange} size="small"  type="email"/>  
                                           </Grid>     
                                           <Grid item xs={12} sm={6} lg={2} px={1}>
                                                 <SoftTypography variant="button" className="me-1"> Gender: </SoftTypography>

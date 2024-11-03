@@ -32,6 +32,8 @@ export default function App() {
   const isSignInOrSignUp =
     pathname === "/authentication/sign-in" ||
     pathname === "/authentication/sign-in/admin" ||
+    pathname === "/authentication/admin/forgot-password" ||
+    pathname === "/authentication/forgot-password" ||
     pathname === "/authentication/sign-up" ||
     pathname === "/user-app";
 

@@ -33,7 +33,7 @@ function CoverLayout({ color, header, title, description, image, children }) {
             </SoftBox>
           </Grid>
           {/* Right Side */}
-          <Grid item xs={12} md={6} className="bg-success" p={3}>
+          <Grid item xs={12} md={6} className="bg-success d-flex align-items-center" p={3}>
             <SoftBox>
               <SoftBox pt={2} px={3}>
                 {!header ? (

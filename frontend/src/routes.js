@@ -19,6 +19,8 @@ import Abouts from "layouts/abouts";
 import SignIn from "layouts/authentication/sign-in";
 import AdminSignIn from "layouts/authentication/sign-in/admin";
 import SignUp from "layouts/authentication/sign-up";
+import ForgotPassword from "layouts/authentication/sign-in/forgot-password";
+import StudentForgotPassword from "layouts/authentication/sign-in/student-forgot-password";
 
 import Shop from "essentials/Icons/Shop";
 import AdminPanelSettingsTwoToneIcon from '@mui/icons-material/AdminPanelSettingsTwoTone';
@@ -206,6 +208,24 @@ const routes = (access) => [
     route: "/authentication/sign-in/admin",
     icon: <InfoTwoToneIcon size="12px" />,
     component: <AdminSignIn />,
+    noCollapse: true,
+  },
+  {
+    type: "",
+    name: "Forgot Password",
+    key: "forgot-password",
+    route: "/authentication/admin/forgot-password",
+    icon: <InfoTwoToneIcon size="12px" />,
+    component: <ForgotPassword />,
+    noCollapse: true,
+  },
+  {
+    type: "",
+    name: "Forgot Password",
+    key: "student-forgot-password",
+    route: "/authentication/forgot-password",
+    icon: <InfoTwoToneIcon size="12px" />,
+    component: <StudentForgotPassword />,
     noCollapse: true,
   },
   {

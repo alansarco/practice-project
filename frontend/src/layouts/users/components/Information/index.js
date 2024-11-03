@@ -99,6 +99,7 @@ function Information({USER, HandleRendering, ReloadTable}) {
                   Gender: USER.gender == null ? " " : USER.gender,
                   Birthdate: USER.birthday == null ? " " : USER.birthday,
                   Mobile_Number: USER.contact == null ? " " : USER.contact,
+                  Email: USER.email == null ? " " : USER.email,
                   Religion: USER.religion == null ? " " : USER.religion,
                   Modality: USER.modality == null ? " " : USER.modality,
                   Password_Change: USER.password_change == "1" ? "Yes" : "No",

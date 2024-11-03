@@ -29,6 +29,7 @@ function Edit({USER, HandleRendering, UpdateLoading, ReloadTable }) {
             name: USER.name == null ? "" : USER.name,
             gender: USER.gender == null ? "" : USER.gender,
             contact: USER.contact == null ? "" : USER.contact,
+            email: USER.contact == null ? "" : USER.email,
             access: USER.access_level == null ? " " : USER.access_level,
             birthdate: USER.birthdate == null ? "" : USER.birthdate,
             organization: USER.organization == null ? "" : USER.organization,
@@ -59,6 +60,7 @@ function Edit({USER, HandleRendering, UpdateLoading, ReloadTable }) {
                   "username", 
                   "name", 
                   "birthdate",
+                  "email",
                   "gender",
                   "organization",
                   "contact",
@@ -120,6 +122,11 @@ function Edit({USER, HandleRendering, UpdateLoading, ReloadTable }) {
                                                 <SoftTypography variant="button" className="me-1">Fullname:</SoftTypography>
                                                 <SoftTypography variant="span" className="text-xxs text-danger fst-italic">*</SoftTypography>
                                                 <SoftInput name="name" value={formData.name.toUpperCase()} onChange={handleChange} size="small" /> 
+                                          </Grid>  
+                                          <Grid item xs={12} sm={12} md={6} px={1}>
+                                                <SoftTypography variant="button" className="me-1">Email:</SoftTypography>
+                                                <SoftTypography variant="span" className="text-xxs text-danger fst-italic">*</SoftTypography>
+                                                <SoftInput name="email" value={formData.email} onChange={handleChange} size="small"  type="email"/> 
                                           </Grid>  
                                           <Grid item xs={12} sm={12} md={3} px={1}>
                                                 <SoftTypography variant="button" className="me-1">Role:</SoftTypography>

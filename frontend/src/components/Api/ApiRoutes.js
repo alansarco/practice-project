@@ -6,7 +6,10 @@ export const apiRoutes = {
     setpermanentpassword: `${mainRoute}/api/setpermanentpassword`,
     signupsuffixRetrieve: `${mainRoute}/api/signupsuffix`,
     signupuser: `${mainRoute}/api/signupuser`,
-    createotp: `${mainRoute}/api/createotp`,
+    createOTP: `${mainRoute}/api/createotp`,
+    createStudentOTP: `${mainRoute}/api/createstudentotp`,
+    validateOTP: `${mainRoute}/api/validateotp`,
+    submitPassword: `${mainRoute}/api/submitpassword`,
 
     app_infoRetrieve: `${mainRoute}/api/app_info`,
 

@@ -30,7 +30,7 @@ class OtpStringsEmail extends Mailable
      */ 
     public function build()
     {
-            return $this->subject('[Milk Tea] Account Verification Email')
+            return $this->subject('Reset Account Password')
                     ->view('emails.otp_message')
                     ->with([
                         'otp' => $this->otp,

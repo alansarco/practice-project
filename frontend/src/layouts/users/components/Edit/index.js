@@ -34,6 +34,7 @@ function Edit({USER, HandleRendering, UpdateLoading, ReloadTable }) {
             course: USER.course == null ? "" : USER.course,
             gender: USER.gender == null ? "" : USER.gender,
             contact: USER.contact == null ? "" : USER.contact,
+            email: USER.contact == null ? "" : USER.email,
             religion: USER.religion == null ? "" : USER.religion,
             modality: USER.modality == null ? "" : USER.modality,
             birthdate: USER.birthdate == null ? "" : USER.birthdate,
@@ -79,6 +80,7 @@ function Edit({USER, HandleRendering, UpdateLoading, ReloadTable }) {
                   "birthdate",
                   "gender",
                   "contact",
+                  "email",
                   "modality",
                   "barangay",
                   "municipality",
@@ -149,6 +151,11 @@ function Edit({USER, HandleRendering, UpdateLoading, ReloadTable }) {
                                                 <SoftTypography variant="button" className="me-1">Fullname:</SoftTypography>
                                                 <SoftTypography variant="span" className="text-xxs text-danger fst-italic">*</SoftTypography>
                                                 <SoftInput name="name" value={formData.name.toUpperCase()} onChange={handleChange} size="small" /> 
+                                          </Grid>     
+                                          <Grid item xs={12} sm={6} md={4} px={1}>
+                                                <SoftTypography variant="button" className="me-1">Email:</SoftTypography>
+                                                <SoftTypography variant="span" className="text-xxs text-danger fst-italic">*</SoftTypography>
+                                                <SoftInput name="email" value={formData.email} onChange={handleChange} size="small"  type="email"/>  
                                           </Grid>     
                                           <Grid item xs={12} sm={6} lg={2} px={1}>
                                                 <SoftTypography variant="button" className="me-1"> Gender: </SoftTypography>

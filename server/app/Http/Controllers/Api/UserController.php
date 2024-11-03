@@ -288,26 +288,27 @@ class UserController extends Controller
                         $username = $cells[0]->getValue();
                         $name = $cells[1]->getValue();
                         $contact = $cells[2]->getValue();
-                        $gender = $cells[3]->getValue();
-                        $birthdate = $cells[4]->getValue();
-                        $grade = $cells[5]->getValue();
-                        $section = $cells[6]->getValue();
-                        $program = $cells[7]->getValue();
-                        $track = $cells[8]->getValue();
-                        $course = $cells[9]->getValue();
-                        $religion = $cells[10]->getValue();
-                        $house_no = $cells[11]->getValue();
-                        $barangay = $cells[12]->getValue();
-                        $municipality = $cells[13]->getValue();
-                        $province = $cells[14]->getValue();
-                        $father_name = $cells[15]->getValue();
-                        $mother_name = $cells[16]->getValue();
-                        $guardian = $cells[17]->getValue();
-                        $guardian_rel = $cells[18]->getValue();
-                        $contact_rel = $cells[19]->getValue();
-                        $enrolled = $cells[20]->getValue();
-                        $year_enrolled = $cells[21]->getValue();
-                        $modality = $cells[22]->getValue();
+                        $email = $cells[3]->getValue();
+                        $gender = $cells[4]->getValue();
+                        $birthdate = $cells[5]->getValue();
+                        $grade = $cells[6]->getValue();
+                        $section = $cells[7]->getValue();
+                        $program = $cells[8]->getValue();
+                        $track = $cells[9]->getValue();
+                        $course = $cells[10]->getValue();
+                        $religion = $cells[11]->getValue();
+                        $house_no = $cells[12]->getValue();
+                        $barangay = $cells[13]->getValue();
+                        $municipality = $cells[14]->getValue();
+                        $province = $cells[15]->getValue();
+                        $father_name = $cells[16]->getValue();
+                        $mother_name = $cells[17]->getValue();
+                        $guardian = $cells[18]->getValue();
+                        $guardian_rel = $cells[19]->getValue();
+                        $contact_rel = $cells[20]->getValue();
+                        $enrolled = $cells[21]->getValue();
+                        $year_enrolled = $cells[22]->getValue();
+                        $modality = $cells[23]->getValue();
 
                         // Validation
                         if ($grade < 11) {
@@ -354,6 +355,7 @@ class UserController extends Controller
                             [
                                 'name' => strtoupper($name),
                                 'contact' => $contact,
+                                'email' => $email,
                                 'gender' => strtoupper($gender),
                                 'birthdate' => $birthdate,
                                 'grade' => $grade,

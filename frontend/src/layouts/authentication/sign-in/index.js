@@ -231,6 +231,30 @@ function SignIn() {
           </SoftButton>
         </SoftBox>
         <SoftBox display={{ sm: "flex" }} justifyContent="space-between" textAlign={{ xs: "start", sm: "end" }}>
+          <SoftTypography 
+              py={1}
+              className="text-nowrap text-xxs  text-decoration-underline me-3"
+              component={Link}
+              to="/authentication/forgot-password"
+              color="white"
+              fontWeight="bold"
+              // textGradient
+            >
+              Forgot Password?
+          </SoftTypography> 
+          <SoftTypography 
+              py={1}
+              className="text-nowrap text-xxs  text-decoration-underline"
+              component={Link}
+              to="/authentication/sign-in/admin"
+              color="warning"
+              fontWeight="bold"
+              // textGradient
+            >
+              Login as Admin?
+          </SoftTypography> 
+        </SoftBox>
+        <SoftBox mb={1}>
           <SoftBox display="flex" alignItems="center" py={1}>
               <Checkbox checked={showPassword} onChange={HandleShowPassword} />
               <SoftTypography 
@@ -244,17 +268,6 @@ function SignIn() {
                 &nbsp;Show Password
               </SoftTypography>
           </SoftBox>
-          <SoftTypography 
-              py={1}
-              className="text-nowrap text-xxs  text-decoration-underline"
-              component={Link}
-              to="/authentication/sign-in/admin"
-              color="warning"
-              fontWeight="bold"
-              // textGradient
-            >
-              Login as Admin?
-          </SoftTypography> 
         </SoftBox>
         <SoftBox mt={1} mb={0}>
           <SoftTypography className="text-xxs" fontWeight="regular" color="white">

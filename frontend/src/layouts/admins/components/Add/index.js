@@ -26,6 +26,7 @@ function Add({HandleRendering, ReloadTable }) {
         
       const initialState = {
             username: "",
+            email: "",
             password: "",
             name: "",
             access: "",
@@ -64,6 +65,7 @@ function Add({HandleRendering, ReloadTable }) {
                   "access",
                   "contact",
                   "birthdate",
+                  "email",
                   "organization",
             ];
             const emptyRequiredFields = requiredFields.filter(field => !formData[field]);
@@ -127,6 +129,11 @@ function Add({HandleRendering, ReloadTable }) {
                                                 <SoftTypography variant="button" className="me-1">Password:</SoftTypography>
                                                 <SoftTypography variant="span" className="text-xxs text-danger fst-italic">*</SoftTypography>
                                                 <SoftInput name="password" value={formData.password} onChange={handleChange} size="small" /> 
+                                          </Grid>   
+                                          <Grid item xs={12} sm={6} md={4} lg={3} px={1}>
+                                                <SoftTypography variant="button" className="me-1">Email:</SoftTypography>
+                                                <SoftTypography variant="span" className="text-xxs text-danger fst-italic">*</SoftTypography>
+                                                <SoftInput name="email" value={formData.email} onChange={handleChange} size="small"  type="email"/> 
                                           </Grid>   
                                           <Grid item xs={12} sm={6} md={4} lg={3} px={1}>
                                                 <SoftTypography variant="button" className="me-1">Role:</SoftTypography>

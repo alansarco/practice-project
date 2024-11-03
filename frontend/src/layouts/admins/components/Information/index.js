@@ -93,6 +93,7 @@ function Information({USER, HandleRendering, ReloadTable}) {
                   Name: USER.name,  
                   Contact: USER.contact == null ? " " : USER.contact,
                   Gender: USER.gender == null ? " " : USER.gender,
+                  Email: USER.email == null ? " " : USER.email,
                   Role: USER.access_level == null ? " " : USER.access_level == 999 ? "Super Admin" : "Admin",
                   Birthdate: USER.birthday == null ? " " : USER.birthday ,
                   Last_Online: USER.last_online,
