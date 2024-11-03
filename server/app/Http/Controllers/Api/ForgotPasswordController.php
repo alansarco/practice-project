@@ -209,7 +209,7 @@ class ForgotPasswordController extends Controller
             ]);    
         }
 
-        $hashedPassword = Hash::make($request->newpass);
+        $hashedPassword = Hash::make($request->newpassword);
         $update = User::where('username', $request->username)->update([ 'password' => $hashedPassword]);
         if($update) {   
             return response()->json([
