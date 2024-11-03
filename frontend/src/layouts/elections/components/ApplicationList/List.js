@@ -257,7 +257,7 @@ function List({APPLICATION, POLL, HandleRendering, UpdateLoading}) {
                                                             </Grid>    
                                                             <Grid item xs={12} sm={6} lg={4}>
                                                                   <SoftBox display="flex" justifyContent="end">
-                                                                  <DownloadButton candidateId={candidate.candidateid} handleLoading={handleLoading}/>
+                                                                  <DownloadButton pollid={POLL.pollid} candidateId={candidate.candidateid} handleLoading={handleLoading}/>
                                                                   </SoftBox>
                                                             </Grid>                               
                                                             </Grid>     
@@ -355,7 +355,7 @@ function List({APPLICATION, POLL, HandleRendering, UpdateLoading}) {
                                                             </Grid>                                        
                                                             <Grid item xs={12} sm={6} lg={4}>
                                                                   <SoftBox display="flex" justifyContent="end">
-                                                                  <DownloadButton candidateId={candidate.candidateid} handleLoading={handleLoading}/>
+                                                                  <DownloadButton pollid={POLL.pollid} candidateId={candidate.candidateid} handleLoading={handleLoading}/>
                                                                   </SoftBox>
                                                             </Grid>                                        
                                                             </Grid>     
@@ -447,7 +447,7 @@ function List({APPLICATION, POLL, HandleRendering, UpdateLoading}) {
                                                             </Grid>   
                                                             <Grid item xs={12} sm={6} lg={4}>
                                                                   <SoftBox display="flex" justifyContent="end">
-                                                                  <DownloadButton Color="success" candidateId={candidate.candidateid} handleLoading={handleLoading}/>
+                                                                  <DownloadButton pollid={POLL.pollid} candidateId={candidate.candidateid} handleLoading={handleLoading}/>
                                                                   </SoftBox>
                                                             </Grid>                                        
                                                             </Grid>     

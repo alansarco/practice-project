@@ -37,7 +37,7 @@ function MyApplication({APPLICATION, POLL, HandleRendering, UpdateLoading}) {
 
       const pollid = POLL.pollid;
       const candidateid = APPLICATION.candidateid;
-      const fileDownloadUrl = `${process.env.REACT_APP_BASE_URL}/${APPLICATION.requirements_url}`;
+      // const fileDownloadUrl = `${process.env.REACT_APP_BASE_URL}/${APPLICATION.requirements_url}`;
 
       const handleDelete = async (e) => {
         e.preventDefault();     
@@ -109,7 +109,7 @@ function MyApplication({APPLICATION, POLL, HandleRendering, UpdateLoading}) {
                         {APPLICATION.requirements_base64 && (
                             <Grid container spacing={0} alignItems="center">
                                 <Grid item xs={12} md={6} lg={4} px={1}>
-                                  <DownloadButton candidateId={APPLICATION.candidateid} handleLoading={handleLoading}/>
+                                  <DownloadButton pollid={pollid} candidateId={APPLICATION.candidateid} handleLoading={handleLoading}/>
                                 </Grid>
                             </Grid>
                         )}

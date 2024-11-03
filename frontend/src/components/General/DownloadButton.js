@@ -5,7 +5,7 @@ import { apiRoutes } from 'components/Api/ApiRoutes';
 import { toast } from "react-toastify";
 import SoftButton from 'components/SoftButton';
 
-const DownloadButton = ({ candidateId, handleLoading }) => {
+const DownloadButton = ({ candidateId, handleLoading, pollid }) => {
     const {token} = useStateContext();  
     const YOUR_ACCESS_TOKEN = token; 
     const headers = {
@@ -15,7 +15,7 @@ const DownloadButton = ({ candidateId, handleLoading }) => {
         try {
             handleLoading(true);
             const response = await axios.get(apiRoutes.downloadRequirements, {
-                params: { candidateId },
+                params: { candidateId, pollid },
                 headers,
                 responseType: 'blob' // Important to set response type to blob for binary data
             });

@@ -481,7 +481,9 @@ class ElectionController extends Controller
     }
 
     public function downloadrequirements(Request $request) {
-        $application = Candidate::where('candidateid', $request->candidateId)->first();
+        $application = Candidate::where('candidateid', $request->candidateId)
+            ->where('pollid', $request->pollid)
+            ->first();
     
         if (!$application || !$application->requirements) {
             return response()->json(['message' => 'File not found'], 404);
