@@ -86,9 +86,11 @@ function Abouts() {
           <Card className="bg-white rounded-5">
             <SoftBox mt={2} p={2} pb={4}>
               <SoftBox className="px-md-0 px-2">
+                {fetchdata && fetchdata.length > 0 && 
                 <SoftTypography fontWeight="medium" textTransform="capitalize" color="success" textGradient>
                   System Information
                 </SoftTypography>
+                }
                 <Grid container spacing={0} alignItems="center">
                   <Grid item xs={12} px={1}>
                     <SoftTypography color="secondary" className="text-sm paragraph_format">
@@ -97,11 +99,14 @@ function Abouts() {
                   </Grid>  
                 </Grid>
                 <Grid container spacing={0} alignItems="center" px={1} mt={3}>
+                  {fetchdata && fetchdata.length > 0 &&
                   <Grid item xs={12} justifyContent="center" className="d-flex">
                     <SoftTypography  className="h1 fw-bold text-uppercase text-center" color="dark">
                       Campus Organizational Structure
                     </SoftTypography>
                   </Grid>
+                  }
+                  
                   <Grid item xs={12} justifyContent="center">
                     {imagePreview && (
                       <img
