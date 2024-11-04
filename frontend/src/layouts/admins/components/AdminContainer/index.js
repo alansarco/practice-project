@@ -175,7 +175,9 @@ function AdminContainer({USER, HandleRendering, ReloadTable}) {
                 sx={{ background: "transparent" }}
               >
                 <Tab label="Information" onClick={setProfile} icon={<Cube />} />
+                {access == 999 && role === "ADMIN" &&
                 <Tab label="Edit" onClick={setEdit} icon={<Document />} />
+                }
               </Tabs> 
             </AppBar>
           </Grid>

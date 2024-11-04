@@ -89,15 +89,22 @@ class AdminController extends Controller
 
     // update specific admin's information
     public function update(Request $request) {
-        $authUser = Admin::select('name')->where('username', Auth::user()->username)->first();
+        $authUser = Admin::select('name', 'username')->where('username', Auth::user()->username)->first();
 
         if($request->access == 999) {
             $superadmin = User::leftJoin('admins', 'users.username', '=', 'admins.username')
             ->where('role', 'ADMIN')
             ->where('access_level', 999)
             ->count();
+
             $superadmin_limit = App_Info::select('superadmin_limit')->first();
-            if($superadmin >= $superadmin_limit->superadmin_limit) {
+
+            $access_level = User::select('access_level')->where('username', $request->username)->first();
+
+            $add = 0; 
+            if($access_level->access_level == 999) $add = 1;
+            
+            if($superadmin >= $superadmin_limit->superadmin_limit + $add) {
                 return response()->json([
                     'message' => 'Maximum Super Admin reached!'
                 ]);
