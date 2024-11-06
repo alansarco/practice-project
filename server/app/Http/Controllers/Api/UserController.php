@@ -276,6 +276,12 @@ class UserController extends Controller
         $firstRow = true;
 
         try {
+            Student::where('enrolled', 1)
+            ->update([
+                'enrolled' => 0,
+                'year_unenrolled' => date('Y'),
+            ]);
+
             foreach ($reader->getSheetIterator() as $sheet) {
                 foreach ($sheet->getRowIterator() as $row) {
                     if ($firstRow) {

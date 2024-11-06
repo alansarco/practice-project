@@ -207,7 +207,7 @@ function Announcements() {
                         <> <CalendarMonthTwoToneIcon /> </>
                       }
                     </SoftButton>
-                    {access >= 10 && role === "ADMIN" && 
+                    {access == 999 && role === "ADMIN" && 
                     <SoftButton onClick={() => setRendering(3)} className="ms-2 py-0 px-3 d-flex rounded-pill" variant="gradient" color="success" size="small" >
                       <Icon>add</Icon> Add Event
                     </SoftButton>
@@ -261,7 +261,7 @@ function Announcements() {
                                     event.hashtag3,
                                   ]}
                                 />
-                                {access >= 10 && role === "ADMIN" &&
+                                {access == 999 && role === "ADMIN" &&
                                  <SoftBox mt={2} display="flex" justifyContent="end">
                                   <SoftButton onClick={() => handleDelete(event.id)} className="text-xxs me-2 px-3 rounded-pill" size="small" variant="gradient" color="primary">
                                     <DeleteTwoToneIcon /> delete
