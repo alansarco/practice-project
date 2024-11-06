@@ -98,7 +98,7 @@ function Add({HandleRendering, ReloadTable }) {
                         toast.warning("Please select program!", { autoClose: true });
                   }
                   else if(formData.grade > 10 && (formData.track == "" || formData.course == "")) {
-                        toast.warning("Please select a track and course!", { autoClose: true });
+                        toast.warning("Please select a track and strand!", { autoClose: true });
                   }
                   else {      
                         setSubmitProfile(true);
@@ -228,7 +228,7 @@ function Add({HandleRendering, ReloadTable }) {
                                                 </select>
                                           </Grid>
                                           <Grid item xs={12} sm={6} md={3} px={1}>   
-                                                <SoftTypography variant="button" className="me-1"> Course: </SoftTypography>
+                                                <SoftTypography variant="button" className="me-1"> Strand: </SoftTypography>
                                                 <SoftTypography variant="span" className="text-xxs text-danger fst-italic">*</SoftTypography>
                                                 <select className="form-control form-select form-select-sm text-secondary rounded-5 cursor-pointer" name="course" value={formData.course} onChange={handleChange} >
                                                       <option value="">N/A</option>

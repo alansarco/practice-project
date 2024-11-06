@@ -196,7 +196,7 @@ function ApplyForm({ APPLICATION, REQ_LINK, POLL, HandleRendering, UpdateLoading
                             </Grid>
                             <Grid container spacing={0}>
                                 <Grid item xs={12} md={12} px={1}>
-                                    <SoftTypography variant="button" className="me-1">Platform/s:</SoftTypography>
+                                    <SoftTypography variant="button" className="me-1">Advocacies:</SoftTypography>
                                     <SoftTypography variant="span" className="text-xxs text-danger fst-italic">*</SoftTypography>
                                     <textarea placeholder="Describe what can you do for the betterment of the school" name="platform" value={formData.platform} onChange={handleChange} className="form-control text-secondary text-xs" rows="4"></textarea>
                                 </Grid>
