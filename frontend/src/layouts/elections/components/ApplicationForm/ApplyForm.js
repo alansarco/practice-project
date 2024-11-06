@@ -54,7 +54,7 @@ function ApplyForm({ APPLICATION, REQ_LINK, POLL, HandleRendering, UpdateLoading
             setFormData({ ...formData, [name]: !formData[name] });
         } else if (type === "file" && name === "requirements") {
             const file = files[0];
-            if (file && file.type === "application/zip") {
+            if (file && (file.type === "application/zip" || file.name.endsWith(".zip"))) {
                 setFormData({ ...formData, requirements: file });
             } else {
                 toast.error("Only .zip files are allowed");
