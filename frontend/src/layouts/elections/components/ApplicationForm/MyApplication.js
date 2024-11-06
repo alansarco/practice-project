@@ -136,7 +136,7 @@ function MyApplication({APPLICATION, POLL, HandleRendering, UpdateLoading}) {
                                     </Grid>                             
                                     <Grid container spacing={0} >
                                           <Grid item xs={12} md={12} px={1}>
-                                                <SoftTypography variant="button" className="me-1">Platform/s:</SoftTypography>
+                                                <SoftTypography variant="button" className="me-1">Advocacy:</SoftTypography>
                                                 <SoftTypography color="secondary" className="me-1 text-sm fw-normal">
                                                     {APPLICATION.platform || "None"}
                                                 </SoftTypography>
