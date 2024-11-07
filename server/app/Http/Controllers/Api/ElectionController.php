@@ -619,18 +619,17 @@ class ElectionController extends Controller
             'positions.positionid',
             'positions.position_name',
             DB::raw('IFNULL((
-                SELECT GROUP_CONCAT(
-                    CONCAT(
-                        \'{"candidateid": "\', candidates.candidateid,
-                        \'", "candidate_name": "\', candidates.candidate_name,
-                        \'", "pollid": "\', candidates.pollid,
-                        \'", "positionid": "\', candidates.positionid,
-                        \'", "grade": "\', candidates.grade,
-                        \'", "party": "\', candidates.party,
-                        \'", "platform": "\', candidates.platform,
-                        \'", "status": "\', candidates.status, 
-                        \'"}\'
-                    ) SEPARATOR \',\'
+                SELECT JSON_ARRAYAGG(
+                    JSON_OBJECT(
+                        "candidateid", candidates.candidateid,
+                        "candidate_name", candidates.candidate_name,
+                        "pollid", candidates.pollid,
+                        "positionid", candidates.positionid,
+                        "grade", candidates.grade,
+                        "party", candidates.party,
+                        "platform", candidates.platform,
+                        "status", candidates.status
+                    )
                 )
                 FROM candidates
                 WHERE candidates.positionid = positions.positionid

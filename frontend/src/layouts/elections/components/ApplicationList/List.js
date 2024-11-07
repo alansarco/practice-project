@@ -204,11 +204,11 @@ function List({APPLICATION, POLL, HandleRendering, UpdateLoading}) {
                                                 (() => {
                                                       let candidatesArray = [];
                                                       try {
-                                                      // Parse the string into a valid JSON array
-                                                      candidatesArray = JSON.parse('[' + position.candidates + ']')
-                                                      .filter(candidate => candidate.status === "1"); // Filtering approved candidates
+                                                        candidatesArray = JSON.parse(position.candidates).filter(
+                                                          candidate => candidate.status === 1 // Filter only approved candidates
+                                                        );
                                                       } catch (error) {
-                                                      console.error('Error parsing candidates:', error);
+                                                        console.error('Error parsing candidates:', error);
                                                       }
 
                                                       // Check if there are any approved candidates
@@ -295,11 +295,11 @@ function List({APPLICATION, POLL, HandleRendering, UpdateLoading}) {
                                                 (() => {
                                                       let candidatesArray = [];
                                                       try {
-                                                      // Parse the string into a valid JSON array
-                                                      candidatesArray = JSON.parse('[' + position.candidates + ']')
-                                                      .filter(candidate => candidate.status === "0"); // Filtering approved candidates
+                                                        candidatesArray = JSON.parse(position.candidates).filter(
+                                                          candidate => candidate.status === 1 // Filter only approved candidates
+                                                        );
                                                       } catch (error) {
-                                                      console.error('Error parsing candidates:', error);
+                                                        console.error('Error parsing candidates:', error);
                                                       }
 
                                                       // Check if there are any approved candidates
@@ -393,11 +393,11 @@ function List({APPLICATION, POLL, HandleRendering, UpdateLoading}) {
                                                 (() => {
                                                       let candidatesArray = [];
                                                       try {
-                                                      // Parse the string into a valid JSON array
-                                                      candidatesArray = JSON.parse('[' + position.candidates + ']')
-                                                      .filter(candidate => candidate.status === "2"); // Filtering approved candidates
+                                                        candidatesArray = JSON.parse(position.candidates).filter(
+                                                          candidate => candidate.status === 1 // Filter only approved candidates
+                                                        );
                                                       } catch (error) {
-                                                      console.error('Error parsing candidates:', error);
+                                                        console.error('Error parsing candidates:', error);
                                                       }
 
                                                       // Check if there are any approved candidates

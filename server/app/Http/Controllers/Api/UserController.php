@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Admin;
 use App\Models\App_Info;
 use App\Models\Student;
+use App\Models\StudentUpload;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -258,7 +259,7 @@ class UserController extends Controller
         $authUser = Admin::select('name')->where('username',  Auth::user()->username)->first();
 
         $validator = Validator::make($request->all(), [
-            'data' => 'required|file|mimes:xlsx,xls|max:5120',
+            'data' => 'required|file|mimes:xlsx,xls|max:20000',
         ]);
 
         if ($validator->fails()) {
@@ -277,86 +278,83 @@ class UserController extends Controller
 
         try {
             Student::where('enrolled', 1)
-            ->update([
-                'enrolled' => 0,
-                'year_unenrolled' => date('Y'),
-            ]);
+                ->update([
+                    'enrolled' => 0,
+                    'year_unenrolled' => date('Y'),
+                ]);
 
             foreach ($reader->getSheetIterator() as $sheet) {
+                $rowNumber = 1;
                 foreach ($sheet->getRowIterator() as $row) {
                     if ($firstRow) {
                         $firstRow = false; // Skip the first row (header)
                         continue;
                     }
+                    $rowNumber++; // Increment row number for each data row
 
                     $cells = $row->getCells();
-                    if (isset($cells[0])) {
-                        $username = $cells[0]->getValue();
-                        $name = $cells[1]->getValue();
-                        $contact = $cells[2]->getValue();
-                        $email = $cells[3]->getValue();
-                        $gender = $cells[4]->getValue();
-                        $birthdate = $cells[5]->getValue();
-                        $grade = $cells[6]->getValue();
-                        $section = $cells[7]->getValue();
-                        $program = $cells[8]->getValue();
-                        $track = $cells[9]->getValue();
-                        $course = $cells[10]->getValue();
-                        $religion = $cells[11]->getValue();
-                        $house_no = $cells[12]->getValue();
-                        $barangay = $cells[13]->getValue();
-                        $municipality = $cells[14]->getValue();
-                        $province = $cells[15]->getValue();
-                        $father_name = $cells[16]->getValue();
-                        $mother_name = $cells[17]->getValue();
-                        $guardian = $cells[18]->getValue();
-                        $guardian_rel = $cells[19]->getValue();
-                        $contact_rel = $cells[20]->getValue();
-                        $enrolled = $cells[21]->getValue();
-                        $year_enrolled = $cells[22]->getValue();
-                        $modality = $cells[23]->getValue();
+                                    
+                    if (!empty($cells[0])) {
+                        $username = isset($cells[0]) ? $cells[0]->getValue() : null;
+                        $name = isset($cells[1]) ? $cells[1]->getValue() : null;
+                        $contact = isset($cells[2]) ? $cells[2]->getValue() : null;
+                        $email = isset($cells[3]) ? $cells[3]->getValue() : null;
+                        $gender = isset($cells[4]) ? $cells[4]->getValue() : null;
+                        $birthdate = isset($cells[5]) ? $cells[5]->getValue() : null;
+                        $grade = isset($cells[6]) ? $cells[6]->getValue() : null;
+                        $section = isset($cells[7]) ? $cells[7]->getValue() : null;
+                        $program = isset($cells[8]) ? $cells[8]->getValue() : null;
+                        $track = isset($cells[9]) ? $cells[9]->getValue() : null;
+                        $course = isset($cells[10]) ? $cells[10]->getValue() : null;
+                        $religion = isset($cells[11]) ? $cells[11]->getValue() : '';
+                        $house_no = isset($cells[12]) ? $cells[12]->getValue() : '';
+                        $barangay = isset($cells[13]) ? $cells[13]->getValue() : null;
+                        $municipality = isset($cells[14]) ? $cells[14]->getValue() : null;
+                        $province = isset($cells[15]) ? $cells[15]->getValue() : null;
+                        $father_name = isset($cells[16]) ? $cells[16]->getValue() : '';
+                        $mother_name = isset($cells[17]) ? $cells[17]->getValue() : '';
+                        $guardian = isset($cells[18]) ? $cells[18]->getValue() : '';
+                        $guardian_rel = isset($cells[19]) ? $cells[19]->getValue() : '';
+                        $contact_rel = isset($cells[20]) ? $cells[20]->getValue() : '';
+                        $year_enrolled = isset($cells[21]) ? $cells[21]->getValue() : null;
+                        $modality = isset($cells[22]) ? $cells[22]->getValue() : '';
 
                         // Validation
                         if ($grade < 11) {
-                            $track = null;
-                            $course = null;
+                            $track = '';
+                            $course = '';
                         }
 
                         if ($grade > 10) {
-                            $program = null;
+                            $program = '';
                         }
 
-                        if(!$year_enrolled) {
+                        if (!$year_enrolled) {
                             $year_enrolled = date('Y');
                         }
-                        
 
                         // Custom validations
                         if (!is_numeric($username) || strlen($username) != 12) {
-                            throw new \Exception("Invalid LRN: $username");
+                            throw new \Exception("Row $rowNumber: Invalid LRN $username");
                         }
                         if (!is_numeric($contact)) {
-                            throw new \Exception("Invalid contact of LRN $username: $contact");
+                            throw new \Exception("Row $rowNumber: Invalid contact for LRN $username - $contact");
                         }
                         if (!in_array($gender, ['M', 'F'])) {
-                            throw new \Exception("Invalid gender of LRN $username: $gender");
+                            throw new \Exception("Row $rowNumber: Invalid gender for LRN $username - $gender");
                         }
                         if (!preg_match('/\d{4}-\d{2}-\d{2}/', $birthdate)) {
-                            throw new \Exception("Invalid birthdate format of LRN $username: $birthdate");
+                            throw new \Exception("Row $rowNumber: Invalid birthdate format for LRN $username - $birthdate");
                         }
                         if ($grade < 7 || $grade > 12) {
-                            throw new \Exception("Invalid grade of LRN $username: $grade");
-                        }
-                        if (!in_array($enrolled, [0, 1])) {
-                            throw new \Exception("Invalid enrolled value  of LRN $username: $enrolled");
+                            throw new \Exception("Row $rowNumber: Invalid grade for LRN $username - $grade");
                         }
                         if (!preg_match('/^\d{4}$/', $year_enrolled)) {
-                            throw new \Exception("Invalid year enrolled  of LRN $username: $year_enrolled");
+                            throw new \Exception("Row $rowNumber: Invalid year enrolled for LRN $username - $year_enrolled");
                         }
 
-                        
                         // Update or create student record
-                        Student::updateOrCreate(
+                        StudentUpload::updateOrCreate(
                             ['username' => $username],
                             [
                                 'name' => strtoupper($name),
@@ -379,11 +377,12 @@ class UserController extends Controller
                                 'guardian' => strtoupper($guardian),
                                 'guardian_rel' => $guardian_rel,
                                 'contact_rel' => $contact_rel,
-                                'enrolled' => $enrolled,
+                                'enrolled' => 1,
                                 'year_enrolled' => $year_enrolled,
                                 'modality' => $modality,
-                                'created_by' => "Uploaded by ".$authUser->name,
-                                'updated_by' => "Uploaded by ".$authUser->name,
+                                'deleted_at' => null,
+                                'created_by' => "Uploaded by " . $authUser->name,
+                                'updated_by' => "Uploaded by " . $authUser->name,
                             ]
                         );
                     }
@@ -392,28 +391,15 @@ class UserController extends Controller
 
             DB::commit(); // Commit transaction if all rows pass validation
             $reader->close();
-            // Remove soft-deleted duplicates for `username`
-            DB::table('students')
-                ->select('username')
-                ->whereNotNull('deleted_at')
-                ->groupBy('username')
-                ->havingRaw('COUNT(username) > 1')
-                ->pluck('username')
-                ->each(function ($username) {
-                    Student::where('username', $username)
-                        ->whereNotNull('deleted_at')
-                        ->forceDelete(); // Permanently delete soft-deleted duplicates
-                });
-            
-                sleep(1);
 
-                // Try deleting with Storage, and if it fails, use unlink
-                try {
-                    Storage::delete($path) || unlink($fullPath);
-                } catch (\Exception $e) {
-                    // Handle deletion error
-                    return response()->json(['status' => 500, 'message' => 'Failed to delete uploaded file: ' . $e->getMessage()]);
-                }
+            sleep(1);
+            
+            // Try deleting with Storage, and if it fails, use unlink
+            try {
+                Storage::delete($path) || unlink($fullPath);
+            } catch (\Exception $e) {
+                return response()->json(['status' => 500, 'message' => 'Failed to delete uploaded file: ' . $e->getMessage()]);
+            }
 
             return response()->json(['status' => 200, 'message' => 'Students data uploaded successfully!']);
 
@@ -428,12 +414,12 @@ class UserController extends Controller
             try {
                 Storage::delete($path) || unlink($fullPath);
             } catch (\Exception $e) {
-                // Handle deletion error
                 return response()->json(['status' => 500, 'message' => 'Failed to delete uploaded file: ' . $e->getMessage()]);
             }
 
-            return response()->json(['status' => 500, 'message' => 'Failed to upload data: ' . $e->getMessage()]);
+            return response()->json(['status' => 500, 'message' => 'Failed to upload data due to error in row ' . $rowNumber . ': ' . $e->getMessage()]);
         }
     }
+
 
 }
