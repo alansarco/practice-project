@@ -204,11 +204,14 @@ function List({APPLICATION, POLL, HandleRendering, UpdateLoading}) {
                                                 (() => {
                                                       let candidatesArray = [];
                                                       try {
-                                                        candidatesArray = JSON.parse(position.candidates).filter(
-                                                          candidate => candidate.status === 1 // Filter only approved candidates
-                                                        );
+                                                            if (typeof position.candidates === 'string') {
+                                                                  candidatesArray = JSON.parse(position.candidates);
+                                                            } else if (Array.isArray(position.candidates)) {
+                                                                  candidatesArray = position.candidates;
+                                                            }
+                                                            candidatesArray = candidatesArray.filter(candidate => candidate.status === 1);
                                                       } catch (error) {
-                                                        console.error('Error parsing candidates:', error);
+                                                      console.error('Error parsing candidates:', error);
                                                       }
 
                                                       // Check if there are any approved candidates
@@ -225,8 +228,8 @@ function List({APPLICATION, POLL, HandleRendering, UpdateLoading}) {
                                                       return candidatesArray.map((candidate) => (
                                                       candidate.candidateid ? 
                                                       <SoftBox my={2} className="shadow p-3" key={candidate.candidateid}>
-                                                            <SoftBadge badgeContent={candidate.status === "1" ? "approved" : candidate.status === "2" ? "rejected" : "pending"} variant="gradient" 
-                                                            color={candidate.status === "1" ? "info" : candidate.status === "2" ? "primary" : "warning"} size="lg"
+                                                            <SoftBadge badgeContent={candidate.status === 1 ? "approved" : candidate.status === 2 ? "rejected" : "pending"} variant="gradient" 
+                                                            color={candidate.status === 1 ? "info" : candidate.status === 2 ? "primary" : "warning"} size="lg"
                                                             className="d-flex justify-content-end"
                                                             />
                                                             <SoftTypography color="info" className="me-1 text-sm fw-normal">
@@ -295,11 +298,14 @@ function List({APPLICATION, POLL, HandleRendering, UpdateLoading}) {
                                                 (() => {
                                                       let candidatesArray = [];
                                                       try {
-                                                        candidatesArray = JSON.parse(position.candidates).filter(
-                                                          candidate => candidate.status === 1 // Filter only approved candidates
-                                                        );
+                                                            if (typeof position.candidates === 'string') {
+                                                                  candidatesArray = JSON.parse(position.candidates);
+                                                            } else if (Array.isArray(position.candidates)) {
+                                                                  candidatesArray = position.candidates;
+                                                            }
+                                                            candidatesArray = candidatesArray.filter(candidate => candidate.status === 0);
                                                       } catch (error) {
-                                                        console.error('Error parsing candidates:', error);
+                                                      console.error('Error parsing candidates:', error);
                                                       }
 
                                                       // Check if there are any approved candidates
@@ -316,8 +322,8 @@ function List({APPLICATION, POLL, HandleRendering, UpdateLoading}) {
                                                       return candidatesArray.map((candidate) => (
                                                       candidate.candidateid ? 
                                                       <SoftBox my={2} className="shadow p-3" key={candidate.candidateid}>
-                                                            <SoftBadge badgeContent={candidate.status === "1" ? "approved" : candidate.status === "2" ? "rejected" : "pending"} variant="gradient" 
-                                                            color={candidate.status === "1" ? "info" : candidate.status === "2" ? "primary" : "warning"} size="lg"
+                                                             <SoftBadge badgeContent={candidate.status === 1 ? "approved" : candidate.status === 2 ? "rejected" : "pending"} variant="gradient" 
+                                                            color={candidate.status === 1 ? "info" : candidate.status === 2 ? "primary" : "warning"} size="lg"
                                                             className="d-flex justify-content-end"
                                                             />
                                                             <SoftTypography color="info" className="me-1 text-sm fw-normal">
@@ -393,11 +399,14 @@ function List({APPLICATION, POLL, HandleRendering, UpdateLoading}) {
                                                 (() => {
                                                       let candidatesArray = [];
                                                       try {
-                                                        candidatesArray = JSON.parse(position.candidates).filter(
-                                                          candidate => candidate.status === 1 // Filter only approved candidates
-                                                        );
+                                                            if (typeof position.candidates === 'string') {
+                                                                  candidatesArray = JSON.parse(position.candidates);
+                                                            } else if (Array.isArray(position.candidates)) {
+                                                                  candidatesArray = position.candidates;
+                                                            }
+                                                            candidatesArray = candidatesArray.filter(candidate => candidate.status === 2);
                                                       } catch (error) {
-                                                        console.error('Error parsing candidates:', error);
+                                                      console.error('Error parsing candidates:', error);
                                                       }
 
                                                       // Check if there are any approved candidates
@@ -414,8 +423,8 @@ function List({APPLICATION, POLL, HandleRendering, UpdateLoading}) {
                                                       return candidatesArray.map((candidate) => (
                                                       candidate.candidateid ? 
                                                       <SoftBox my={2} className="shadow p-3" key={candidate.candidateid}>
-                                                            <SoftBadge badgeContent={candidate.status === "1" ? "approved" : candidate.status === "2" ? "rejected" : "pending"} variant="gradient" 
-                                                            color={candidate.status === "1" ? "info" : candidate.status === "2" ? "primary" : "warning"} size="lg"
+                                                             <SoftBadge badgeContent={candidate.status === 1 ? "approved" : candidate.status === 2 ? "rejected" : "pending"} variant="gradient" 
+                                                            color={candidate.status === 1 ? "info" : candidate.status === 2 ? "primary" : "warning"} size="lg"
                                                             className="d-flex justify-content-end"
                                                             />
                                                             <SoftTypography color="info" className="me-1 text-sm fw-normal">

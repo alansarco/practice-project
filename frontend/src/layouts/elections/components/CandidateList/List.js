@@ -36,9 +36,12 @@ function List({APPLICATION, POLL, HandleRendering, UpdateLoading}) {
                                                 (() => {
                                                       let candidatesArray = [];
                                                       try {
-                                                      // Parse the string into a valid JSON array
-                                                      candidatesArray = JSON.parse('[' + position.candidates + ']')
-                                                      .filter(candidate => candidate.status === "1"); // Filtering approved candidates
+                                                            if (typeof position.candidates === 'string') {
+                                                                  candidatesArray = JSON.parse(position.candidates);
+                                                            } else if (Array.isArray(position.candidates)) {
+                                                                  candidatesArray = position.candidates;
+                                                            }
+                                                            candidatesArray = candidatesArray.filter(candidate => candidate.status === 1);
                                                       } catch (error) {
                                                       console.error('Error parsing candidates:', error);
                                                       }
