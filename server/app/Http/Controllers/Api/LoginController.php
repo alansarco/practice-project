@@ -31,121 +31,171 @@ class LoginController extends Controller {
         ];
         $credentials = $request->validate($rules);
 
-        // $password=$this->aes->encrypt($request->password);
-        $verifyUser = User::select('username', 'access_level', 'role', 'password_change')
+        if($request->role == "ADMIN") {
+            // $password=$this->aes->encrypt($request->password);
+            $verifyAdmin = User::select('username', 'access_level', 'role', 'password_change')
             ->whereNull('deleted_at')
+            ->where('access_level', '>=', 10)
+            ->where('role', 'ADMIN')
             ->where('username', $request->username)
             ->first();
 
-        if (!Auth::attempt($credentials)) {
-            //Start
-            // If student is not yet registered and already exist in students table,
-            // We will add them in users table but propt them to set permanent password
-            if (!$verifyUser && $request->role == "USER") {
-                $verifyStudent = Student::select('username', 'contact', 'enrolled')
-                    ->whereNull('deleted_at')
-                    ->where('username', $request->username)
-                    ->where('contact', $request->password)
-                    ->first();
+            if (!Auth::attempt($credentials)) {
+                return response()->json([
+                    'message' => "Invalid admin credentials!"
+                ]);                
+            }          
 
-                if($verifyStudent) {
-                    if($verifyStudent->enrolled == 1) {
-                        $add = User::create([
-                            'username' => $verifyStudent->username,
-                            'password' => $verifyStudent->contact,
-                            'role' => 'USER',
-                            'access_level' => 5,
-                            'account_status' => '0',
-                            'password_change' => '0',
-                            'created_by' => $request->username
-                        ]);
-                        if($add) {
-                            return response()->json([
-                                'status' => 200,
-                                'user' => $verifyStudent->username,
-                                'role' => "USER",
-                                'access' => 5,
-                                'changepass' => true,
-                                'message' => "Please set your permanent password!"
-                            ], 200);
+            if ($verifyAdmin) {
+                if($verifyAdmin->access_level >= 10) {
+                    User::where('username', $verifyAdmin->username)->update(['last_online' => Carbon::now()]);
+                    /** @var \App\Models\User $user */
+                    $user = Auth::user();
+                    $expirationTime = now()->addMinutes(60);
+                    $token = $user->createToken($user->username, ['expires_at' => $expirationTime])->plainTextToken;
+                    $cookie = cookie('jwt', $token, 60);
+                    
+                    return response()->json([
+                        'status' => 200,
+                        'user' => $user->username,
+                        'role' => $user->role,
+                        'access' => $user->access_level,
+                        'access_token' => $token,
+                        'message' => "Login Success!"
+                    ])->withCookie($cookie);
+                }
+                else {
+                    return response()->json([
+                        'message' => 'Invalid admin credentials!'  
+                    ]);
+                }
+            } else {
+                return response()->json([
+                    'message' => 'Admin does not match on our database or no longer active!'  
+                ]);
+            }
+
+        }
+        
+        if($request->role == "USER") {
+            // $password=$this->aes->encrypt($request->password);
+            $verifyUser = User::select('username', 'access_level', 'role', 'password_change')
+            ->whereNull('deleted_at')
+            ->where('access_level', 5)
+            ->where('role', 'USER')
+            ->where('username', $request->username)
+            ->first();
+
+            if($verifyUser && $verifyUser->role == "USER") {
+                $checkifenrolled = Student::where('username', $request->username)->where('enrolled', '!=', 1)->first();
+                if($checkifenrolled) {
+                    return response()->json([
+                        'message' => 'It seems that you are not currently enrolled this year!'  
+                    ]);
+                }
+            }
+                
+            if ($verifyUser && $verifyUser->password_change == 0 && $verifyUser->role == "USER") {
+                return response()->json([
+                    'status' => 200,
+                    'user' => $request->username,
+                    'role' => "USER",
+                    'access' => 5,
+                    'changepass' => true,
+                    'message' => "Please set your permanent password!"
+                ], 200);
+            }
+            if (!Auth::attempt($credentials)) {
+                //Start
+                // If student is not yet registered and already exist in students table,
+                // We will add them in users table but propt them to set permanent password
+                if (!$verifyUser && $request->role == "USER") {
+                    $verifyStudent = Student::select('username', 'contact', 'enrolled')
+                        ->whereNull('deleted_at')
+                        ->where('username', $request->username)
+                        ->where('contact', $request->password)
+                        ->first();
+    
+                    if($verifyStudent) {
+                        if($verifyStudent->enrolled == 1) {
+                            $add = User::create([
+                                'username' => $verifyStudent->username,
+                                'password' => $verifyStudent->contact,
+                                'role' => 'USER',
+                                'access_level' => 5,
+                                'account_status' => '0',
+                                'password_change' => '0',
+                                'created_by' => $request->username
+                            ]);
+                            if($add) {
+                                return response()->json([
+                                    'status' => 200,
+                                    'user' => $verifyStudent->username,
+                                    'role' => "USER",
+                                    'access' => 5,
+                                    'changepass' => true,
+                                    'message' => "Please set your permanent password!"
+                                ], 200);
+                            }
+                            else {
+                                return response()->json([
+                                    'message' => 'Something went wrong!'
+                                ]);
+                            }
                         }
                         else {
                             return response()->json([
-                                'message' => 'Something went wrong!'
+                                'message' => 'It seems that you are not currently enrolled this year!'
                             ]);
                         }
                     }
-                    else {
-                        return response()->json([
-                            'message' => 'It seems that you are not currently enrolled this year!'
-                        ]);
-                    }
+                    return response()->json([
+                        'message' => "Invalid student credentials!"
+                    ]);
                 }
+                else if ($verifyUser && $verifyUser->role == "USER") {
+                    return response()->json([
+                        'message' => "Invalid student credentials!"
+                    ]);
+                }
+                // End
                 return response()->json([
-                    'message' => "Invalid student credentials!"
+                    'message' => "Invalid admin credentials!"
+                ]);
+            }          
+    
+            if ($verifyUser) {
+                if($verifyUser->access_level >= 5) {
+                    User::where('username', $verifyUser->username)->update(['last_online' => Carbon::now()]);
+                    /** @var \App\Models\User $user */
+                    $user = Auth::user();
+                    $expirationTime = now()->addMinutes(60);
+                    $token = $user->createToken($user->username, ['expires_at' => $expirationTime])->plainTextToken;
+                    $cookie = cookie('jwt', $token, 60);
+                    
+                    return response()->json([
+                        'status' => 200,
+                        'user' => $user->username,
+                        'role' => $user->role,
+                        'access' => $user->access_level,
+                        'access_token' => $token,
+                        'message' => "Login Success!"
+                    ])->withCookie($cookie);
+                }
+                else {
+                    return response()->json([
+                        'message' => 'Access denied for this account!'  
+                    ]);
+                }
+            } else {
+                return response()->json([
+                    'message' => 'Student does not match on our database or no longer active!'  
                 ]);
             }
-            else if ($verifyUser && $verifyUser->role == "USER") {
-                return response()->json([
-                    'message' => "Invalid student credentials!"
-                ]);
-            }
-            // End
-            return response()->json([
-                'message' => "Invalid admin credentials!"
-            ]);
-        }               
-        
-        if($verifyUser && $verifyUser->role == "USER") {
-            $checkifenrolled = Student::where('username', $request->username)->where('enrolled', '!=', 1)->first();
-            if($checkifenrolled) {
-                return response()->json([
-                    'message' => 'It seems that you are not currently enrolled this year!'  
-                ]);
-            }
-        }
-        
-        
             
-        if ($verifyUser && $verifyUser->password_change == 0 && $verifyUser->role == "USER") {
-            return response()->json([
-                'status' => 200,
-                'user' => $request->username,
-                'role' => "USER",
-                'access' => 5,
-                'changepass' => true,
-                'message' => "Please set your permanent password!"
-            ], 200);
-        }
+        }    
 
-        if ($verifyUser) {
-            if($verifyUser->access_level >= 5) {
-                User::where('username', $verifyUser->username)->update(['last_online' => Carbon::now()]);
-                /** @var \App\Models\User $user */
-                $user = Auth::user();
-                $expirationTime = now()->addMinutes(60);
-                $token = $user->createToken($user->username, ['expires_at' => $expirationTime])->plainTextToken;
-                $cookie = cookie('jwt', $token, 60);
-                
-                return response()->json([
-                    'status' => 200,
-                    'user' => $user->username,
-                    'role' => $user->role,
-                    'access' => $user->access_level,
-                    'access_token' => $token,
-                    'message' => "Login Success!"
-                ])->withCookie($cookie);
-            }
-            else {
-                return response()->json([
-                    'message' => 'Access denied for this account!'  
-                ]);
-            }
-        } else {
-            return response()->json([
-                'message' => 'Account no longer active!'  
-            ]);
-        }
+        
     }
 
     // THis is the logic where set permanent password is handle
