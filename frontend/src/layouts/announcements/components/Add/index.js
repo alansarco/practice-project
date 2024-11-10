@@ -94,7 +94,6 @@ function Add({HandleRendering, ReloadTable}) {
                                     const response = await axios.post(apiRoutes.addAnnouncement, formData, {headers});
                                     if(response.data.status == 200) {
                                           toast.success(`${response.data.message}`, { autoClose: true });
-                                          setFormData(initialState);
                                     } else {
                                           toast.error(`${response.data.message}`, { autoClose: true });
                                     }

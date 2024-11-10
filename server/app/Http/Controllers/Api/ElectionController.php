@@ -16,6 +16,7 @@ use App\Models\Vote;
 use Carbon\Carbon;
 use Exception;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Validator;
 
 class ElectionController extends Controller
@@ -668,37 +669,7 @@ class ElectionController extends Controller
                 return response()->json([
                     'message' => 'An application from this party already exists for the selected position!'
                 ]);
-            }
-            
-            $application = Candidate::leftJoin('students', 'candidates.candidateid', '=', 'students.username')
-                ->leftJoin('positions', function($join) {
-                    $join->on('candidates.positionid', '=', 'positions.positionid')
-                        ->on('candidates.pollid', '=', 'positions.pollid');
-                })
-                ->select('candidates.candidateid', 'candidates.positionid', 'candidates.pollid', 
-                    'positions.position_name', 'candidates.party', 'candidates.platform', 'candidates.status',
-                )
-                ->whereNotNull('positions.position_name')
-                ->where('candidates.pollid', $request->info)
-                ->where('candidates.candidateid', $authUser->username)
-                ->first();
-
-            $otherapplication = Candidate::leftJoin('polls', 'candidates.pollid', '=', 'polls.pollid')
-                ->select('candidates.candidateid', 'candidates.positionid', 'candidates.pollid', 
-                    'candidates.party', 'candidates.platform', 'candidates.status', 'polls.voting_end'
-                )
-                ->where('polls.pollid', '!=', $request->info)
-                ->where('polls.voting_end','>' , Carbon::today()->toDateString())
-                ->where('candidates.candidateid', $authUser->username)
-                ->where('candidates.status', '!=', 2)
-                ->where('candidates.party', '!=', $request->party)
-                ->first();
-
-            if($application || $otherapplication) {
-                return response()->json([
-                    'message' => 'Seems like you have already active application!'
-                ]);
-            }   
+            }  
 
             $update = Candidate::where('pollid', $request->pollid)
                 ->where('candidateid', $request->candidateid)
@@ -718,9 +689,24 @@ class ElectionController extends Controller
             ]);
                 
             if($update) {
+                $student = Student::where('username', $request->candidateid)->first();
+                $pollinfo = Poll::where('pollid', $request->pollid)->first();
+
+                if($student->contact) {
+                    $number = $student->contact;
+                    $message = "Hello $student->name! Your application for $pollinfo->pollname has been approved!";
+
+                    Http::asForm()->post('https://semaphore.co/api/v4/messages', [
+                        'apikey' => '191998cd60101ec1f81b319a063fb06a',
+                        'number' => $number,
+                        'message' => $message,
+                        'sender_name' => '',
+                    ]);
+                }
+
                 return response()->json([
                     'status' => 200,
-                    'message' => 'Application has been approved!'
+                    'message' => 'Application has been approved and SMS notification has been sent!'
                 ], 200);
             }   
             return response()->json([
@@ -746,9 +732,23 @@ class ElectionController extends Controller
             ]);
                 
             if($update) {
+                $student = Student::where('username', $request->candidateid)->first();
+                $pollinfo = Poll::where('pollid', $request->pollid)->first();
+
+                if($student->contact) {
+                    $number = $student->contact;
+                    $message = "Hello $student->name! Your application for $pollinfo->pollname has been rejected!";
+
+                    Http::asForm()->post('https://semaphore.co/api/v4/messages', [
+                        'apikey' => '191998cd60101ec1f81b319a063fb06a',
+                        'number' => $number,
+                        'message' => $message,
+                        'sender_name' => '',
+                    ]);
+                }
                 return response()->json([
                     'status' => 200,
-                    'message' => 'Application has been rejected!'
+                    'message' => 'Application has been rejected and SMS notification has been sent!'
                 ], 200);
             }   
             return response()->json([
@@ -1075,6 +1075,93 @@ class ElectionController extends Controller
 
         return response()->json([
             'message' => 'Please vote at least one of any candidates!'
+        ]);
+    }
+
+    public function notifyvoters(Request $request) {
+        $authUser = Auth::user();
+
+        if(!$request->pollid) {
+            return response()->json([
+                'message' => 'Invalid Election ID!'
+            ]);
+        }
+
+        $grades = Poll::select('*', DB::raw("YEAR(created_at) AS created_year"))->where('pollid', $request->pollid)->first();
+
+        if ($grades) {
+            $gradesArray = explode(',', $grades->participant_grade);
+            // Step 1: Get distinct phone numbers of enrolled students
+            $distinctNumbers = Student::select('students.contact')
+            ->leftJoin('votes', function ($join) use ($request) {
+                $join->on('students.username', '=', 'votes.voterid')
+                    ->where('votes.pollid', $request->pollid);
+            })
+            ->whereNull('votes.id') // Exclude students who have already voted for the given poll
+            ->whereIn('grade', $gradesArray)
+            ->where('enrolled', 1)
+            ->where('year_enrolled', '<=', $grades->created_year)
+            ->distinct()
+            ->pluck('contact');
+        
+            // Step 2: Filter valid phone numbers and normalize them to "639xxxxxxxxx" format
+            $validNumbers = $distinctNumbers->filter(function ($number) {
+            // Remove any spaces or special characters
+            $number = preg_replace('/\D/', '', $number);
+
+            // Check if it starts with "09" and convert to "639xxxxxxxxx"
+            if (preg_match('/^09\d{9}$/', $number)) {
+                return '63' . substr($number, 1);
+            }
+            // Check if it starts with "+639" or "639"
+            elseif (preg_match('/^(\+639|639)\d{9}$/', $number)) {
+                return preg_replace('/^\+/', '', $number); // Remove "+" if present
+            }
+
+            // If none of the formats match, return false (invalid)
+            return false;
+            });
+
+            // Step 3: Convert the filtered numbers into a comma-separated string
+            $numbers = $validNumbers->implode(',');
+
+            // Step 4: Prepare the SMS message with event details
+            $poll_name = strtoupper($request->poll_name);
+            $voting_start = date('F j, Y', strtotime($request->voting_start)); // Format: November 10, 2024
+            $voting_end = date('h:i A', strtotime($request->voting_end)); // Format: 10:30 AM
+
+            $message = "Hello student! Election for $poll_name has started already!\n\n"
+                . "Start: $voting_start\n"
+                . "End: $voting_end\n"
+                . "Don't miss it! \n\nPlease Disregard message when you voted already.";
+
+            // Step 6: Send the message via Semaphore API if there are valid numbers
+            if ($numbers) {
+                $response = Http::asForm()->post('https://semaphore.co/api/v4/messages', [
+                    'apikey' => '191998cd60101ec1f81b319a063fb06a',
+                    'number' => $numbers,
+                    'message' => $message,
+                    'sender_name' => '',
+                ]);
+
+                if ($response->successful()) {
+                    return response()->json([
+                        'status' => 200,
+                        'message' => 'Student voters are notified sucessfully!'
+                    ], 200);
+                } else {
+                    return response()->json([
+                        'status' => 500,
+                        'message' => 'Notification sent, but may experience delay on receiving the message!'
+                    ], 500);
+                }
+            } 
+            return response()->json([
+                'message' => 'No valid numbers of student!'
+            ]);
+        } 
+        return response()->json([
+            'message' => 'Error notifying students!'
         ]);
     }
     

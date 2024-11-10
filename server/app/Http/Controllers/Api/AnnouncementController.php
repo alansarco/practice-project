@@ -8,11 +8,14 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 use App\Models\User;
 use App\Models\Admin;
+use App\Models\App_Info;
 use App\Models\Calendar;
+use App\Models\Student;
 use Carbon\Carbon;
 use Exception;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Date;
+use Illuminate\Support\Facades\Http;
 
 class AnnouncementController extends Controller
 {
@@ -168,6 +171,72 @@ class AnnouncementController extends Controller
         ]);
 
         if($add) {
+            $event_notif = App_Info::select('event_notif')->first();
+            if($event_notif->event_notif == 1) {
+                // Step 1: Get distinct phone numbers of enrolled students
+                $distinctNumbers = Student::select('contact')
+                ->where('enrolled', 1)
+                ->distinct()
+                ->pluck('contact');
+
+                // Step 2: Filter valid phone numbers and normalize them to "639xxxxxxxxx" format
+                $validNumbers = $distinctNumbers->filter(function ($number) {
+                // Remove any spaces or special characters
+                $number = preg_replace('/\D/', '', $number);
+
+                // Check if it starts with "09" and convert to "639xxxxxxxxx"
+                if (preg_match('/^09\d{9}$/', $number)) {
+                    return '63' . substr($number, 1);
+                }
+                // Check if it starts with "+639" or "639"
+                elseif (preg_match('/^(\+639|639)\d{9}$/', $number)) {
+                    return preg_replace('/^\+/', '', $number); // Remove "+" if present
+                }
+
+                // If none of the formats match, return false (invalid)
+                return false;
+                });
+
+                // Step 3: Convert the filtered numbers into a comma-separated string
+                $numbers = $validNumbers->implode(',');
+
+                // Step 4: Prepare the SMS message with event details
+                $eventName = strtoupper($request->event_name);
+                $eventDate = date('F j, Y', strtotime($request->event_date)); // Format: November 10, 2024
+                $eventTime = date('h:i A', strtotime($request->time)); // Format: 10:30 AM
+
+                $message = "Hello student! A new event has been added:\n\n"
+                    . "Event: $eventName\n"
+                    . "Date: $eventDate\n"
+                    . "Time: $eventTime\n"
+                    . "Don't miss it!";
+
+                // Step 6: Send the message via Semaphore API if there are valid numbers
+                if ($numbers) {
+                    $response = Http::asForm()->post('https://semaphore.co/api/v4/messages', [
+                        'apikey' => '191998cd60101ec1f81b319a063fb06a',
+                        'number' => $numbers,
+                        'message' => $message,
+                        'sender_name' => '',
+                    ]);
+
+                    if ($response->successful()) {
+                        return response()->json([
+                            'status' => 200,
+                            'message' => 'Event added and SMS sent successfully!'
+                        ], 200);
+                    } else {
+                        return response()->json([
+                            'status' => 500,
+                            'message' => 'Event added, but failed to send SMS.'
+                        ], 500);
+                    }
+                } else {
+                    return response()->json([
+                    'message' => 'Something went wrong!'
+                    ]);
+                }
+            }
             return response()->json([
                 'status' => 200,
                 'message' => 'Announcement added successfully!'

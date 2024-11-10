@@ -66,6 +66,7 @@ export const apiRoutes = {
     archiveResult: `${mainRoute}/api/elections/archiveresult`,
     voteCandidates: `${mainRoute}/api/elections/votecandidates`,
     submitVote: `${mainRoute}/api/elections/submitvote`,
+    notifyVoters: `${mainRoute}/api/elections/notifyvoters`,
     downloadRequirements: `${mainRoute}/api/elections/downloadrequirements`,
 
     myPages: `${mainRoute}/api/mypages`,

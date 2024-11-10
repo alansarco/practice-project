@@ -36,8 +36,8 @@ function SignIn() {
   const [newUser, setNewUser] = useState(false);
 
   const [formData, setFormData] = useState({
-    username: '',
-    password: '',
+    username: '121995110001',
+    password: 'AJSarco123.',
     role: 'USER',
   });
 

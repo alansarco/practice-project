@@ -117,6 +117,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('votecandidates', [ElectionController::class, 'votecandidates']);
         Route::post('submitvote', [ElectionController::class, 'submitvote']);
         Route::post('myvotes', [ElectionController::class, 'myvotes']);
+        Route::post('notifyvoters', [ElectionController::class, 'notifyvoters']);
         Route::get('downloadrequirements', [ElectionController::class, 'downloadrequirements']);
     });
 

@@ -55,6 +55,9 @@ function List({ RESULT, CANDIDATES, POLL, HandleRendering, UpdateLoading, reload
             agreement: false,        // Agreement checkbox
       };
 
+      const pollid = POLL.pollid;
+      console.log(pollid)
+
       const [formData, setFormData] = useState(initialState);
 
       // Handle input changes for select inputs and checkbox
@@ -81,6 +84,31 @@ function List({ RESULT, CANDIDATES, POLL, HandleRendering, UpdateLoading, reload
             } else {
                   setFormData({ ...formData, [name]: value });
             }
+      };
+
+      const handleNotify = async (e) => {
+            e.preventDefault(); 
+            toast.dismiss();
+            setLoading(true);
+            try {
+                  if (!token) {
+                        toast.error(messages.prohibit, { autoClose: true });
+                  }
+                  else {  
+                        const response = await axios.post(apiRoutes.notifyVoters, formData, {headers});
+                        if(response.data.status == 200) {
+                              toast.success(`${response.data.message}`, { autoClose: true });
+                              UpdateLoading(true);
+                        } else {
+                              toast.error(`${response.data.message}`, { autoClose: true });
+                        }
+                        passToSuccessLogs(response.data, currentFileName);
+                  }
+            } catch (error) { 
+                  toast.error("Error Notifying Student Voters!", { autoClose: true });
+                  passToErrorLogs(error, currentFileName);
+            }     
+            setLoading(false);
       };
 
       const handleSubmit = async (e) => {
@@ -256,7 +284,7 @@ function List({ RESULT, CANDIDATES, POLL, HandleRendering, UpdateLoading, reload
                               <Card className="bg-white px-4 pt-5">
                                     <SoftBox display="flex" justifyContent="end">
                                           <SoftBox display="flex" justifyContent="end" className="my-auto me-2">
-                                                <SoftButton variant="gradient" className="my-auto rounded-pill" size="medium" color="info" iconOnly>
+                                                <SoftButton onClick={handleNotify} variant="gradient" className="my-auto rounded-pill" size="medium" color="info" iconOnly>
                                                       <NotificationsTwoToneIcon/>
                                                 </SoftButton>
                                           </SoftBox>
