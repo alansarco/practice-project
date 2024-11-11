@@ -56,7 +56,6 @@ function List({ RESULT, CANDIDATES, POLL, HandleRendering, UpdateLoading, reload
       };
 
       const pollid = POLL.pollid;
-      console.log(pollid)
 
       const [formData, setFormData] = useState(initialState);
 
@@ -337,7 +336,8 @@ function List({ RESULT, CANDIDATES, POLL, HandleRendering, UpdateLoading, reload
                                                 onChange={handleChange}
                                                 >
                                                 <option value="">Select Candidate</option>
-                                                {position.candidates && JSON.parse('[' + position.candidates + ']').map((candidate) => (
+
+                                                {position.candidates && JSON.parse(position.candidates).map((candidate) => (
                                                       candidate.candidateid ?
                                                       <option key={candidate.candidateid} value={candidate.candidateid}>
                                                             {candidate.candidate_name}
