@@ -34,8 +34,8 @@ function AdminSignIn() {
   const [submitLogin, setSubmitLogin] = useState(false);
 
   const [formData, setFormData] = useState({
-    username: '001',
-    password: 'secret',
+    username: '',
+    password: '',
     role: 'ADMIN',
   });
 
