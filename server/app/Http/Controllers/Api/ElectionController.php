@@ -700,7 +700,7 @@ class ElectionController extends Controller
                         'apikey' => '191998cd60101ec1f81b319a063fb06a',
                         'number' => $number,
                         'message' => $message,
-                        'sender_name' => '',
+                        'sender_name' => 'SNHS',
                     ]);
                 }
 
@@ -743,7 +743,7 @@ class ElectionController extends Controller
                         'apikey' => '191998cd60101ec1f81b319a063fb06a',
                         'number' => $number,
                         'message' => $message,
-                        'sender_name' => '',
+                        'sender_name' => 'SNHS',
                     ]);
                 }
                 return response()->json([
@@ -1141,7 +1141,7 @@ class ElectionController extends Controller
                     'apikey' => '191998cd60101ec1f81b319a063fb06a',
                     'number' => $numbers,
                     'message' => $message,
-                    'sender_name' => '',
+                    'sender_name' => 'SNHS',
                 ]);
 
                 if ($response->successful()) {
