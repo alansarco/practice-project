@@ -258,6 +258,7 @@ function ResultContainer({authUser, FROM, INFO, HandleRendering}) {
       CANDIDATES={fetchapplication}
       MAXVOTERS={totalparticipants}
       PARTICIPANTS={participantslist}
+      USER = {authUser.username}
       CURRENTVOTES={currentvotes}
       UpdateLoading={UpdateLoading} POLL={Poll} HandleRendering={HandleRendering} />
     }

@@ -44,7 +44,7 @@ function Users() {
     return <Navigate to="/not-found" />
   }
   
-  const [searchTriggered, setSearchTriggered] = useState(false); 
+  const [searchTriggered, setSearchTriggered] = useState(true); 
   const [filter, setFilter] = useState([]);
   const [page, setPage] = useState(1);
   const [fetching, setFetching] = useState("");

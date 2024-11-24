@@ -180,7 +180,7 @@ function ElectionContainer({authUser, FROM, INFO, HandleRendering}) {
               >
                 <Tab label="Information" onClick={setProfile} icon={<Cube />} />
                 {(FROM === "application" || FROM === "ongoing" || FROM === "upcoming") && 
-                  (access == 999 || authUser.username === Poll.admin_id) &&
+                  (authUser.username === Poll.admin_id) &&
                   <Tab label="Edit" onClick={setEdit} icon={<Document />} />
                 }
                 
@@ -190,7 +190,7 @@ function ElectionContainer({authUser, FROM, INFO, HandleRendering}) {
         </Grid>
       </Card>
     </SoftBox>
-    {menu === "profile" && <Information FROM={FROM} POSITIONS={Position} POLL={Poll} HandleRendering={HandleRendering}  />}
+    {menu === "profile" && <Information USER={authUser.username} FROM={FROM} POSITIONS={Position} POLL={Poll} HandleRendering={HandleRendering}  />}
     {menu === "edit" && 
       FROM === "application" && 
       <EditApplication UpdateLoading={UpdateLoading} POSITIONS={Position} POLL={Poll} HandleRendering={HandleRendering} />

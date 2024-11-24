@@ -52,6 +52,7 @@ function Seniors() {
     const [fetching, setFetching] = useState("");
 
     const [reload, setReload] = useState(false);
+    const [searchTriggered, setSearchTriggered] = useState(true);
 
     const YOUR_ACCESS_TOKEN = token; 
     const headers = {
@@ -64,6 +65,7 @@ function Seniors() {
         track: "",
         course: "",
         enrolled: "",
+        org_name: "",
     };
 
     const [formData, setFormData] = useState(initialState);
@@ -81,6 +83,7 @@ function Seniors() {
     const [rendering, setRendering] = useState(1);
     const [fetchdata, setFetchdata] = useState([]);
     const tableHeight = DynamicTableHeight();  
+    const [fetchorgs, setFetchorgs] = useState([]);
 
     const HandleUSER = (user) => {
         setUSER(user);
@@ -89,6 +92,35 @@ function Seniors() {
     const HandleRendering = (rendering) => {
         setRendering(rendering);
     };
+
+    useEffect(() => {
+      axios.get(apiRoutes.orgSelect, { headers })
+      .then(response => {
+          setFetchorgs(response.data.orgs);
+          passToSuccessLogs(response.data, currentFileName);
+      })
+      .catch(error => {
+            passToErrorLogs(`Organizations not Fetched!  ${error}`, currentFileName);
+      });
+    }, []);
+
+    useEffect(() => {
+      if (searchTriggered) {
+        setReload(true);
+        axios.post(apiRoutes.seniorRetrieve + '?page=' + 1, formData, {headers})
+          .then(response => {
+            setFetchdata(response.data.users);
+            passToSuccessLogs(response.data, currentFileName);
+            setReload(false);
+            setFetching("No data Found!")
+          })
+          .catch(error => {
+            passToErrorLogs(`Stuents Data not Fetched!  ${error}`, currentFileName);
+            setReload(false);
+          });
+        setSearchTriggered(false);
+      }
+    }, [searchTriggered]);
 
     const ReloadTable = () => {
         axios.post(apiRoutes.seniorRetrieve + '?page=' + page, formData, {headers})
@@ -182,7 +214,7 @@ function Seniors() {
                 <SoftBox component="form" role="form" className="px-md-0 px-2" onSubmit={handleSubmit}>
                     <Grid container spacing={1} py={1} pb={2}>  
                         <Grid item xs={12} lg={8} className="d-block d-md-flex">
-                            <SoftTypography variant="button" className="me-2 my-auto">Filter Result:</SoftTypography>
+                            <SoftTypography variant="button" className="me-2 my-auto text-nowrap">Filter Result:</SoftTypography>
                             <SoftBox className="my-auto">
                             <select className="form-select-sm text-secondary rounded-5 me-2 cursor-pointer border span" name="grade" value={formData.grade} onChange={handleChange} >
                                 <option value="">All SHS</option>
@@ -223,6 +255,18 @@ function Seniors() {
                                         {status.desc}
                                 </option>
                                 ))}
+                            </select>
+                            <select className="form-select-sm text-secondary rounded-5 cursor-pointer border span"
+                              name="org_name"
+                              value={formData.org_name}
+                              onChange={handleChange}
+                              >
+                              <option value="">All Organization</option>
+                              {fetchorgs && fetchorgs.map((orgs) => (
+                              <option key={orgs.org_name} value={orgs.org_name}>
+                                    {orgs.org_name}
+                              </option>
+                              ))}
                             </select>
                             </SoftBox>
                         </Grid>   

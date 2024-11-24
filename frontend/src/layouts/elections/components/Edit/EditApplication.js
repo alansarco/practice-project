@@ -5,7 +5,7 @@ import SoftBox from "components/SoftBox";
 import SoftButton from "components/SoftButton";
 import SoftInput from "components/SoftInput";
 import SoftTypography from "components/SoftTypography";
-import { participantSelect, currentDate } from "components/General/Utils";
+import { strictSelect, currentDate } from "components/General/Utils";
 import { toast } from "react-toastify";
 import { messages } from "components/General/Messages";
 import { useStateContext } from "context/ContextProvider";
@@ -23,22 +23,40 @@ function EditApplication({FROM, POLL, POSITIONS, HandleRendering, UpdateLoading}
             POSITIONS.length > 10 ? 3 : POSITIONS.length > 5 ? 2 : 1
       );
       const [fetchadmins, setFetchadmins] = useState([]);
-
+      const grades = [7, 8, 9, 10, 11, 12]; 
+      const [fetchorgs, setFetchorgs] = useState([]);
+      const [resetadmin, setResetAdmin] = useState(true);
+      
       const YOUR_ACCESS_TOKEN = token; 
       const headers = {
             'Authorization': `Bearer ${YOUR_ACCESS_TOKEN}`
       };
 
       useEffect(() => {
-            axios.get(apiRoutes.adminSelect, { headers })
+            axios.get(apiRoutes.orgSelect, { headers })
             .then(response => {
-                  setFetchadmins(response.data.admins);
-                  passToSuccessLogs(response.data, currentFileName);
+                setFetchorgs(response.data.orgs);
+                passToSuccessLogs(response.data, currentFileName);
             })
             .catch(error => {
-                  passToErrorLogs(`Admin Data not Fetched!  ${error}`, currentFileName);
+                  passToErrorLogs(`Organizations not Fetched!  ${error}`, currentFileName);
             });
       }, []);
+
+      useEffect(() => {
+            if (resetadmin) {
+                axios.post(apiRoutes.adminSelect, formData, { headers })
+                    .then(response => {
+                        setFetchadmins(response.data.admins);
+                        setResetAdmin(false);
+                        passToSuccessLogs(response.data, currentFileName);
+                    })
+                    .catch(error => {
+                        passToErrorLogs(`Admin Data not Fetched! ${error}`, currentFileName);
+                    });
+            }
+      }, [resetadmin]);  // Add resetadmin to the dependency array
+      
 
       const toggleShowMore = () => {
             setShowMore(showMore + 1);
@@ -72,6 +90,8 @@ function EditApplication({FROM, POLL, POSITIONS, HandleRendering, UpdateLoading}
             voting_start: POLL.voting_start == null ? "" : POLL.voting_start,
             voting_end: POLL.voting_end == null ? "" : POLL.voting_end,
             qualifications: POLL.qualifications == null ? "" : POLL.qualifications,
+            strict_mode: POLL.strict_mode == null ? "" : POLL.strict_mode,
+            organization: POLL.organization == null ? "" : POLL.organization,
             requirements: POLL.requirements == null ? "" : POLL.requirements,
             admin_id: POLL.admin_id == null ? "" : POLL.admin_id,
             ongoing_apply: currentDate >= POLL.application_start ? true : false,
@@ -85,11 +105,46 @@ function EditApplication({FROM, POLL, POSITIONS, HandleRendering, UpdateLoading}
       const [formData, setFormData] = useState(initialState);
 
       const handleChange = (e) => {
-            const { name, value, type } = e.target;
+            const { name, value, type, checked } = e.target;
         
-            if (type === "checkbox") {
+            if (type === "checkbox" && name === "participant_grade") {
+                  setFormData((prevData) => {
+                        // Split existing grades into an array (or use empty array if none exist)
+                        let selectedGrades = prevData.participant_grade 
+                          ? prevData.participant_grade.split(",") 
+                          : [];
+                  
+                        if (checked) {
+                          // Add grade only if it doesn't already exist
+                          if (!selectedGrades.includes(value)) {
+                            selectedGrades.push(value);
+                          }
+                        } else {
+                          // Remove grade if unchecked
+                          selectedGrades = selectedGrades.filter((grade) => grade !== value);
+                        }
+                  
+                        // Return updated form data with only valid grades
+                        return {
+                          ...prevData,
+                          participant_grade: selectedGrades.filter(Boolean).join(","), // Filter removes any falsy values like empty strings
+                        };
+                  });
+            }
+            else if (type === "checkbox") {
                   setFormData({ ...formData, [name]: !formData[name] });
-            } else {
+            }
+            else if (name === "organization") {
+                  setResetAdmin(true);
+                  setFormData((prevData) => {
+                        let updatedData = { ...prevData, [name]: value };
+      
+                        const validatedData = VotingDateValidation({ name, updatedData, toast }); 
+                        
+                        return validatedData;
+                  });
+            }
+             else {
                   setFormData((prevData) => {
                   let updatedData = { ...prevData, [name]: value };
 
@@ -117,6 +172,7 @@ function EditApplication({FROM, POLL, POSITIONS, HandleRendering, UpdateLoading}
                   "validation_end",
                   "voting_start",
                   "voting_end",
+                  "organization",
                   "qualifications",
                   "requirements",
                   "admin_id",
@@ -186,35 +242,86 @@ function EditApplication({FROM, POLL, POSITIONS, HandleRendering, UpdateLoading}
                                           Election Information    
                                     </SoftTypography>
                                     <Grid container spacing={0} alignItems="center"> 
-                                          <Grid item xs={12} md={6} lg={6} px={1}>
+                                          <Grid item xs={12} md={10} lg={8} px={1}>
                                                 <SoftTypography variant="button" className="me-1">Description:</SoftTypography>
                                                 <SoftTypography variant="span" className="text-xxs text-danger fst-italic">*</SoftTypography>
                                                 <SoftInput name="description" value={formData.description} onChange={handleChange} size="small" /> 
                                           </Grid>  
                                     </Grid> 
-                                    <Grid container spacing={0} alignItems="center">
-                                          <Grid item xs={12} sm={6} md={4} lg={2} px={1}>
-                                                <SoftTypography variant="button" className="me-1"> Participants: </SoftTypography>
+                                    <Grid container spacing={0} alignItems="center"> 
+                                          <Grid item xs={12} sm={6} lg={4} px={1}>
+                                                <SoftTypography variant="button" className="me-1 text-nowrap"> Organization: </SoftTypography>
                                                 <SoftTypography variant="span" className="text-xxs text-danger fst-italic">*</SoftTypography>
-                                                <select className="form-control form-select form-select-sm text-secondary rounded-5 cursor-pointer" name="participant_grade" value={formData.participant_grade} onChange={handleChange} >
-                                                      <option value=""></option>
-                                                      {participantSelect && participantSelect.map((participant) => (
-                                                      <option key={participant.value} value={participant.value}>
-                                                            {participant.desc}
+                                                <select className="form-control form-select form-select-sm text-secondary rounded-5 cursor-pointer" name="organization" value={formData.organization} onChange={handleChange} 
+                                                disabled = {formData.ongoing_apply}>
+                                                <option value=""></option>
+                                                      {fetchorgs && fetchorgs.map((orgs) => (
+                                                      <option key={orgs.org_name} value={orgs.org_name}>
+                                                            {orgs.org_name}
                                                       </option>
                                                       ))}
                                                 </select>
                                           </Grid>
+                                          <Grid item xs={12} sm={6} lg={4} px={1}>
+                                                <SoftTypography variant="button" className="me-1 text-nowrap"> Strict to Organization: </SoftTypography>
+                                                <SoftTypography variant="span" className="text-xxs text-danger fst-italic">*</SoftTypography>
+                                                <select className="form-control form-select form-select-sm text-secondary rounded-5 cursor-pointer" name="strict_mode" value={formData.strict_mode} onChange={handleChange} 
+                                                disabled = {formData.ongoing_apply}>
+                                                      <option value=""></option>
+                                                      {strictSelect && strictSelect.map((strict) => (
+                                                      <option key={strict.value} value={strict.value}>
+                                                            {strict.desc}
+                                                      </option>
+                                                      ))}
+                                                </select>
+                                          </Grid>
+                                    </Grid> 
+                                    {!formData.ongoing_apply &&
+                                    <Grid container spacing={0} alignItems="center">
+                                          <Grid item xs={12} sm={6} md={4} lg={2} px={1}>
+                                                <SoftTypography variant="button" className="me-1"> Participants: </SoftTypography>
+                                                <SoftTypography variant="span" className="text-xxs text-danger fst-italic">*</SoftTypography>
+                                                {grades.map((grade) => (
+                                                      <SoftBox key={grade} className="form-check form-check-inline">
+                                                            <Checkbox 
+                                                                  className='border-2 border-success' 
+                                                                  name="participant_grade" 
+                                                                  value={grade}
+                                                                  checked={formData.participant_grade.includes(grade.toString())}
+                                                                  onChange={handleChange} 
+                                                            />
+                                                            <SoftTypography variant="button" className="me-1 ms-2">Grade {grade} </SoftTypography>
+                                                      
+                                                      </SoftBox>
+                                                ))}
+                                          </Grid>
+                                    </Grid>
+                                    }
+                                     
+                                    <Grid container spacing={0} alignItems="center">
                                           <Grid item xs={12} sm={6} md={4} lg={4} px={1}>
                                                 <SoftTypography variant="button" className="me-1 text-nowrap"> Assigned Admin: </SoftTypography>
                                                 <SoftTypography variant="span" className="text-xxs text-danger fst-italic">*</SoftTypography>
-                                                <select className="form-control form-select form-select-sm text-secondary rounded-5 cursor-pointer" name="admin_id" value={formData.admin_id} onChange={handleChange} >
-                                                      <option value=""></option>
-                                                      {fetchadmins && fetchadmins.length > 0 && fetchadmins.map((admin, index) => (
-                                                      <option key={index} value={admin.username}>
-                                                            {admin.name}
-                                                      </option>
-                                                      ))}
+                                                <select
+                                                      className="form-control form-select form-select-sm text-secondary rounded-5 cursor-pointer"
+                                                      name="admin_id"
+                                                      value={formData.admin_id}
+                                                      onChange={handleChange}
+                                                      >
+                                                      <option value="">N/A</option>
+                                                      {Array.from(new Set(fetchadmins.map(admin => admin.organization)))
+                                                            .filter(org => org) // Filter out any undefined or null organizations
+                                                            .map((organization) => (
+                                                                  <optgroup key={organization} label={organization}>
+                                                                  {fetchadmins
+                                                                        .filter(admin => admin.organization === organization)
+                                                                        .map((admin) => (
+                                                                              <option key={admin.username} value={admin.username}>
+                                                                              {admin.name}
+                                                                              </option>
+                                                                        ))}
+                                                                  </optgroup>
+                                                            ))}
                                                 </select>
                                           </Grid>
                                     </Grid> 
@@ -298,10 +405,14 @@ function EditApplication({FROM, POLL, POSITIONS, HandleRendering, UpdateLoading}
                                                 <textarea name="requirements" value={formData.requirements} onChange={handleChange} className="form-control text-secondary text-xs" rows="4"></textarea> 
                                           </Grid> 
                                     </Grid> 
-                                    <SoftTypography mt={2} fontWeight="medium" textTransform="capitalize" color="success" textGradient>
-                                          Position Information    
-                                    </SoftTypography>
-                                    <Grid container spacing={10} alignItems="center">
+                                    {!formData.ongoing_apply &&
+                                          <SoftTypography mt={2} fontWeight="medium" textTransform="capitalize" color="success" textGradient>
+                                                Position Information    
+                                          </SoftTypography>
+                                    }
+                                   
+                                    {!formData.ongoing_apply &&
+                                          <Grid container spacing={10} alignItems="center">
                                           {showMore > 0 &&
                                           <Grid item xs={12} md={6} lg={4} px={1}>
                                                 <SoftTypography variant="button" className="me-1 text-nowrap my-auto">Position 1:</SoftTypography>
@@ -345,6 +456,8 @@ function EditApplication({FROM, POLL, POSITIONS, HandleRendering, UpdateLoading}
                                           </Grid>
                                           }
                                     </Grid> 
+                                    }
+                                    {!formData.ongoing_apply &&
                                     <SoftBox mt={2} display="flex" justifyContent="start">
                                           <SoftButton onClick={toggleShowLess} variant="gradient" disabled={showMore <= 1 ||  formData.ongoing_apply} className="mx-2 text-xxs px-3 rounded-pill" size="small" color="secondary">
                                                 Show Less
@@ -353,6 +466,8 @@ function EditApplication({FROM, POLL, POSITIONS, HandleRendering, UpdateLoading}
                                                 Add More
                                           </SoftButton>
                                     </SoftBox>
+                                    }
+                                    
                                     <Grid mt={3} container spacing={0} alignItems="center">
                                           <Grid item xs={12} pl={1}>
                                                 <Checkbox 

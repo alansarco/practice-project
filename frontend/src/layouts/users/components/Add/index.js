@@ -18,6 +18,7 @@ function Add({HandleRendering, ReloadTable }) {
       const currentFileName = "layouts/users/components/Add/index.js";
       const [submitProfile, setSubmitProfile] = useState(false);
       const {token} = useStateContext();  
+      const [fetchorgs, setFetchorgs] = useState([]);
 
       const YOUR_ACCESS_TOKEN = token; 
       const headers = {
@@ -30,6 +31,7 @@ function Add({HandleRendering, ReloadTable }) {
             grade: '',
             section: '',
             program: '',
+            org_name: '',
             track: '',
             course: '',
             gender: '',
@@ -66,6 +68,17 @@ function Add({HandleRendering, ReloadTable }) {
       const handleCancel = () => {
             HandleRendering(1);
       };
+
+      useEffect(() => {
+            axios.get(apiRoutes.orgSelect, { headers })
+            .then(response => {
+                setFetchorgs(response.data.orgs);
+                passToSuccessLogs(response.data, currentFileName);
+            })
+            .catch(error => {
+                  passToErrorLogs(`Organizations not Fetched!  ${error}`, currentFileName);
+            });
+          }, []);
             
       const handleSubmit = async (e) => {
             e.preventDefault(); 
@@ -256,12 +269,28 @@ function Add({HandleRendering, ReloadTable }) {
                                                 <SoftTypography variant="span" className="text-xxs text-danger fst-italic">*</SoftTypography>
                                                 <SoftInput name="religion" value={formData.religion.toUpperCase()} onChange={handleChange} size="small" /> 
                                           </Grid>
+                                          <Grid item xs={12} sm={6} md={4} px={1}>
+                                                <SoftTypography variant="button" className="me-1">Organization:</SoftTypography>
+                                                <SoftTypography variant="span" className="text-xxs text-danger fst-italic">*</SoftTypography>
+                                                <select className="form-control form-select form-select-sm text-secondary rounded-5 cursor-pointer"
+                                                      name="org_name"
+                                                      value={formData.org_name}
+                                                      onChange={handleChange}
+                                                      >
+                                                      <option value=""></option>
+                                                      {fetchorgs && fetchorgs.map((orgs) => (
+                                                      <option key={orgs.org_name} value={orgs.org_name}>
+                                                            {orgs.org_name}
+                                                      </option>
+                                                      ))}
+                                                </select>
+                                          </Grid>
                                           <Grid item xs={12} sm={6} md={3} px={1}>
                                                 <SoftTypography variant="button" className="me-1"> Contact Number: </SoftTypography>
                                                 <SoftTypography variant="span" className="text-xxs text-danger fst-italic">*</SoftTypography>
                                                 <SoftInput type="number" name="contact" value={formData.contact} onChange={handleChange} size="small" /> 
                                           </Grid> 
-                                          <Grid item xs={12} sm={6} px={1}>
+                                          <Grid item xs={12} sm={6} md={4} px={1}>
                                                 <SoftTypography variant="button" className="me-1"> Birthdate: </SoftTypography>
                                                 <SoftTypography variant="span" className="text-xxs text-danger fst-italic">*</SoftTypography>
                                                 <input className="form-control form-control-sm text-secondary rounded-5"  max={currentDate} name="birthdate" value={formData.birthdate} onChange={handleChange} type="date" />

@@ -25,6 +25,8 @@ class Poll extends Model
         'voting_end', 
         'requirements', 
         'qualifications', 
+        'strict_mode', 
+        'organization', 
         'poll_status',
         'admin_id',
         'admin_name',

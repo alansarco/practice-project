@@ -186,13 +186,9 @@ function List({ RESULT, CANDIDATES, POLL, HandleRendering, UpdateLoading, reload
                         <SoftBox className="px-md-0 px-2" > 
                               <Card className="bg-white px-4 pt-5">
                                     <SoftBox display="flex" justifyContent="end">
-                                          <SoftTypography color="info" className="text-center" variant="h6">
-                                                Total Voters:
-                                                <b className="text-dark">{MAXVOTERS || 0}</b>
-                                          </SoftTypography>
                                           <SoftTypography color="info" className="text-center ms-3" variant="h6">
                                                 Casted Votes:
-                                                <b className="text-dark">{CURRENTVOTES || 0}</b>
+                                                <b className="text-dark">{MAXVOTERS || 0}</b>
                                           </SoftTypography>
                                     </SoftBox>
                                     <Table table="sm" PARTICIPANTS={PARTICIPANTS} tablehead={tablehead} />

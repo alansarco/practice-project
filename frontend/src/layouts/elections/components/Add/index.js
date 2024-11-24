@@ -5,7 +5,7 @@ import SoftBox from "components/SoftBox";
 import SoftButton from "components/SoftButton";
 import SoftInput from "components/SoftInput";
 import SoftTypography from "components/SoftTypography";
-import { participantSelect, currentDate } from "components/General/Utils";
+import { participantSelect, currentDate, strictSelect } from "components/General/Utils";
 import { toast } from "react-toastify";
 import { messages } from "components/General/Messages";
 import { useStateContext } from "context/ContextProvider";
@@ -21,6 +21,9 @@ function Add({HandleRendering}) {
       const {token} = useStateContext();  
       const [showMore, setShowMore] = useState(1);
       const [fetchadmins, setFetchadmins] = useState([]);
+      const grades = [7, 8, 9, 10, 11, 12]; 
+      const [fetchorgs, setFetchorgs] = useState([]);
+      const [resetadmin, setResetAdmin] = useState(true);
 
       const YOUR_ACCESS_TOKEN = token; 
       const headers = {
@@ -28,15 +31,29 @@ function Add({HandleRendering}) {
       };
 
       useEffect(() => {
-            axios.get(apiRoutes.adminSelect, { headers })
+            axios.get(apiRoutes.orgSelect, { headers })
             .then(response => {
-                  setFetchadmins(response.data.admins);
-                  passToSuccessLogs(response.data, currentFileName);
+                setFetchorgs(response.data.orgs);
+                passToSuccessLogs(response.data, currentFileName);
             })
             .catch(error => {
-                  passToErrorLogs(`Admin Data not Fetched!  ${error}`, currentFileName);
+                  passToErrorLogs(`Organizations not Fetched!  ${error}`, currentFileName);
             });
       }, []);
+
+      useEffect(() => {
+            if (resetadmin) {
+                axios.post(apiRoutes.adminSelect, formData, { headers })
+                    .then(response => {
+                        setFetchadmins(response.data.admins);
+                        setResetAdmin(false);
+                        passToSuccessLogs(response.data, currentFileName);
+                    })
+                    .catch(error => {
+                        passToErrorLogs(`Admin Data not Fetched! ${error}`, currentFileName);
+                    });
+            }
+      }, [resetadmin]);  // Add resetadmin to the dependency array
 
       const toggleShowMore = () => {
             setShowMore(showMore + 1);
@@ -67,6 +84,8 @@ function Add({HandleRendering}) {
             application_start: "",
             application_end: "",
             validation_end: "",
+            organization: "",
+            strict_mode: 0,
             voting_start: "",
             voting_end: "",
             qualifications: "",
@@ -93,20 +112,56 @@ function Add({HandleRendering}) {
       const [formData, setFormData] = useState(initialState);
 
       const handleChange = (e) => {
-            const { name, value, type } = e.target;
-        
-            if (type === "checkbox") {
-                  setFormData({ ...formData, [name]: !formData[name] });
-            } else {
-                  setFormData((prevData) => {
+      const { name, value, type, checked  } = e.target;
+      
+      if (type === "checkbox" && name === "participant_grade") {
+            setFormData((prevData) => {
+                  // Split existing grades into an array (or use empty array if none exist)
+                  let selectedGrades = prevData.participant_grade 
+                    ? prevData.participant_grade.split(",") 
+                    : [];
+            
+                  if (checked) {
+                    // Add grade only if it doesn't already exist
+                    if (!selectedGrades.includes(value)) {
+                      selectedGrades.push(value);
+                    }
+                  } else {
+                    // Remove grade if unchecked
+                    selectedGrades = selectedGrades.filter((grade) => grade !== value);
+                  }
+            
+                  // Return updated form data with only valid grades
+                  return {
+                    ...prevData,
+                    participant_grade: selectedGrades.filter(Boolean).join(","), // Filter removes any falsy values like empty strings
+                  };
+            });
+      }
+      else if (type === "checkbox") {
+            setFormData({ ...formData, [name]: !formData[name] });
+      } 
+      else if (name === "organization") {
+            setResetAdmin(true);
+            setFormData((prevData) => {
                   let updatedData = { ...prevData, [name]: value };
 
                   const validatedData = VotingDateValidation({ name, updatedData, toast }); 
                   
                   return validatedData;
-                });
-            }
-        };
+            });
+      }
+      else {
+            setFormData((prevData) => {
+            let updatedData = { ...prevData, [name]: value };
+
+            const validatedData = VotingDateValidation({ name, updatedData, toast }); 
+            
+            return validatedData;
+      });
+      }
+      };
+          
         
 
       const handleCancel = () => {
@@ -127,6 +182,7 @@ function Add({HandleRendering}) {
                   "voting_start",
                   "voting_end",
                   "qualifications",
+                  "organization",
                   "requirements",
                   "admin_id",
             ];
@@ -198,7 +254,7 @@ function Add({HandleRendering}) {
                                           Election Information    
                                     </SoftTypography>
                                     <Grid container spacing={0} alignItems="center">
-                                          <Grid item xs={12} md={6} lg={3} px={1}>
+                                          <Grid item xs={12} md={6} lg={4} px={1}>
                                                 <SoftTypography variant="button" className="me-1">Election Name:</SoftTypography>
                                                 <SoftTypography variant="span" className="text-xxs text-danger fst-italic">*</SoftTypography>
                                                 <SoftInput name="pollname" value={formData.pollname.toUpperCase()} onChange={handleChange} size="small" /> 
@@ -210,14 +266,26 @@ function Add({HandleRendering}) {
                                           </Grid>  
                                     </Grid> 
                                     <Grid container spacing={0} alignItems="center">
-                                          <Grid item xs={12} sm={6} md={4} lg={2} px={1}>
-                                                <SoftTypography variant="button" className="me-1"> Participants: </SoftTypography>
+                                          <Grid item xs={12} sm={6} lg={4} px={1}>
+                                                <SoftTypography variant="button" className="me-1 text-nowrap"> Organization: </SoftTypography>
                                                 <SoftTypography variant="span" className="text-xxs text-danger fst-italic">*</SoftTypography>
-                                                <select className="form-control form-select form-select-sm text-secondary rounded-5 cursor-pointer" name="participant_grade" value={formData.participant_grade} onChange={handleChange} >
+                                                <select className="form-control form-select form-select-sm text-secondary rounded-5 cursor-pointer" name="organization" value={formData.organization} onChange={handleChange} >
+                                                <option value="">All Organization</option>
+                                                      {fetchorgs && fetchorgs.map((orgs) => (
+                                                      <option key={orgs.org_name} value={orgs.org_name}>
+                                                            {orgs.org_name}
+                                                      </option>
+                                                      ))}
+                                                </select>
+                                          </Grid>
+                                          <Grid item xs={12} sm={6} lg={4} px={1}>
+                                                <SoftTypography variant="button" className="me-1 text-nowrap"> Strict to Organization: </SoftTypography>
+                                                <SoftTypography variant="span" className="text-xxs text-danger fst-italic">*</SoftTypography>
+                                                <select className="form-control form-select form-select-sm text-secondary rounded-5 cursor-pointer" name="strict_mode" value={formData.strict_mode} onChange={handleChange} >
                                                       <option value=""></option>
-                                                      {participantSelect && participantSelect.map((participant) => (
-                                                      <option key={participant.value} value={participant.value}>
-                                                            {participant.desc}
+                                                      {strictSelect && strictSelect.map((strict) => (
+                                                      <option key={strict.value} value={strict.value}>
+                                                            {strict.desc}
                                                       </option>
                                                       ))}
                                                 </select>
@@ -245,7 +313,26 @@ function Add({HandleRendering}) {
                                                                         ))}
                                                                   </optgroup>
                                                             ))}
-                                                      </select>
+                                                </select>
+                                          </Grid>
+                                    </Grid> 
+                                    <Grid container spacing={0} alignItems="center">
+                                          <Grid item xs={12} sm={6} md={4} lg={2} px={1}>
+                                                <SoftTypography variant="button" className="me-1"> Participants: </SoftTypography>
+                                                <SoftTypography variant="span" className="text-xxs text-danger fst-italic">*</SoftTypography>
+                                                {grades.map((grade) => (
+                                                      <SoftBox key={grade} className="form-check form-check-inline">
+                                                            <Checkbox 
+                                                                  className='border-2 border-success' 
+                                                                  name="participant_grade" 
+                                                                  value={grade}
+                                                                  checked={formData.participant_grade.includes(grade.toString())}
+                                                                  onChange={handleChange} 
+                                                            />
+                                                            <SoftTypography variant="button" className="me-1 ms-2">Grade {grade} </SoftTypography>
+                                                           
+                                                      </SoftBox>
+                                                ))}
                                           </Grid>
                                     </Grid> 
                                     <Grid container spacing={0} alignItems="center">

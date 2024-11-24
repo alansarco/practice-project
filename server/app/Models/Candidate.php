@@ -19,6 +19,8 @@ class Candidate extends Model
         'positionid',
         'candidate_name',
         'party',
+        'id_picture',
+        'organization',
         'grade',
         'requirements',
         'platform',

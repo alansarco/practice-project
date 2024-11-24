@@ -29,6 +29,11 @@ export const roleSelect = [
       { value: 999, desc: "Super Admin" },
 ];
 
+export const strictSelect = [
+      { value: 1, desc: "Yes" },
+      { value: 0, desc: "No" },
+];
+
 export const enrollStatus = [
       { value: 1, desc: "Yes" },
       { value: 0, desc: "No" },

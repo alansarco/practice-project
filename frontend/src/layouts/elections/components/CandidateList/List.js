@@ -65,6 +65,16 @@ function List({APPLICATION, POLL, HandleRendering, UpdateLoading}) {
                                                                   {candidate.candidateid || " "}
                                                                   </SoftTypography>
                                                             }
+                                                            {candidate.id_picture && (
+                                                                  <SoftBox className="d-flex">
+                                                                  <img 
+                                                                        src={`data:image/png;base64,${candidate.id_picture}`} 
+                                                                        alt={`${candidate.candidate_name}'s ID`} 
+                                                                        className="img-fluid rounded mt-2 border text-center m-auto" 
+                                                                        style={{ width: '150px',  height: '150px' }} // Adjust the size as needed
+                                                                  />
+                                                                  </SoftBox>
+                                                            )}  
                                                             <SoftTypography color="dark" className="me-1 text-sm fw-bold">
                                                             {candidate.candidate_name || " "}
                                                             </SoftTypography>

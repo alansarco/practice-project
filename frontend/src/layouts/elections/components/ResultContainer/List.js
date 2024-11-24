@@ -20,7 +20,7 @@ import DefaultDoughnutChart from "essentials/Charts/DoughnutCharts/DefaultDoughn
 import { distributionSelect } from "components/General/Utils";
 import NotificationsTwoToneIcon from '@mui/icons-material/NotificationsTwoTone';
 
-function List({ RESULT, CANDIDATES, POLL, HandleRendering, UpdateLoading, reload, VOTE, MAXVOTERS, CURRENTVOTES, PARTICIPANTS }) {
+function List({ USER, RESULT, CANDIDATES, POLL, HandleRendering, UpdateLoading, reload, VOTE, MAXVOTERS, CURRENTVOTES, PARTICIPANTS }) {
       const [isLoading, setLoading] = useState(false);
       const currentFileName = "layouts/elections/components/ResultContainer/List.js";
       const [tabtitle, setTabtitle] = useState(1);
@@ -170,12 +170,12 @@ function List({ RESULT, CANDIDATES, POLL, HandleRendering, UpdateLoading, reload
                                     <SoftButton onClick={handleResultTab} className="mt-2 mt-sm-0 mx-1 w-100 text-xxs px-5 rounded-pill text-nowrap" size="small" color={tabtitle == 1 ? "dark" : "white"}>
                                           Results
                                     </SoftButton>
-                                    {access == 999 && 
+                                    {access >= 10 && 
                                     <SoftButton onClick={handleParticipantTab} className="mt-2 mt-sm-0 mx-1 w-100 text-xxs px-5 rounded-pill text-nowrap" size="small" color={tabtitle == 2 ? "dark" : "white"}>
                                           Participants
                                     </SoftButton>
                                     }          
-                                    {!VOTE && access == 5 && 
+                                    {access == 5 && 
                                     <SoftButton onClick={handleVoteTab} className="mt-2 mt-sm-0 mx-1 w-100 text-xxs px-5 rounded-pill text-nowrap" size="small" color={tabtitle == 3 ? "dark" : "white"}>
                                           Vote Now
                                     </SoftButton>
@@ -282,11 +282,13 @@ function List({ RESULT, CANDIDATES, POLL, HandleRendering, UpdateLoading, reload
                         <SoftBox className="px-md-0 px-2" > 
                               <Card className="bg-white px-4 pt-5">
                                     <SoftBox display="flex" justifyContent="end">
+                                          {USER === POLL.admin_id &&
                                           <SoftBox display="flex" justifyContent="end" className="my-auto me-2">
                                                 <SoftButton onClick={handleNotify} variant="gradient" className="my-auto rounded-pill" size="medium" color="info" iconOnly>
                                                       <NotificationsTwoToneIcon/>
                                                 </SoftButton>
                                           </SoftBox>
+                                          }
                                           <SoftTypography color="info" className="text-center my-auto" variant="h6">
                                                 Total Voters:
                                                 <b className="text-dark">{MAXVOTERS || 0}</b>
@@ -321,8 +323,8 @@ function List({ RESULT, CANDIDATES, POLL, HandleRendering, UpdateLoading, reload
 
                               {/* Loop through positions and display select input for each */}
                               {CANDIDATES && CANDIDATES.length > 0 && 
-                                    CANDIDATES.map((position) => (
-                                    <Grid container className="py-2" spacing={0} justifyContent="center" alignItems="center" key={position.positionid}>
+                                    CANDIDATES.map((position, index) => (
+                                    <Grid container className="py-2" spacing={0} justifyContent="center" alignItems="center" key={index}>
                                           <Grid item xs={12} md={4} px={1}>
                                                 <SoftTypography color="secondary" className="me-1 text-sm fw-normal">
                                                 {position.position_name || " "}

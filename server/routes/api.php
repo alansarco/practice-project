@@ -12,6 +12,7 @@ use App\Http\Controllers\Api\ForgotPasswordController;
 use App\Http\Controllers\Api\SignupController;
 use App\Http\Controllers\Api\JuniorController;
 use App\Http\Controllers\Api\MyPageController;
+use App\Http\Controllers\Api\OrganizationController;
 use App\Http\Controllers\Api\SeniorController;
 use App\Http\Controllers\Api\SettingsController;
 use Illuminate\Support\Facades\Route;
@@ -54,7 +55,7 @@ Route::middleware('auth:sanctum')->group(function () {
     });
 
     Route::prefix('applications')->group(function () {
-        Route::get('adminselect', [ElectionController::class, 'adminselect']);
+        Route::post('adminselect', [ElectionController::class, 'adminselect']);
     });    
 
     Route::prefix('users')->group(function () {
@@ -98,7 +99,6 @@ Route::middleware('auth:sanctum')->group(function () {
 
     Route::prefix('elections')->group(function () {
         Route::get('/', [ElectionController::class, 'index']);
-        Route::get('captainselect', [ElectionController::class, 'captainselect']);
         Route::post('addelection', [ElectionController::class, 'addelection']);
         Route::get('electioninfo', [ElectionController::class, 'electioninfo']);
         Route::get('deleteelection', [ElectionController::class, 'deleteelection']);
@@ -130,6 +130,13 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::prefix('settings')->group(function () {
         Route::get('/', [SettingsController::class, 'index']);
         Route::post('updatesettings', [SettingsController::class, 'updatesettings']);
+    });
+
+    Route::prefix('organizations')->group(function () {
+        Route::get('/', [OrganizationController::class, 'index']);
+        Route::get('orgselect', [OrganizationController::class, 'orgselect']);
+        Route::post('addorg', [OrganizationController::class, 'addorg']);
+        Route::get('deleteorg', [OrganizationController::class, 'deleteorg']);
     });
 
 

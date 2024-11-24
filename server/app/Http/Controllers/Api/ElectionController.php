@@ -21,9 +21,10 @@ use Illuminate\Support\Facades\Validator;
 
 class ElectionController extends Controller
 {
-    public function adminselect() {
+    public function adminselect(Request $request) {
         $admins = User::leftJoin('admins', 'users.username', '=', 'admins.username')
                 ->select('admins.username', 'admins.name', 'admins.organization')
+                ->where('admins.organization', $request->organization)
                 ->where('users.account_status', 1)
                 ->where('users.role', 'ADMIN')
                 ->where('users.access_level', 10)
@@ -38,6 +39,7 @@ class ElectionController extends Controller
             }   
             else {
                 return response()->json([
+                    'admins' => $admins,
                     'message' => 'No Admin Accounts found!'
                 ]);
             }
@@ -118,6 +120,8 @@ class ElectionController extends Controller
                     'voting_start' => $request->voting_start,
                     'voting_end' => $request->voting_end,
                     'qualifications' => $request->qualifications,
+                    'organization' => strtoupper($request->organization),
+                    'strict_mode' => $request->strict_mode,
                     'requirements' => $request->requirements,
                     'admin_id' => $request->admin_id,
                     'admin_name' => strtoupper($authAdmin->name),
@@ -292,6 +296,8 @@ class ElectionController extends Controller
             'voting_start' => $request->voting_start,
             'voting_end' => $request->voting_end,
             'qualifications' => $request->qualifications,
+            'organization' => $request->organization,
+            'strict_mode' => $request->strict_mode,
             'requirements' => $request->requirements,
             'admin_id' => $request->admin_id,
             'admin_name' => strtoupper($authAdmin->name),
@@ -365,12 +371,6 @@ class ElectionController extends Controller
     public function deleteelection(Request $request) {
         $authUser = Admin::select('name', 'username')->where('username', Auth::user()->username)->first();
         
-        $authUserized = Auth::user();
-        if($authUserized->role !== "ADMIN" || $authUserized->access_level != 999) {
-            return response()->json([
-                'message' => 'You are not allowed to perform this action!'
-            ]);
-        }
         $poll = DB::table('polls')->where('pollid', $request->pollid)->first();
         if($poll) {
             try {
@@ -500,13 +500,14 @@ class ElectionController extends Controller
     }
 
     public function sumbitapplication(Request $request) {
-        $authUser = Student::select('name', 'username', 'grade')->where('username', Auth::user()->username)->first();
+        $authUser = Student::select('name', 'username', 'grade', 'org_name')->where('username', Auth::user()->username)->first();
 
         $validator = Validator::make($request->all(), [
             'pollid' => 'required',
             'party' => 'required',
             'platform' => 'required',
             'requirements' => 'required|mimes:zip|max:10240', 
+            'id_picture' => 'required|mimes:png|max:2048', 
         ]); 
 
         if($validator->fails()) {
@@ -520,6 +521,13 @@ class ElectionController extends Controller
         if ($request->hasFile('requirements')) {
             $file = $request->file('requirements');
             $requirementsData = file_get_contents($file->getRealPath()); // Get the file content as a string
+        }
+        
+        // Process the validated data, like storing the file, etc.
+        $pictureData = null; // Initialize the variable to hold the file path
+        if ($request->hasFile('id_picture')) {
+            $file = $request->file('id_picture');
+            $pictureData = file_get_contents($file->getRealPath()); // Get the file content as a string
         }
         
         $existingApplication = Candidate::where('pollid', $request->pollid)
@@ -569,10 +577,12 @@ class ElectionController extends Controller
                 'pollid' => strtoupper($request->pollid),
                 'positionid' => $request->positionid,
                 'candidate_name' => $authUser->name,
+                'organization' => $authUser->org_name,
                 'party' => strtoupper($request->party),
                 'grade' => strtoupper($authUser->grade),
                 'platform' => $request->platform,
                 'requirements' => $requirementsData,
+                'id_picture' => $pictureData,
                 'status' => 0,
                 'created_by' => $authUser->name,
                 'updated_by' => $authUser->name
@@ -628,6 +638,8 @@ class ElectionController extends Controller
                         "positionid", candidates.positionid,
                         "grade", candidates.grade,
                         "party", candidates.party,
+                        "organization", candidates.organization,
+                        "id_picture", TO_BASE64(candidates.id_picture),
                         "platform", candidates.platform,
                         "status", candidates.status
                     )
@@ -640,16 +652,87 @@ class ElectionController extends Controller
         ->where('positions.pollid', $request->info)
         ->groupBy('positions.positionid', 'positions.position_name', 'positions.pollid')
         ->get();
+        
+
+        $grades = Poll::select('participant_grade', 'organization', 'strict_mode', DB::raw("YEAR(created_at) AS created_year"))->where('pollid', $request->info)->first();
+        $currentYear = Carbon::now()->format('Y');
+
+        if ($grades) {
+            $gradesArray = explode(',', $grades->participant_grade);
+            if($grades->strict_mode == 1) {
+                $totalparticipants = Student::whereIn('grade', $gradesArray)
+                    // ->where('enrolled', 1)
+                    ->where('year_enrolled', '<=', $grades->created_year)
+                    ->where('org_name', $grades->organization)
+                    ->where(function ($query) use ($currentYear) {
+                        $query->whereNull('year_unenrolled')
+                            ->orWhere('year_unenrolled', '')
+                            ->orWhere('year_unenrolled', '>', $currentYear);
+                    })
+                    ->count();
+                $participantslist = Student::select('username', 'name', 'grade',
+                    DB::raw("IF(EXISTS(SELECT 1 FROM votes WHERE pollid = '$request->info' AND voterid = students.username),1,0) AS votestatus"),
+                    DB::raw("(SELECT DATE_FORMAT(MAX(created_at), '%M %d, %Y %h:%i %p') FROM votes 
+                            WHERE pollid = '$request->info' AND voterid = students.username) AS vote_date")
+                    )
+                    ->whereIn('grade', $gradesArray)
+                    // ->where('enrolled', 1)
+                    ->where('org_name', $grades->organization)
+                    ->where('year_enrolled', '<=', $grades->created_year)
+                    ->where(function ($query) use ($currentYear) {
+                        $query->whereNull('year_unenrolled')
+                            ->orWhere('year_unenrolled', '')
+                            ->orWhere('year_unenrolled', '>', $currentYear);
+                    })
+                    ->orderBy('votestatus', 'DESC')
+                    ->orderBy('vote_date', 'DESC')
+                    ->get();
+            }
+            else {
+                $totalparticipants = Student::whereIn('grade', $gradesArray)
+                    // ->where('enrolled', 1)
+                    ->where('year_enrolled', '<=', $grades->created_year)
+                    ->where(function ($query) use ($currentYear) {
+                        $query->whereNull('year_unenrolled')
+                            ->orWhere('year_unenrolled', '')
+                            ->orWhere('year_unenrolled', '>', $currentYear);
+                    })
+                    ->count();
+                $participantslist = Student::select('username', 'name', 'grade',
+                    DB::raw("IF(EXISTS(SELECT 1 FROM votes WHERE pollid = '$request->info' AND voterid = students.username),1,0) AS votestatus"),
+                    DB::raw("(SELECT DATE_FORMAT(MAX(created_at), '%M %d, %Y %h:%i %p') FROM votes 
+                            WHERE pollid = '$request->info' AND voterid = students.username) AS vote_date")
+                    )
+                    ->whereIn('grade', $gradesArray)
+                    // ->where('enrolled', 1)
+                    ->where('year_enrolled', '<=', $grades->created_year)
+                    ->where(function ($query) use ($currentYear) {
+                        $query->whereNull('year_unenrolled')
+                            ->orWhere('year_unenrolled', '')
+                            ->orWhere('year_unenrolled', '>', $currentYear);
+                    })
+                    ->orderBy('votestatus', 'DESC')
+                    ->orderBy('vote_date', 'DESC')
+                    ->get();
+            }
+            
+        } else {
+            $totalparticipants = 0; // Handle the case where no grades are found
+        }
 
         if($applications) {
             return response()->json([
                 'applications' => $applications,
+                'participantslist' => $participantslist,
+                'totalparticipants' => $totalparticipants,
                 'message' => 'Application List Retrieved!',
             ]);
         }   
         else {
             return response()->json([
                 'applications' => $applications,
+                'participantslist' => $participantslist,
+                'totalparticipants' => $totalparticipants,
                 'message' => 'No applications found!'
             ]);
         }
@@ -808,6 +891,7 @@ class ElectionController extends Controller
             )
             ->whereNotNull('positions.position_name')
             ->where('candidates.pollid', $request->info)
+            ->where('candidates.status', 1)
             ->orderBy('candidates.positionid', 'ASC')
             ->orderBy('candidates.votes', 'DESC')
             ->get();
@@ -832,12 +916,17 @@ class ElectionController extends Controller
 
     public function archiveresult(Request $request) {
         try {
-            $grades = Poll::select('participant_grade', DB::raw("YEAR(created_at) AS created_year"))->where('pollid', $request->info)->first();
+            $grades = Poll::select('participant_grade', 'organization', 'strict_mode', DB::raw("YEAR(created_at) AS created_year"))->where('pollid', $request->info)->first();
             $currentYear = Carbon::now()->format('Y');
 
             if ($grades) {
                 $gradesArray = explode(',', $grades->participant_grade);
                 $totalparticipants = Student::whereIn('grade', $gradesArray)
+                    ->join(DB::raw("(SELECT voterid, MAX(created_at) as vote_date FROM votes WHERE pollid = '{$request->info}' GROUP BY voterid) as votes"),
+                        function ($join) {
+                            $join->on('students.username', '=', 'votes.voterid');
+                        }
+                    )
                     // ->where('enrolled', 1)
                     ->where('year_enrolled', '<=', $grades->created_year)
                     ->where(function ($query) use ($currentYear) {
@@ -846,22 +935,29 @@ class ElectionController extends Controller
                             ->orWhere('year_unenrolled', '>', $currentYear);
                     })
                     ->count();
-                $participantslist = Student::select('username', 'name', 'grade',
-                    DB::raw("IF(EXISTS(SELECT 1 FROM votes WHERE pollid = '$request->info' AND voterid = students.username),1,0) AS votestatus"),
-                    DB::raw("(SELECT DATE_FORMAT(MAX(created_at), '%M %d, %Y %h:%i %p') FROM votes 
-                            WHERE pollid = '$request->info' AND voterid = students.username) AS vote_date")
+
+                $participantslist = Student::select(
+                        'students.username',
+                        'students.name',
+                        'students.grade',
+                        DB::raw("1 AS votestatus"), // Since INNER JOIN ensures a match, votestatus is always 1
+                        DB::raw("DATE_FORMAT(votes.vote_date, '%M %d, %Y %h:%i %p') AS vote_date")
                     )
-                    ->whereIn('grade', $gradesArray)
-                    // ->where('enrolled', 1)
-                    ->where('year_enrolled', '<=', $grades->created_year)
+                    ->join(DB::raw("(SELECT voterid, MAX(created_at) as vote_date FROM votes WHERE pollid = '{$request->info}' GROUP BY voterid) as votes"),
+                        function ($join) {
+                            $join->on('students.username', '=', 'votes.voterid');
+                        }
+                    )
+                    ->whereIn('students.grade', $gradesArray)
+                    ->where('students.year_enrolled', '<=', $grades->created_year)
                     ->where(function ($query) use ($currentYear) {
-                        $query->whereNull('year_unenrolled')
-                            ->orWhere('year_unenrolled', '')
-                            ->orWhere('year_unenrolled', '>', $currentYear);
+                        $query->whereNull('students.year_unenrolled')
+                            ->orWhere('students.year_unenrolled', '')
+                            ->orWhere('students.year_unenrolled', '>', $currentYear);
                     })
-                    ->orderBy('votestatus', 'DESC')
-                    ->orderBy('vote_date', 'DESC')
+                    ->orderBy('vote_date', 'DESC')  // Sort by the latest vote date
                     ->get();
+                
             } else {
                 $totalparticipants = 0; // Handle the case where no grades are found
             }
@@ -905,6 +1001,7 @@ class ElectionController extends Controller
                 )
                 ->whereNotNull('positions.position_name')
                 ->where('candidates.pollid', $request->info)
+                ->where('candidates.status', 1)
                 ->orderBy('candidates.positionid', "ASC")
                 ->orderBy('candidates.votes', "DESC")
                 ->get();
@@ -939,11 +1036,40 @@ class ElectionController extends Controller
 
         if($vote > 0) $alreadyvote = true;
 
-        $grades = Poll::select('participant_grade', DB::raw("YEAR(created_at) AS created_year"))->where('pollid', $request->info)->first();
+        $grades = Poll::select('participant_grade', 'organization', 'strict_mode', DB::raw("YEAR(created_at) AS created_year"))->where('pollid', $request->info)->first();
 
         if ($grades) {
             $gradesArray = explode(',', $grades->participant_grade);
-            $totalparticipants = Student::whereIn('grade', $gradesArray)
+            if($grades->strict_mode == 1) {
+                $totalparticipants = Student::whereIn('grade', $gradesArray)
+                    // ->where('enrolled', 1)
+                    ->where('year_enrolled', '<=', $grades->created_year)
+                    ->where('org_name', $grades->organization)
+                    ->where(function ($query) use ($currentYear) {
+                        $query->whereNull('year_unenrolled')
+                            ->orWhere('year_unenrolled', '')
+                            ->orWhere('year_unenrolled', '>', $currentYear);
+                    })
+                    ->count();
+                $participantslist = Student::select('username', 'name', 'grade',
+                    DB::raw("IF(EXISTS(SELECT 1 FROM votes WHERE pollid = '$request->info' AND voterid = students.username),1,0) AS votestatus"),
+                    DB::raw("(SELECT DATE_FORMAT(MAX(created_at), '%M %d, %Y %h:%i %p') FROM votes 
+                            WHERE pollid = '$request->info' AND voterid = students.username) AS vote_date")
+                    )
+                    ->whereIn('grade', $gradesArray)
+                    // ->where('enrolled', 1)
+                    ->where('year_enrolled', '<=', $grades->created_year)
+                    ->where(function ($query) use ($currentYear) {
+                        $query->whereNull('year_unenrolled')
+                            ->orWhere('year_unenrolled', '')
+                            ->orWhere('year_unenrolled', '>', $currentYear);
+                    })
+                    ->orderBy('votestatus', 'DESC')
+                    ->orderBy('vote_date', 'DESC')
+                    ->get();
+            }
+            else {
+                $totalparticipants = Student::whereIn('grade', $gradesArray)
                     // ->where('enrolled', 1)
                     ->where('year_enrolled', '<=', $grades->created_year)
                     ->where(function ($query) use ($currentYear) {
@@ -952,24 +1078,23 @@ class ElectionController extends Controller
                             ->orWhere('year_unenrolled', '>', $currentYear);
                     })
                     ->count();
-            $participantslist = Student::select('username', 'name', 'grade',
-                DB::raw("IF(EXISTS(SELECT 1 FROM votes WHERE pollid = '$request->info' AND voterid = students.username),1,0) AS votestatus"),
-                DB::raw("(SELECT DATE_FORMAT(MAX(created_at), '%M %d, %Y %h:%i %p') FROM votes 
-                          WHERE pollid = '$request->info' AND voterid = students.username) AS vote_date")
-                )
-                ->whereIn('grade', $gradesArray)
-                // ->where('enrolled', 1)
-                ->where('year_enrolled', '<=', $grades->created_year)
-                ->where(function ($query) use ($currentYear) {
-                    $query->whereNull('year_unenrolled')
-                        ->orWhere('year_unenrolled', '')
-                        ->orWhere('year_unenrolled', '>', $currentYear);
-                })
-                ->orderBy('votestatus', 'DESC')
-                ->orderBy('vote_date', 'DESC')
-                ->get();
-        
-
+                $participantslist = Student::select('username', 'name', 'grade',
+                    DB::raw("IF(EXISTS(SELECT 1 FROM votes WHERE pollid = '$request->info' AND voterid = students.username),1,0) AS votestatus"),
+                    DB::raw("(SELECT DATE_FORMAT(MAX(created_at), '%M %d, %Y %h:%i %p') FROM votes 
+                            WHERE pollid = '$request->info' AND voterid = students.username) AS vote_date")
+                    )
+                    ->whereIn('grade', $gradesArray)
+                    // ->where('enrolled', 1)
+                    ->where('year_enrolled', '<=', $grades->created_year)
+                    ->where(function ($query) use ($currentYear) {
+                        $query->whereNull('year_unenrolled')
+                            ->orWhere('year_unenrolled', '')
+                            ->orWhere('year_unenrolled', '>', $currentYear);
+                    })
+                    ->orderBy('votestatus', 'DESC')
+                    ->orderBy('vote_date', 'DESC')
+                    ->get();
+            }
         } else {
             $totalparticipants = 0; // Handle the case where no grades are found
         }

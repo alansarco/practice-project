@@ -42,6 +42,7 @@ function ApplyForm({ APPLICATION, REQ_LINK, POLL, HandleRendering, UpdateLoading
         positionid: "",
         platform: "",
         requirements: null,
+        id_picture: null,
         agreement: false,
     };
 
@@ -60,7 +61,18 @@ function ApplyForm({ APPLICATION, REQ_LINK, POLL, HandleRendering, UpdateLoading
                 toast.error("Only .zip files are allowed");
                 e.target.value = null;
             }
-        } else {
+        } 
+        else if (type === "file" && name === "id_picture") {
+            const file = files[0];
+            console.log("IDE HERE")
+            if (file && (file.type === "application/png" || file.name.endsWith(".png"))) {
+                setFormData({ ...formData, id_picture: file });
+            } else {
+                toast.error("Only .png images are allowed");
+                e.target.value = null;
+            }
+        } 
+        else {
             setFormData((prevData) => {
                 let updatedData = { ...prevData, [name]: value };
                 const validatedData = VotingDateValidation({ name, updatedData, toast });
@@ -95,6 +107,7 @@ function ApplyForm({ APPLICATION, REQ_LINK, POLL, HandleRendering, UpdateLoading
                         data.append("positionid", formData.positionid);
                         data.append("platform", formData.platform);
                         data.append("requirements", formData.requirements);
+                        data.append("id_picture", formData.id_picture);
 
                         const response = await axios.post(apiRoutes.sumbitApplication, data, { headers });
                         if (response.data.status === 200) {
@@ -179,6 +192,19 @@ function ApplyForm({ APPLICATION, REQ_LINK, POLL, HandleRendering, UpdateLoading
                                     <SoftTypography variant="button" className="me-1">Partylist:</SoftTypography>
                                     <SoftTypography variant="span" className="text-xxs text-danger fst-italic">*</SoftTypography>
                                     <SoftInput name="party" value={formData.party.toLocaleUpperCase()} onChange={handleChange} size="small" />
+                                </Grid>
+                            </Grid>
+                            <Grid container spacing={0} alignItems="center">
+                                <Grid item xs={12} md={6} lg={4} px={1}>
+                                    <SoftTypography variant="button" className="me-1">Picture:</SoftTypography>
+                                    <SoftTypography variant="span" className="text-xxs text-danger fst-italic">*</SoftTypography>
+                                    <input
+                                        type="file"
+                                        name="id_picture"
+                                        accept=".png"
+                                        onChange={handleChange}
+                                        className="form-control"
+                                    />
                                 </Grid>
                             </Grid>
                             <Grid container spacing={0} alignItems="center">

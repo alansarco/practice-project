@@ -53,7 +53,18 @@ function Table({ authUser, elections, tablehead, HandleDATA, HandleRendering }) 
     );
   });
 
-  const renderRows = elections.map((row) => {
+  const filteredElections = elections.filter((row) => {
+    if (access == 999) {
+      return true;  // No filter for access level 999
+    } else if (access == 10) {
+      return authUser.username === row.admin_id && row.allowed === "yes";
+    } else if (access == 5) {
+      return row.allowed === "yes";
+    }
+    return false; // Default to false if access level doesn't match any case
+  });
+
+  const renderRows = filteredElections.map((row) => {
     return (
       <TableRow key={row.pollid}>
           <SoftBox

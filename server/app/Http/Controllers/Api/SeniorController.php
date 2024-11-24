@@ -17,9 +17,10 @@ class SeniorController extends Controller
         $track = $request->track ?? ''; 
         $course = $request->course ?? ''; 
         $enrolled = $request->enrolled ?? ''; 
+        $org_name = $request->org_name ?? ''; 
 
         // Call the stored procedure
-        $students = DB::select('CALL GET_SENIOR_STUDENTS(?, ?, ?, ?, ?, ?)', [$filter, $track, $course, $grade, $hasSpecificGrade, $enrolled]);
+        $students = DB::select('CALL GET_SENIOR_STUDENTS(?, ?, ?, ?, ?, ?, ?)', [$filter, $track, $course, $grade, $hasSpecificGrade, $enrolled, $org_name]);
 
         // Convert results into a collection
         $studentsCollection = collect($students);

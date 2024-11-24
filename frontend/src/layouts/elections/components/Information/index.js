@@ -17,7 +17,7 @@ import FixedLoading from "components/General/FixedLoading";
 import { messages } from "components/General/Messages";
 import axios from "axios";  
 
-function Information({FROM, POLL, POSITIONS, HandleRendering}) {  
+function Information({USER, FROM, POLL, POSITIONS, HandleRendering}) {  
   const [deleteData, setDeleteData] = useState(false);
   const currentFileName = "layouts/elections/components/Information/index.js";
 
@@ -91,6 +91,8 @@ function Information({FROM, POLL, POSITIONS, HandleRendering}) {
                     Election_Name: POLL.pollname,  
                     Description: POLL.description == null ? " " : POLL.description,
                     Participants: POLL.participant_grade == null ? " " : POLL.participant_grade,
+                    Organization: POLL.organization == null ? " " : POLL.organization,
+                    Strict_to_Organization: POLL.participant_grade == 1 ? "Yes" : "No",
                     Qualifications: POLL.qualifications == null ? " " : POLL.qualifications,
                     Requirements: POLL.requirements == null ? " " : POLL.requirements,
                     Admin: POLL.admin_name == null ? " " : POLL.admin_name,
@@ -140,7 +142,7 @@ function Information({FROM, POLL, POSITIONS, HandleRendering}) {
                 </SoftButton>
               </SoftBox>
             </Grid>
-            {access == 999 && 
+            {USER === POLL.admin_id && 
              (FROM === "upcoming" || FROM === "application") &&
             <Grid item xs={12} sm={4} md={2} pl={1}>
               <SoftBox mt={2} display="flex" justifyContent="end">

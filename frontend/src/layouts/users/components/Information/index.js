@@ -94,6 +94,7 @@ function Information({USER, HandleRendering, ReloadTable}) {
                   Name: USER.name,
                   Grade: USER.grade == null ? " " : USER.grade,
                   Section: USER.section == null ? " " : USER.section,
+                  Organization: USER.org_name == null ? " " : USER.org_name,
                   Track: USER.track == null ? "N/A" : USER.track,
                   Strand: USER.course == null ? "N/A" : USER.course,
                   Gender: USER.gender == null ? " " : USER.gender,

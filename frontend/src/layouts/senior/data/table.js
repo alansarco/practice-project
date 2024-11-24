@@ -123,6 +123,17 @@ function Table({ users, tablehead, HandleUSER, HandleRendering }) {
           </SoftBox>
           <SoftBox
             className="px-2"
+            textAlign="left"
+            component="td"
+            fontSize={size.xs}
+            color="secondary" 
+            borderBottom={`${borderWidth[1]} solid ${light.main}`}
+            borderTop={`${borderWidth[1]} solid ${light.main}`}
+          >
+            {row.org_name}
+          </SoftBox>
+          <SoftBox
+            className="px-2"
             component="td"
             textAlign="center"
             fontSize={size.xs}

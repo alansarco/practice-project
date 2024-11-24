@@ -72,14 +72,6 @@ class AnnouncementController extends Controller
 
     // update specific admin's information
     public function updateannouncement(Request $request) {
-        $authUser = Auth::user();
-        
-        if($authUser->role !== "ADMIN" || $authUser->access_level < 10) {
-            return response()->json([
-                'message' => 'You are not allowed to perform this action!'
-            ]);
-        }
-
         $validator = Validator::make($request->all(), [
             'event_name' => 'required',
             'description' => 'required',
@@ -132,14 +124,6 @@ class AnnouncementController extends Controller
     }
 
     public function addannouncement(Request $request) {
-        $authUser = Auth::user();
-        
-        if($authUser->role !== "ADMIN" || $authUser->access_level < 10) {
-            return response()->json([
-                'message' => 'You are not allowed to perform this action!'
-            ]);
-        }
-
         $validator = Validator::make($request->all(), [ 
             'event_name' => 'required',
             'description' => 'required',

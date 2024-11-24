@@ -192,14 +192,16 @@ function ApplicationList({authUser, FROM, INFO, HandleRendering}) {
                 sx={{ background: "transparent" }}
               >
                 <Tab label="Information" onClick={setProfile} icon={<Cube />} />
-                <Tab label="Application List" onClick={setApply} icon={<Document />} />
+                {authUser.username === Poll.admin_id &&
+                  <Tab label="Application List" onClick={setApply} icon={<Document />} />
+                }
               </Tabs> 
             </AppBar>
           </Grid>
         </Grid>
       </Card>
     </SoftBox>
-    {menu === "details" && <Information UpdateLoading={UpdateLoading} FROM={FROM} POSITIONS={Position} POLL={Poll} HandleRendering={HandleRendering}  />}
+    {menu === "details" && <Information USER={authUser.username} UpdateLoading={UpdateLoading} FROM={FROM} POSITIONS={Position} POLL={Poll} HandleRendering={HandleRendering}  />}
     
     {menu === "apply" && FROM === "application" &&
       <List APPLICATION={fetchapplication} UpdateLoading={UpdateLoading} POLL={Poll} HandleRendering={HandleRendering} />

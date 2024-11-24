@@ -191,8 +191,8 @@ function List({APPLICATION, POLL, HandleRendering, UpdateLoading}) {
                                           Approved Applications    
                                     </SoftTypography>
                                     {APPLICATION && APPLICATION.length > 0 && 
-                                    APPLICATION.map((position) => (
-                                          <Grid container className="border-bottom border-2" spacing={0} alignItems="center" key={position.positionid}>
+                                    APPLICATION.map((position, index) => (
+                                          <Grid container className="border-bottom border-2" spacing={0} alignItems="center" key={index}>
                                                 <Grid item xs={12} md={4} px={1}>
                                                 <SoftTypography color="secondary" className="me-1 text-sm fw-normal">
                                                       {position.position_name || " "}
@@ -232,8 +232,21 @@ function List({APPLICATION, POLL, HandleRendering, UpdateLoading}) {
                                                             color={candidate.status === 1 ? "info" : candidate.status === 2 ? "primary" : "warning"} size="lg"
                                                             className="d-flex justify-content-end"
                                                             />
+                                                            {candidate.id_picture && (
+                                                                  <SoftBox className="d-flex">
+                                                                  <img 
+                                                                        src={`data:image/png;base64,${candidate.id_picture}`} 
+                                                                        alt={`${candidate.candidate_name}'s ID`} 
+                                                                        className="img-fluid rounded mt-2 border text-center m-auto" 
+                                                                        style={{ width: '150px',  height: '150px' }} // Adjust the size as needed
+                                                                  />
+                                                                  </SoftBox>
+                                                            )}       
                                                             <SoftTypography color="info" className="me-1 text-sm fw-normal">
                                                             {candidate.candidateid || " "}
+                                                            </SoftTypography>
+                                                            <SoftTypography color="secondary" className="me-1 text-xs fw-normal">
+                                                            {candidate.organization || " "}
                                                             </SoftTypography>
                                                             <SoftTypography color="dark" className="me-1 text-sm fw-bold">
                                                             {candidate.candidate_name || " "}
@@ -251,18 +264,18 @@ function List({APPLICATION, POLL, HandleRendering, UpdateLoading}) {
                                                             </SoftTypography>
                                                             </SoftTypography>
                                                             <Grid container spacing={0} alignItems="center" justifyContent="start">
-                                                            <Grid item xs={12} sm={5} lg={3}>
-                                                                  <SoftBox display="flex" justifyContent="end">
-                                                                  <SoftButton onClick={() => handleReject(candidate)} className="mx-1 mt-1 mt-md-0 w-100 text-xxs px-2 rounded-pill" size="small" color="primary">
-                                                                  Reject
-                                                                  </SoftButton>
-                                                                  </SoftBox>
-                                                            </Grid>    
-                                                            <Grid item xs={12} sm={6} lg={4}>
-                                                                  <SoftBox display="flex" justifyContent="end">
-                                                                  <DownloadButton pollid={POLL.pollid} candidateId={candidate.candidateid} handleLoading={handleLoading}/>
-                                                                  </SoftBox>
-                                                            </Grid>                               
+                                                                  <Grid item xs={12} sm={5} lg={3}>
+                                                                        <SoftBox display="flex" justifyContent="end">
+                                                                        <SoftButton onClick={() => handleReject(candidate)} className="mx-1 mt-1 mt-md-0 w-100 text-xxs px-2 rounded-pill" size="small" color="primary">
+                                                                        Reject
+                                                                        </SoftButton>
+                                                                        </SoftBox>
+                                                                  </Grid>    
+                                                                  <Grid item xs={12} sm={6} lg={4}>
+                                                                        <SoftBox display="flex" justifyContent="end">
+                                                                        <DownloadButton pollid={POLL.pollid} candidateId={candidate.candidateid} handleLoading={handleLoading}/>
+                                                                        </SoftBox>
+                                                                  </Grid>                               
                                                             </Grid>     
                                                       </SoftBox>
                                                       : 
@@ -326,8 +339,21 @@ function List({APPLICATION, POLL, HandleRendering, UpdateLoading}) {
                                                             color={candidate.status === 1 ? "info" : candidate.status === 2 ? "primary" : "warning"} size="lg"
                                                             className="d-flex justify-content-end"
                                                             />
+                                                            {candidate.id_picture && (
+                                                                  <SoftBox className="d-flex">
+                                                                  <img 
+                                                                        src={`data:image/png;base64,${candidate.id_picture}`} 
+                                                                        alt={`${candidate.candidate_name}'s ID`} 
+                                                                        className="img-fluid rounded mt-2 border text-center m-auto" 
+                                                                        style={{ width: '150px',  height: '150px' }} // Adjust the size as needed
+                                                                  />
+                                                                  </SoftBox>
+                                                            )}       
                                                             <SoftTypography color="info" className="me-1 text-sm fw-normal">
                                                             {candidate.candidateid || " "}
+                                                            </SoftTypography>
+                                                            <SoftTypography color="secondary" className="me-1 text-xs fw-normal">
+                                                            {candidate.organization || " "}
                                                             </SoftTypography>
                                                             <SoftTypography color="dark" className="me-1 text-sm fw-bold">
                                                             {candidate.candidate_name || " "}
@@ -427,8 +453,21 @@ function List({APPLICATION, POLL, HandleRendering, UpdateLoading}) {
                                                             color={candidate.status === 1 ? "info" : candidate.status === 2 ? "primary" : "warning"} size="lg"
                                                             className="d-flex justify-content-end"
                                                             />
+                                                            {candidate.id_picture && (
+                                                                  <SoftBox className="d-flex">
+                                                                  <img 
+                                                                        src={`data:image/png;base64,${candidate.id_picture}`} 
+                                                                        alt={`${candidate.candidate_name}'s ID`} 
+                                                                        className="img-fluid rounded mt-2 border text-center m-auto" 
+                                                                        style={{ width: '150px',  height: '150px' }} // Adjust the size as needed
+                                                                  />
+                                                                  </SoftBox>
+                                                            )}       
                                                             <SoftTypography color="info" className="me-1 text-sm fw-normal">
                                                             {candidate.candidateid || " "}
+                                                            </SoftTypography>
+                                                            <SoftTypography color="secondary" className="me-1 text-xs fw-normal">
+                                                            {candidate.organization || " "}
                                                             </SoftTypography>
                                                             <SoftTypography color="dark" className="me-1 text-sm fw-bold">
                                                             {candidate.candidate_name || " "}

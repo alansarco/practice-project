@@ -124,10 +124,11 @@ class DashboardController extends Controller
 
         if($userInfo) {
             $participant = $userInfo->grade;
+            $participant_org = $userInfo->org_name;
             $isAdmin = is_null($participant) ? 1 : 0;
             $filter = $request->filter ?? '';
             
-            $polls = DB::select('CALL GET_POLLS(?, ?, ?)', [$isAdmin, $participant, $filter]);
+            $polls = DB::select('CALL GET_POLLS(?, ?, ?, ?)', [$isAdmin, $participant, $filter, $participant_org]);
             
             return response()->json([
                 'message' => 'Elections retrieved!',

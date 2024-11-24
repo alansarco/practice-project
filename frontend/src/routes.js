@@ -13,6 +13,7 @@ import Profile from "layouts/profile";
 import Application from "layouts/elections/application";
 import MyApplications from "layouts/myapplications";
 import MyVotes from "layouts/myvotes";
+import Organizations from "layouts/organizations";
 import Settings from "layouts/settings";
 import Abouts from "layouts/abouts";
 
@@ -37,6 +38,7 @@ import InfoTwoToneIcon from '@mui/icons-material/InfoTwoTone';
 import CalendarMonthTwoToneIcon from '@mui/icons-material/CalendarMonthTwoTone';
 import DescriptionTwoToneIcon from '@mui/icons-material/DescriptionTwoTone';
 import SettingsTwoToneIcon from '@mui/icons-material/SettingsTwoTone';
+import CorporateFareTwoToneIcon from '@mui/icons-material/CorporateFareTwoTone';
 
 // Accept access as a parameter
 const routes = (access) => [
@@ -51,8 +53,8 @@ const routes = (access) => [
   },
 
   // Conditionally render the Accounts menu and its submenus based on access
-  access >= 10 && { type: "title", title: "Accounts", key: "account-pages" },
-  access >= 10 && {
+  access == 999 && { type: "title", title: "Accounts", key: "account-pages" },
+  access == 999 && {
     type: "collapse",
     name: "Users",
     key: "users",
@@ -61,7 +63,7 @@ const routes = (access) => [
     component: <Users />,
     noCollapse: true,
   },
-  access >= 10 && {
+  access == 999 && {
     type: "collapse",
     name: "Admins",
     key: "admins",
@@ -163,6 +165,15 @@ const routes = (access) => [
     route: "/settings",
     icon: <SettingsTwoToneIcon size="12px" />,
     component: <Settings />,
+    noCollapse: true,
+  },
+  access == 999 && {
+    type: "collapse",
+    name: "Organizations",
+    key: "organizations",
+    route: "/organizations",
+    icon: <CorporateFareTwoToneIcon size="12px" />,
+    component: <Organizations />,
     noCollapse: true,
   },
   {

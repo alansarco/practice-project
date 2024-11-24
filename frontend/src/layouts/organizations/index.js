@@ -6,73 +6,83 @@ import SoftBox from "components/SoftBox";
 import SoftTypography from "components/SoftTypography";
 import SoftInput from "components/SoftInput";
 import SoftButton from "components/SoftButton";
-import { ToastContainer, toast } from 'react-toastify';
-import { Link } from 'react-router-dom';
+import { ToastContainer } from 'react-toastify';
 
 import Icon from "@mui/material/Icon";
-  
+
 // React examples
 import DashboardLayout from "essentials/LayoutContainers/DashboardLayout";
 import DashboardNavbar from "essentials/Navbars"; 
 import Footer from "essentials/Footer";
-import Table from "layouts/elections/data/upcomingtable";
-import { tablehead } from "layouts/elections/data/head";
 
 // Data
   import { Grid } from "@mui/material";
 import { DynamicTableHeight } from "components/General/TableHeight";
 
-import React, { useEffect, useState } from "react";
-import FixedLoading from "components/General/FixedLoading";
+import React, { useState, useEffect } from "react";
+import FixedLoading from "components/General/FixedLoading"; 
 import { useStateContext } from "context/ContextProvider";
 import { Navigate } from "react-router-dom";
-import axios from "axios";
-import { passToSuccessLogs, passToErrorLogs } from "components/Api/Gateway";
-import { apiRoutes } from "components/Api/ApiRoutes";
-import { useDashboardData } from 'layouts/dashboard/data/dashboardRedux';
-import ElectionContainer from "layouts/elections/components/ElectionContainer";
-import CandidateList from "layouts/elections/components/CandidateList";
 
-function Upcoming() {
-  const currentFileName = "layouts/elections/upcoming.js";
-  const {token, access, updateTokenExpiration, role} = useStateContext();
+import Table from "layouts/organizations/data/table";
+import { tablehead } from "layouts/organizations/data/head";
+import Add from "layouts/organizations/Add";
+import axios from "axios";
+import { apiRoutes } from "components/Api/ApiRoutes";
+import { passToErrorLogs } from "components/Api/Gateway";
+import { passToSuccessLogs } from "components/Api/Gateway";
+import CustomPagination from "components/General/CustomPagination";
+
+function Organizations() {
+  const currentFileName = "layouts/organizations/index.js";
+  const {token, access, role, updateTokenExpiration} = useStateContext();
   updateTokenExpiration();
   if (!token) {
     return <Navigate to="/authentication/sign-in" />
   }
+  else if(token && access < 10) {
+    return <Navigate to="/not-found" />
+  }
   
-  const [searchTriggered, setSearchTriggered] = useState(false);
+  const [searchTriggered, setSearchTriggered] = useState(true);
   const [filter, setFilter] = useState();
+  const [page, setPage] = useState(1);
+  const [fetching, setFetching] = useState("");
+
   const [reload, setReload] = useState(false);
+  
   const YOUR_ACCESS_TOKEN = token; 
   const headers = {
     'Authorization': `Bearer ${YOUR_ACCESS_TOKEN}`
   };
-  
-  const [info, setINFO] = useState(); 
+
+  const [USER, setUSER] = useState(); 
   const [rendering, setRendering] = useState(1);
   const [fetchdata, setFetchdata] = useState([]);
-  const {authUser, polls, loadPolls} = useDashboardData({authUser: true, polls: true, render: rendering}, []);  
-  const [fetching, setFetching] = useState("");
-
-  useEffect(() => {
-    if (!loadPolls && polls) {
-      setFetchdata(polls.filter(poll => poll.status === "upcoming"), []);
-      // setFetchdata(polls.filter(poll => poll.status === "upcoming" && poll.allowed === "yes"), []);
-    }
-  }, [polls, loadPolls]);
-
   const tableHeight = DynamicTableHeight();
   
-  const HandleDATA = (pollid) => {
-    setINFO(pollid);
+  const HandleUSER= (user) => {
+    setUSER(user);
   };
-
 
   const HandleRendering = (rendering) => {
     setRendering(rendering);
   };
-  
+
+  const ReloadTable = () => {
+    axios.get(apiRoutes.orgRetrieve + '?page=' + page, { params: { filter }, headers })
+    .then(response => {
+      setFetchdata(response.data.organizations);
+      passToSuccessLogs(response.data, currentFileName);
+      setReload(false);
+      setFetching("No data Found!")
+    })
+    .catch(error => {
+      passToErrorLogs(`Admin Data not Fetched!  ${error}`, currentFileName);
+      setReload(false);
+    });
+  }
+
   const handleSearchAndButtonClick = (e) => {
     if (e.key === 'Enter' || e.type === 'click') {
       e.preventDefault(); // Prevent form submission
@@ -86,59 +96,70 @@ function Upcoming() {
   useEffect(() => {
     if (searchTriggered) {
       setReload(true);
-      axios.get(apiRoutes.pollsRetrieve, { params: { filter }, headers })
+      axios.get(apiRoutes.orgRetrieve + '?page=' + page, { params: { filter }, headers })
         .then(response => {
-            // const retrieved = response.data.polls.filter(
-            //     poll => poll.status === "upcoming" && 
-            //     poll.allowed === "yes"
-            // )
-            const retrieved = response.data.polls.filter(poll => poll.status === "upcoming")
-            setFetchdata(retrieved);
-            passToSuccessLogs(response.data, currentFileName);
-            if(retrieved.length < 1) setFetching("No data Found!")        
-            setReload(false);
+          setFetchdata(response.data.organizations);
+          passToSuccessLogs(response.data, currentFileName);
+          setReload(false);
+          setFetching("No data Found!")
         })
         .catch(error => {
-          passToErrorLogs(`Elections Data not Fetched!  ${error}`, currentFileName);
+          passToErrorLogs(`Admin Data not Fetched!  ${error}`, currentFileName);
           setReload(false);
         });
       setSearchTriggered(false);
     }
   }, [searchTriggered]);
 
+  const fetchNextPrevTasks = (link) => {
+    const url = new URL(link);
+    const nextPage = url.searchParams.get('page');
+    setPage(nextPage ? parseInt(nextPage) : 1);
+    setReload(true);      
+
+    // Trigger the API call again with the new page
+    axios.get(apiRoutes.orgRetrieve + '?page=' + nextPage, { params: { filter }, headers })
+    .then(response => {
+      setFetchdata(response.data.organizations);
+      setReload(false);      
+    })
+    .catch(error => {
+      setReload(false);      
+      console.error('Error fetching data for the next page:', error);
+    });
+  };
+  
+  const renderPaginationLinks = () => (
+    <CustomPagination fetchdata={fetchdata} fetchNextPrevTasks={fetchNextPrevTasks} />
+  )
 
   return (
     <> 
-      {loadPolls && <FixedLoading />} 
       {reload && <FixedLoading />} 
       <DashboardLayout>
-        <DashboardNavbar RENDERNAV={rendering} />
-        {info && rendering == 2 ? 
-            <ElectionContainer FROM="upcoming" authUser={authUser} INFO={info} HandleRendering={HandleRendering} HandleDATA={HandleDATA} /> 
-        :
-          rendering == 5 ?
-          <CandidateList FROM="upcoming" authUser={authUser} INFO={info} HandleRendering={HandleRendering} HandleDATA={HandleDATA} />
+        <DashboardNavbar RENDERNAV={rendering} />   
+        {
+          rendering == 3 ?
+            <Add HandleRendering={HandleRendering} ReloadTable={ReloadTable} />
         :
         <SoftBox p={2}>
           <SoftBox >   
             <SoftBox className="px-md-4 px-3 py-2" display="flex" justifyContent="space-between" alignItems="center">
               <SoftBox>
-                <SoftTypography className="text-uppercase text-secondary" variant="h6" >Upcoming Elections</SoftTypography>
+                <SoftTypography className="text-uppercase text-secondary" variant="h6" >Organizations List</SoftTypography>
+              </SoftBox>
+              <SoftBox display="flex">
+                {access == 999 && role === "ADMIN" &&
+                <SoftBox display="flex" >
+                  <SoftButton onClick={() => setRendering(3)} className="ms-2 py-0 px-3 d-flex rounded-pill" variant="gradient" color="success" size="small" >
+                    <Icon>add</Icon> Add Organization
+                  </SoftButton>
+                </SoftBox>
+                }
               </SoftBox>
             </SoftBox>
             <Card className="px-md-4 px-2 pt-3 pb-md-5 pb-4">
-              <Grid container spacing={1} py={1} pb={2}>  
-                <Grid item xs={12} md={8} display="flex">
-                  {access >= 10 && role === "ADMIN" ?
-                  <SoftTypography className="text-xs my-auto px-2 text-dark">
-                    <b className="text-success">Note:</b> Once the election is <b>UPCOMING</b>, only the voting dates can be updated. Super admin can delete the entire data of upcoming election if necessary.
-                  </SoftTypography>
-                  : 
-                  <SoftTypography className="text-xs my-auto px-2 text-dark">
-                    <b className="text-success">Note:</b> Elections displayed here are those you can only participate with.
-                  </SoftTypography>
-                  }
-                </Grid>    
+              <Grid container spacing={1} py={1} pb={2} justifyContent="end">
                 <Grid item xs={12} md={4}>
                   <SoftBox className="px-md-0 px-2" display="flex" margin="0" justifyContent="end">
                         <SoftInput
@@ -165,17 +186,18 @@ function Upcoming() {
                 </Grid>
               </Grid>
               <SoftBox className="shadow-none table-container px-md-1 px-3 bg-gray rounded-5" height={tableHeight} minHeight={50}>
-                  {fetchdata &&  fetchdata.length > 0 ? 
-                    <Table table="sm" authUser={authUser} HandleDATA={HandleDATA} HandleRendering={HandleRendering} elections={fetchdata} tablehead={tablehead} /> :
+                  {fetchdata && fetchdata.data && fetchdata.data.length > 0 ? 
+                    <Table table="sm" ReloadTable={ReloadTable} admins={fetchdata.data} tablehead={tablehead} /> :
                     <>
                     <SoftBox className="d-flex" height="100%">
                       <SoftTypography variant="h6" className="m-auto text-secondary">   
-                      {fetching}               
+                      {fetchdata && fetchdata.data && fetchdata.data.length == 0 ? "No data Found" : fetching}                    
                       </SoftTypography>
                     </SoftBox>
                     </>
                   }
                 </SoftBox>
+                {fetchdata && fetchdata.data && fetchdata.data.length > 0 && <SoftBox>{renderPaginationLinks()}</SoftBox>}
             </Card>
           </SoftBox>
         </SoftBox>
@@ -197,4 +219,4 @@ function Upcoming() {
   );
 }
 
-export default Upcoming;
+export default Organizations;

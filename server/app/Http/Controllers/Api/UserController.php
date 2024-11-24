@@ -318,6 +318,7 @@ class UserController extends Controller
                         $contact_rel = isset($cells[20]) ? $cells[20]->getValue() : '';
                         $year_enrolled = isset($cells[21]) ? $cells[21]->getValue() : null;
                         $modality = isset($cells[22]) ? $cells[22]->getValue() : '';
+                        $org_name = isset($cells[23]) ? $cells[23]->getValue() : '';
 
                         // Validation
                         if ($grade < 11) {
@@ -368,6 +369,7 @@ class UserController extends Controller
                                 'track' => strtoupper($track),
                                 'course' => strtoupper($course),
                                 'religion' => $religion,
+                                'org_name' => strtoupper($org_name),
                                 'house_no' => $house_no,
                                 'barangay' => strtoupper($barangay),
                                 'municipality' => strtoupper($municipality),

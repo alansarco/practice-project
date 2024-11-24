@@ -51,6 +51,8 @@ function Juniors() {
     
     const [page, setPage] = useState(1);
     const [fetching, setFetching] = useState("");
+    const [searchTriggered, setSearchTriggered] = useState(true);
+    const [fetchorgs, setFetchorgs] = useState([]);
 
     const [reload, setReload] = useState(false);
 
@@ -62,6 +64,7 @@ function Juniors() {
     const initialState = {
         filter: "",
         enrolled: "",
+        org_name: "",
         grade: "",
     };
 
@@ -88,6 +91,35 @@ function Juniors() {
     const HandleRendering = (rendering) => {
         setRendering(rendering);
     };
+
+    useEffect(() => {
+      axios.get(apiRoutes.orgSelect, { headers })
+      .then(response => {
+          setFetchorgs(response.data.orgs);
+          passToSuccessLogs(response.data, currentFileName);
+      })
+      .catch(error => {
+            passToErrorLogs(`Organizations not Fetched!  ${error}`, currentFileName);
+      });
+    }, []);
+
+    useEffect(() => {
+      if (searchTriggered) {
+        setReload(true);
+        axios.post(apiRoutes.juniorRetrieve + '?page=' + 1, formData, {headers})
+          .then(response => {
+            setFetchdata(response.data.users);
+            passToSuccessLogs(response.data, currentFileName);
+            setReload(false);
+            setFetching("No data Found!")
+          })
+          .catch(error => {
+            passToErrorLogs(`Stuents Data not Fetched!  ${error}`, currentFileName);
+            setReload(false);
+          });
+        setSearchTriggered(false);
+      }
+    }, [searchTriggered]);
 
     const ReloadTable = () => {
         axios.post(apiRoutes.juniorRetrieve + '?page=' + page, formData, {headers})
@@ -198,6 +230,18 @@ function Juniors() {
                                         {status.desc}
                                 </option>
                                 ))}
+                            </select>
+                            <select className="form-select-sm text-secondary rounded-5 cursor-pointer border span"
+                              name="org_name"
+                              value={formData.org_name}
+                              onChange={handleChange}
+                              >
+                              <option value="">All Organization</option>
+                              {fetchorgs && fetchorgs.map((orgs) => (
+                              <option key={orgs.org_name} value={orgs.org_name}>
+                                    {orgs.org_name}
+                              </option>
+                              ))}
                             </select>
                             </SoftBox>
                         </Grid>   

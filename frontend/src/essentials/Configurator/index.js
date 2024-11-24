@@ -27,25 +27,28 @@ import {
 import { useDashboardData } from "layouts/dashboard/data/dashboardRedux";
 import SoftBadge from "components/SoftBadge";
 import { useNavigate } from "react-router-dom";
+import { useStateContext } from "context/ContextProvider";
 
 function Configurator() {
   const [controller, dispatch] = useSoftUIController();
-  const { openConfigurator, transparentSidenav, fixedNavbar, sidenavColor } = controller;
+  const { openConfigurator} = controller;
   const [disabled, setDisabled] = useState(false);
-  const sidenavColors = ["primary", "dark", "info", "success", "warning", "error"];
+  const {user, access} = useStateContext();
   
   const {polls} = useDashboardData({
     // polls: true, 
   });
   const navigate = useNavigate(); 
 
-  const notifpolls = polls.filter(poll => poll.status !== "archive");
-  // const notifpolls = polls.filter(poll => poll.status !== "archive" && poll.allowed === "yes");
+  let notifpolls = polls.filter(poll => poll.status !== "archive" && poll.allowed === "yes");
+  if(access == 10) {
+    notifpolls = polls.filter(poll => poll.status !== "archive" && user == poll.admin_id && poll.allowed === "yes");
+  }
   
   const handleViewRequest = () => {
     // setOpenConfigurator(dispatch, false); 
     // navigate("/ongoing");  
-};
+  };
   // Use the useEffect hook to change the button state for the sidenav type based on window size.
   useEffect(() => {
     // A function that sets the disabled state of the buttons for the sidenav type.

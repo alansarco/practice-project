@@ -26,6 +26,7 @@ class Student extends Model
         'program', 
         'track', 
         'course', 
+        'org_name', 
         'religion', 
         'house_no', 
         'barangay', 

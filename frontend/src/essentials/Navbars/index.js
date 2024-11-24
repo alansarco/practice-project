@@ -8,7 +8,6 @@ import PropTypes from "prop-types";
 
 // @material-ui core components
 import AppBar from "@mui/material/AppBar";
-import Toolbar from "@mui/material/Toolbar";
 import IconButton from "@mui/material/IconButton";
 import Menu from "@mui/material/Menu";
 import Icon from "@mui/material/Icon";
@@ -18,15 +17,12 @@ import SoftBox from "components/SoftBox";
 
 // React examples
 import Breadcrumbs from "essentials/Breadcrumbs";
-import NotificationItem from "essentials/Items";
 import AccountItems from "essentials/Items/AccountItems";
+import { Grid } from "@mui/material";
 
 // Custom styles for DashboardNavbar
 import {
   navbar,
-  navbarContainer,
-  navbarRow,
-  navbarIconButton,
   navbarMobileMenu,
 } from "essentials/Navbars/styles";
 
@@ -39,9 +35,6 @@ import {
 } from "context";
 
 // Images
-import team2 from "assets/images/team-2.jpg";
-import logoSpotify from "assets/images/small-logos/logo-spotify.svg";
-import { Grid } from "@mui/material";
 import SoftTypography from "components/SoftTypography";
 
 import { useStateContext } from "context/ContextProvider";
@@ -50,11 +43,8 @@ import axios from "axios";
 import { apiRoutes } from "components/Api/ApiRoutes";
 import { toast } from 'react-toastify';
 import FixedLoading from "components/General/FixedLoading";
-import { useSignInData } from "layouts/authentication/sign-in/data/signinRedux";
 import { useDashboardData } from "layouts/dashboard/data/dashboardRedux";
-import CelebrationIcon from '@mui/icons-material/Celebration';
 import NotificationsIcon from '@mui/icons-material/Notifications';
-import CircleIcon from '@mui/icons-material/Circle';
 
 function DashboardNavbar(props) {
   const absolute = props.absolute;
@@ -67,7 +57,7 @@ function DashboardNavbar(props) {
   const route = useLocation().pathname.split("/").slice(1);
   const [formattedDate, setFormattedDate] = useState('');
   const [formattedTime, setFormattedTime] = useState('');
-  const {token, access, setToken, setUser, setRole, setAccess} = useStateContext();
+  const {token, user, access, setToken, setUser, setRole, setAccess} = useStateContext();
   const [submitLogout, setSubmitLogout] = useState(false);
 
   
@@ -81,9 +71,12 @@ function DashboardNavbar(props) {
     polls: true, 
     render: render
   });
-
-  const notifs = polls.filter(poll => poll.status !== "archive").length;
-  // const notifs = polls.filter(poll => poll.status !== "archive" && poll.allowed === "yes").length;
+  // const notifs = polls.filter(poll => poll.status !== "archive").length;
+  let notifs = polls.filter(poll => poll.status !== "archive" && poll.allowed === "yes").length;
+  if(access == 10) {
+    notifs = polls.filter(poll => poll.status !== "archive" &&user == poll.admin_id && poll.allowed === "yes").length;
+  }
+  
 
   useEffect(() => {
     const updateTimestamps = () => {

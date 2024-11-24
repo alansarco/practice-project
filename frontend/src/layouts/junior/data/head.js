@@ -25,7 +25,12 @@ export const tablehead = [
       align: "left",
     },
     {
-      name: "currently enrolled",
+      name: "organization",
+      padding: "px-2",
+      align: "left",
+    },
+    {
+      name: "active",
       padding: "px-2",
       align: "center",
     },
