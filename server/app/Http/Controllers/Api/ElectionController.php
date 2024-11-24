@@ -1251,9 +1251,9 @@ class ElectionController extends Controller
             $numbers = $validNumbers->implode(',');
 
             // Step 4: Prepare the SMS message with event details
-            $poll_name = strtoupper($request->poll_name);
-            $voting_start = date('F j, Y', strtotime($request->voting_start)); // Format: November 10, 2024
-            $voting_end = date('h:i A', strtotime($request->voting_end)); // Format: 10:30 AM
+            $poll_name = strtoupper($grades->pollname);
+            $voting_start = date('F j, Y', strtotime($grades->voting_start)); // Format: November 10, 2024
+            $voting_end = date('F j, Y', strtotime($grades->voting_end)); // Format: 10:30 AM
 
             $message = "Hello student! Election for $poll_name has started already!\n\n"
                 . "Start: $voting_start\n"
