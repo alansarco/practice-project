@@ -277,8 +277,8 @@ function EditApplication({FROM, POLL, POSITIONS, HandleRendering, UpdateLoading}
                                           </Grid>
                                     </Grid> 
                                     {!formData.ongoing_apply &&
-                                    <Grid container spacing={0} alignItems="center">
-                                          <Grid item xs={12} sm={6} md={4} lg={2} px={1}>
+                                    <Grid container spacing={0} alignItems="center" my={2}>
+                                          <Grid item xs={12} px={1}>
                                                 <SoftTypography variant="button" className="me-1"> Participants: </SoftTypography>
                                                 <SoftTypography variant="span" className="text-xxs text-danger fst-italic">*</SoftTypography>
                                                 {grades.map((grade) => (
@@ -300,7 +300,7 @@ function EditApplication({FROM, POLL, POSITIONS, HandleRendering, UpdateLoading}
                                      
                                     <Grid container spacing={0} alignItems="center">
                                           <Grid item xs={12} sm={6} md={4} lg={4} px={1}>
-                                                <SoftTypography variant="button" className="me-1 text-nowrap"> Assigned Admin: </SoftTypography>
+                                                <SoftTypography variant="button" className="me-1 text-nowrap"> Assigned Adviser: </SoftTypography>
                                                 <SoftTypography variant="span" className="text-xxs text-danger fst-italic">*</SoftTypography>
                                                 <select
                                                       className="form-control form-select form-select-sm text-secondary rounded-5 cursor-pointer"

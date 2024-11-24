@@ -165,7 +165,7 @@ function Admins() {
               <Grid container spacing={1} py={1} pb={2}>
                 <Grid item xs={12} md={8} display="flex">
                   <SoftTypography className="text-xs my-auto px-2 text-dark">
-                    <b className="text-success">Note:</b> <b>ADMIN</b>  accounts has limited access, while <b>SUPER ADMIN</b> can access all the fuctionalities of the system.
+                    <b className="text-success">Note:</b> <b>ADVISER</b>  accounts has limited access, while <b>SUPER ADMIN</b> can access all the fuctionalities of the system.
                   </SoftTypography>
                 </Grid>
                 <Grid item xs={12} md={4}>

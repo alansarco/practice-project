@@ -87,7 +87,7 @@ function Table({ admins, tablehead, HandleUSER, HandleRendering }) {
             borderBottom={`${borderWidth[1]} solid ${light.main}`}
             borderTop={`${borderWidth[1]} solid ${light.main}`}
           >
-            {row.access_level == 999 ? "Super Admin" : "Admin"}    
+            {row.access_level == 999 ? "Super Admin" : "Adviser"}    
           </SoftBox>  
           <SoftBox
             className="px-2"

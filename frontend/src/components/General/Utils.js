@@ -25,7 +25,7 @@ export const seniorSelect = [
 ];
 
 export const roleSelect = [
-      { value: 10, desc: "Admin" },
+      { value: 10, desc: "Adviser" },
       { value: 999, desc: "Super Admin" },
 ];
 

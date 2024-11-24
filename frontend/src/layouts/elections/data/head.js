@@ -25,7 +25,7 @@ export const tablehead = [
         align: "left",
       },
       {
-        name: "assigned admin", 
+        name: "assigned adviser", 
         padding: "px-2",
         align: "left",
       },
