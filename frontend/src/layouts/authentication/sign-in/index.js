@@ -147,7 +147,7 @@ function SignIn() {
     {submitLogin && <FixedLoading />}
     {newUser ?    
     <CoverLayout
-      title="SNHS Voting System"
+      title="Campus Voting System"
       description="Set Permanent Password"
       image={logo}
     >
@@ -204,7 +204,7 @@ function SignIn() {
     </CoverLayout>
     :
     <CoverLayout
-      title="SNHS Voting System"
+      title="Campus Voting System"
       description="Login Account"
       image={logo}
     >

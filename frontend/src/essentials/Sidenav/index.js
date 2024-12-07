@@ -137,7 +137,7 @@ function Sidenav({ color, routes, ...rest }) {
             sx={(theme) => sidenavLogoLabel(theme, { miniSidenav })}
           >
             <SoftTypography color="dark" className="ps-2" fontWeight="bold">
-              SNHS-OVS
+              Campus OVS
             </SoftTypography> 
           </SoftBox>
         </SoftBox>

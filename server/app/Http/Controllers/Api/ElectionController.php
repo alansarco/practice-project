@@ -630,19 +630,18 @@ class ElectionController extends Controller
             'positions.positionid',
             'positions.position_name',
             DB::raw('IFNULL((
-                SELECT JSON_ARRAYAGG(
-                    JSON_OBJECT(
-                        "candidateid", candidates.candidateid,
-                        "candidate_name", candidates.candidate_name,
-                        "pollid", candidates.pollid,
-                        "positionid", candidates.positionid,
-                        "grade", candidates.grade,
-                        "party", candidates.party,
-                        "organization", candidates.organization,
-                        "id_picture", TO_BASE64(candidates.id_picture),
-                        "platform", candidates.platform,
-                        "status", candidates.status
-                    )
+                SELECT GROUP_CONCAT(
+                    CONCAT(
+                        \'{"candidateid": "\', candidates.candidateid,
+                        \'", "candidate_name": "\', candidates.candidate_name,
+                        \'", "pollid": "\', candidates.pollid,
+                        \'", "positionid": "\', candidates.positionid,
+                        \'", "grade": "\', candidates.grade,
+                        \'", "party": "\', candidates.party,
+                        \'", "platform": "\', candidates.platform,
+                        \'", "status": "\', candidates.status, 
+                        \'"}\'
+                    ) SEPARATOR \',\'
                 )
                 FROM candidates
                 WHERE candidates.positionid = positions.positionid
@@ -652,6 +651,33 @@ class ElectionController extends Controller
         ->where('positions.pollid', $request->info)
         ->groupBy('positions.positionid', 'positions.position_name', 'positions.pollid')
         ->get();
+
+        // $applications = Position::select(
+        //     'positions.positionid',
+        //     'positions.position_name',
+        //     DB::raw('IFNULL((
+        //         SELECT JSON_ARRAYAGG(
+        //             JSON_OBJECT(
+        //                 "candidateid", candidates.candidateid,
+        //                 "candidate_name", candidates.candidate_name,
+        //                 "pollid", candidates.pollid,
+        //                 "positionid", candidates.positionid,
+        //                 "grade", candidates.grade,
+        //                 "party", candidates.party,
+        //                 "organization", candidates.organization,
+        //                 "id_picture", TO_BASE64(candidates.id_picture),
+        //                 "platform", candidates.platform,
+        //                 "status", candidates.status
+        //             )
+        //         )
+        //         FROM candidates
+        //         WHERE candidates.positionid = positions.positionid
+        //         AND candidates.pollid = positions.pollid
+        //     ), \'[]\') AS candidates')
+        // )
+        // ->where('positions.pollid', $request->info)
+        // ->groupBy('positions.positionid', 'positions.position_name', 'positions.pollid')
+        // ->get();
         
 
         $grades = Poll::select('participant_grade', 'organization', 'strict_mode', DB::raw("YEAR(created_at) AS created_year"))->where('pollid', $request->info)->first();
@@ -1105,17 +1131,18 @@ class ElectionController extends Controller
             'positions.positionid',
             'positions.position_name',
             DB::raw('IFNULL((
-                SELECT JSON_ARRAYAGG(
-                    JSON_OBJECT(
-                        "candidateid", candidates.candidateid,
-                        "candidate_name", candidates.candidate_name,
-                        "pollid", candidates.pollid,
-                        "positionid", candidates.positionid,
-                        "grade", candidates.grade,
-                        "party", candidates.party,
-                        "platform", candidates.platform,
-                        "status", candidates.status
-                    )
+                SELECT GROUP_CONCAT(
+                    CONCAT(
+                        \'{"candidateid": "\', candidates.candidateid,
+                        \'", "candidate_name": "\', candidates.candidate_name,
+                        \'", "pollid": "\', candidates.pollid,
+                        \'", "positionid": "\', candidates.positionid,
+                        \'", "grade": "\', candidates.grade,
+                        \'", "party": "\', candidates.party,
+                        \'", "platform": "\', candidates.platform,
+                        \'", "status": "\', candidates.status, 
+                        \'"}\'
+                    ) SEPARATOR \',\'
                 )
                 FROM candidates
                 WHERE candidates.positionid = positions.positionid
@@ -1126,6 +1153,32 @@ class ElectionController extends Controller
         ->where('positions.pollid', $request->info)
         ->groupBy('positions.positionid', 'positions.position_name', 'positions.pollid')
         ->get();
+
+        // $applications = Position::select(
+        //     'positions.positionid',
+        //     'positions.position_name',
+        //     DB::raw('IFNULL((
+        //         SELECT JSON_ARRAYAGG(
+        //             JSON_OBJECT(
+        //                 "candidateid", candidates.candidateid,
+        //                 "candidate_name", candidates.candidate_name,
+        //                 "pollid", candidates.pollid,
+        //                 "positionid", candidates.positionid,
+        //                 "grade", candidates.grade,
+        //                 "party", candidates.party,
+        //                 "platform", candidates.platform,
+        //                 "status", candidates.status
+        //             )
+        //         )
+        //         FROM candidates
+        //         WHERE candidates.positionid = positions.positionid
+        //         AND candidates.pollid = positions.pollid
+        //         AND candidates.status = 1
+        //     ), \'[]\') AS candidates')
+        // )
+        // ->where('positions.pollid', $request->info)
+        // ->groupBy('positions.positionid', 'positions.position_name', 'positions.pollid')
+        // ->get();
 
         if($applications) {
             return response()->json([

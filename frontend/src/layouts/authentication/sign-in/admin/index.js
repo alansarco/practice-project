@@ -91,7 +91,7 @@ function AdminSignIn() {
     <>
     {submitLogin && <FixedLoading />}
     <AdminCoverLayout
-      title="SNHS Voting System"
+      title="Campus Voting System"
       description="Login Admin Account"
       image={logo}
     >

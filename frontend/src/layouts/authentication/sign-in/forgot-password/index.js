@@ -148,7 +148,7 @@ function ForgotPassword() {
     <>
     {submitLogin && <FixedLoading />}
     <AdminCoverLayout
-      title="SNHS Voting System"
+      title="Campus Voting System"
       description={step < 4 ? "Forgot Password?" : "Password Chaged Successfully"} 
       image={logo}
     >
