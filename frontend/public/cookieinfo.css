@@ -1,0 +1,40 @@
+#cookieinfo-mask {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: #999;
+    zoom: 1;
+    filter: alpha(opacity=50);
+    opacity: 0.5;
+    z-index: 10000000000;
+}
+
+.cookieinfo {
+    position: fixed;
+    left: 0;
+    right: 0;
+    height: auto;
+    min-height: 21px;
+    z-index: 10000000001;
+    background: #eee;
+    color: #333;
+    line-height: 21px;
+    padding: 8px 18px;
+    font-family: Roboto, Arial, sans-serif;
+    font-size: 14px;
+    text-align: center;
+}
+
+.cookieinfo .cookieinfo-close {
+    float: right;
+    display: block;
+    /* padding: 5px 8px; */
+    min-width: 100px;
+    margin-left: 5px;
+    border-radius: 5px;
+    cursor: pointer;
+    color: #000;
+    background-color: #F1D600;
+}
