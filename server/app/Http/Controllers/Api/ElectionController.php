@@ -639,6 +639,7 @@ class ElectionController extends Controller
                         \'", "grade": "\', candidates.grade,
                         \'", "party": "\', candidates.party,
                         \'", "platform": "\', candidates.platform,
+                        \'", "id_picture": "\', TO_BASE64(candidates.id_picture),
                         \'", "status": "\', candidates.status, 
                         \'"}\'
                     ) SEPARATOR \',\'
