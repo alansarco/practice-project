@@ -1,5 +1,5 @@
 // export const mainRoute = "http://127.0.0.1:8000";
-export const mainRoute = "https://shark-app-bes35.ondigitalocean.app/app";
+export const mainRoute = "https://shark-app-bes35.ondigitalocean.app";
 
 export const apiRoutes = {  
     login: `${mainRoute}/api/login`,
