@@ -36,15 +36,15 @@ function List({APPLICATION, POLL, HandleRendering, UpdateLoading}) {
                                                 (() => {
                                                       let candidatesArray = [];
                                                       try {
-                                                            // if (typeof position.candidates === 'string') {
-                                                            //       candidatesArray = JSON.parse(position.candidates);
-                                                            // } else if (Array.isArray(position.candidates)) {
-                                                            //       candidatesArray = position.candidates;
-                                                            // }
-                                                            // candidatesArray = candidatesArray.filter(candidate => candidate.status === 1);
+                                                            if (typeof position.candidates === 'string') {
+                                                                  candidatesArray = JSON.parse(position.candidates);
+                                                            } else if (Array.isArray(position.candidates)) {
+                                                                  candidatesArray = position.candidates;
+                                                            }
+                                                            candidatesArray = candidatesArray.filter(candidate => candidate.status === 1);
 
-                                                            candidatesArray = JSON.parse('[' + position.candidates + ']')
-                                                            .filter(candidate => candidate.status === "1"); 
+                                                            // candidatesArray = JSON.parse('[' + position.candidates + ']')
+                                                            // .filter(candidate => candidate.status === "1"); 
                                                       } catch (error) {
                                                       console.error('Error parsing candidates:', error);
                                                       }
