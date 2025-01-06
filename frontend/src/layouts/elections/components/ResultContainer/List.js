@@ -175,7 +175,7 @@ function List({ USER, RESULT, CANDIDATES, POLL, HandleRendering, UpdateLoading, 
                                           Participants
                                     </SoftButton>
                                     }          
-                                    {access >= 10 && 
+                                    {!VOTE && access == 5 && 
                                     <SoftButton onClick={handleVoteTab} className="mt-2 mt-sm-0 mx-1 w-100 text-xxs px-5 rounded-pill text-nowrap" size="small" color={tabtitle == 3 ? "dark" : "white"}>
                                           Vote Now
                                     </SoftButton>
